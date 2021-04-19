@@ -6,7 +6,25 @@
     <description>Recent content in Posts on Markyang&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 12 Apr 2021 20:19:34 +0800</lastBuildDate><atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 20 Apr 2021 01:11:59 +0800</lastBuildDate><atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Leetcode 回溯算法——排列</title>
+      <link>http://localhost:1313/post/%E5%9B%9E%E6%BA%AF%E7%AE%97%E6%B3%95%E6%8E%92%E5%88%97/</link>
+      <pubDate>Tue, 20 Apr 2021 01:11:59 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/%E5%9B%9E%E6%BA%AF%E7%AE%97%E6%B3%95%E6%8E%92%E5%88%97/</guid>
+      <description>46. 全排列 给定一个 没有重复 数字的序列，返回其所有可能的全排列。 示例: 1 2 3 4 5 6 7 8 9 10 输入: [1,2,3] 输出: [ [1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1] ] 1 2 3 4 5 6 7 8 9 10 11 12</description>
+    </item>
+    
+    <item>
+      <title>下载gcc源码</title>
+      <link>http://localhost:1313/post/%E4%B8%8B%E8%BD%BDgcc%E6%BA%90%E7%A0%81/</link>
+      <pubDate>Mon, 19 Apr 2021 00:04:33 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/%E4%B8%8B%E8%BD%BDgcc%E6%BA%90%E7%A0%81/</guid>
+      <description>想下载gcc源码分析一下 new的内存配置 打开vs, ubuntu gcc 都看不到源码 gnu.org下载太慢了，采用国内镜像下载 1、中科大镜像源 1 https://mirrors.ustc.edu.cn/gnu/gcc/ 2、选择一个</description>
+    </item>
+    
     <item>
       <title>My First Post</title>
       <link>http://localhost:1313/post/my-first-post/</link>

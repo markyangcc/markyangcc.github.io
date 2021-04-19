@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>My First Post - Markyang&#39;s Blog</title>
+  <title>下载gcc源码 - Markyang&#39;s Blog</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="markyangcc" /><meta name="description" content="Github配合Hugo搭建静态网站 1、Github 创建 仓库 2、下载Hugo并配置环境变量等命令 1 2 3 hugo new site blog hugo hugo server 3、push to github fatal: unable to access" /><meta name="keywords" content="Hugo, theme, even" />
+<meta name="author" content="markyangcc" /><meta name="description" content="想下载gcc源码分析一下 new的内存配置 打开vs, ubuntu gcc 都看不到源码 gnu.org下载太慢了，采用国内镜像下载 1、中科大镜像源 1 https://mirrors.ustc.edu.cn/gnu/gcc/ 2、选择一个" /><meta name="keywords" content="Hugo, theme, even" />
 
 
 
@@ -26,7 +26,7 @@
 <meta name="generator" content="Hugo 0.82.0 with theme even" />
 
 
-<link rel="canonical" href="http://localhost:1313/post/my-first-post/" />
+<link rel="canonical" href="http://localhost:1313/post/%E4%B8%8B%E8%BD%BDgcc%E6%BA%90%E7%A0%81/" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -39,20 +39,20 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="My First Post" />
-<meta property="og:description" content="Github配合Hugo搭建静态网站 1、Github 创建 仓库 2、下载Hugo并配置环境变量等命令 1 2 3 hugo new site blog hugo hugo server 3、push to github fatal: unable to access" />
+<meta property="og:title" content="下载gcc源码" />
+<meta property="og:description" content="想下载gcc源码分析一下 new的内存配置 打开vs, ubuntu gcc 都看不到源码 gnu.org下载太慢了，采用国内镜像下载 1、中科大镜像源 1 https://mirrors.ustc.edu.cn/gnu/gcc/ 2、选择一个" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://localhost:1313/post/my-first-post/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2021-04-12T20:19:34&#43;08:00" />
-<meta property="article:modified_time" content="2021-04-12T20:19:34&#43;08:00" />
+<meta property="og:url" content="http://localhost:1313/post/%E4%B8%8B%E8%BD%BDgcc%E6%BA%90%E7%A0%81/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-04-19T00:04:33&#43;08:00" />
+<meta property="article:modified_time" content="2021-04-19T00:04:33&#43;08:00" />
 
-<meta itemprop="name" content="My First Post">
-<meta itemprop="description" content="Github配合Hugo搭建静态网站 1、Github 创建 仓库 2、下载Hugo并配置环境变量等命令 1 2 3 hugo new site blog hugo hugo server 3、push to github fatal: unable to access"><meta itemprop="datePublished" content="2021-04-12T20:19:34&#43;08:00" />
-<meta itemprop="dateModified" content="2021-04-12T20:19:34&#43;08:00" />
-<meta itemprop="wordCount" content="235">
+<meta itemprop="name" content="下载gcc源码">
+<meta itemprop="description" content="想下载gcc源码分析一下 new的内存配置 打开vs, ubuntu gcc 都看不到源码 gnu.org下载太慢了，采用国内镜像下载 1、中科大镜像源 1 https://mirrors.ustc.edu.cn/gnu/gcc/ 2、选择一个"><meta itemprop="datePublished" content="2021-04-19T00:04:33&#43;08:00" />
+<meta itemprop="dateModified" content="2021-04-19T00:04:33&#43;08:00" />
+<meta itemprop="wordCount" content="93">
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="My First Post"/>
-<meta name="twitter:description" content="Github配合Hugo搭建静态网站 1、Github 创建 仓库 2、下载Hugo并配置环境变量等命令 1 2 3 hugo new site blog hugo hugo server 3、push to github fatal: unable to access"/>
+<meta name="twitter:title" content="下载gcc源码"/>
+<meta name="twitter:description" content="想下载gcc源码分析一下 new的内存配置 打开vs, ubuntu gcc 都看不到源码 gnu.org下载太慢了，采用国内镜像下载 1、中科大镜像源 1 https://mirrors.ustc.edu.cn/gnu/gcc/ 2、选择一个"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -125,10 +125,10 @@
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">My First Post</h1>
+      <h1 class="post-title">下载gcc源码</h1>
 
       <div class="post-meta">
-        <span class="post-time"> 2021-04-12 </span>
+        <span class="post-time"> 2021-04-19 </span>
         
         
       </div>
@@ -137,62 +137,34 @@
     <div class="post-toc" id="post-toc">
   <h2 class="post-toc-title">Contents</h2>
   <div class="post-toc-content always-active">
-    <nav id="TableOfContents">
-  <ul>
-    <li><a href="#github配合hugo搭建静态网站">Github配合Hugo搭建静态网站</a></li>
-  </ul>
-</nav>
+    <nav id="TableOfContents"></nav>
   </div>
 </div>
     <div class="post-content">
-      <h1 id="github配合hugo搭建静态网站">Github配合Hugo搭建静态网站</h1>
-<p>1、Github 创建 仓库</p>
-<p>2、下载Hugo并配置环境变量等命令</p>
+      <p>想下载gcc源码分析一下 new的内存配置
+打开vs, ubuntu gcc 都看不到源码</p>
+<p>gnu.org下载太慢了，采用国内镜像下载</p>
+<p>1、中科大镜像源</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback">hugo new site blog
-hugo 
-hugo server
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">https://mirrors.ustc.edu.cn/gnu/gcc/
 </code></pre></td></tr></table>
 </div>
-</div><p>3、push to github</p>
-<p><code>fatal: unable to access 'https://github.com/xxx/xxx.github.io.git/': OpenSSL SSL_read: Connection was reset, errno 10054</code></p>
-<p>冲突了，采用本地已经存在的仓库推送至Github这种方式</p>
-<p>4、写文章与上传文章</p>
+</div><p>2、选择一个版本</p>
+<p>比如想看c++11版本的源码，搜索 gcc c++11</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
+<pre class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-fallback" data-lang="fallback"># ./blog 目录下执行下面命令新建文章
-hugo new post/paper.md
-# 将更新的内容，保存到 public 目录下
-hugo
-
-# 编辑完成后，更新github上的内容
-# /yang-blog/public 目录下
-git status  # 查看当前修改状态
-git add .  # 添加所有修改过的文件
-git commit -m &#34;Add a new post&#34;  # 引号内容是本次提交的说明
-git push -u origin main
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">https://www.gnu.org/software/gcc/projects/cxx-status.html
 </code></pre></td></tr></table>
 </div>
-</div>
+</div><p><img src="/images/image-20210419002927614.png" alt="image-20210419002927614"></p>
+
     </div>
 
     <div class="post-copyright">
@@ -203,7 +175,7 @@ git push -u origin main
   <p class="copyright-item">
     <span class="item-title">LastMod</span>
     <span class="item-content">
-        2021-04-12
+        2021-04-19
         
     </span>
   </p>
@@ -213,12 +185,16 @@ git push -u origin main
 <footer class="post-footer">
       
       <nav class="post-nav">
-        <a class="prev" href="/post/%E4%B8%8B%E8%BD%BDgcc%E6%BA%90%E7%A0%81/">
+        <a class="prev" href="/post/%E5%9B%9E%E6%BA%AF%E7%AE%97%E6%B3%95%E6%8E%92%E5%88%97/">
             <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">下载gcc源码</span>
+            <span class="prev-text nav-default">Leetcode 回溯算法——排列</span>
             <span class="prev-text nav-mobile">Prev</span>
           </a>
-        
+        <a class="next" href="/post/my-first-post/">
+            <span class="next-text nav-default">My First Post</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
       </nav>
     </footer>
   </article>
