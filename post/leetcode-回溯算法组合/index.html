@@ -49,7 +49,7 @@
 <meta itemprop="name" content="Leetcode 回溯算法——组合">
 <meta itemprop="description" content="总结 1、子集 2、子集 II ——剪枝思想 3、组合 4、组合总和 candidates 中的数字可以无限制重复被选取，所以startindex递归时就不用&#43;1了 sum &gt; targ"><meta itemprop="datePublished" content="2021-04-20T01:12:06&#43;08:00" />
 <meta itemprop="dateModified" content="2021-04-20T01:12:06&#43;08:00" />
-<meta itemprop="wordCount" content="1166">
+<meta itemprop="wordCount" content="1472">
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Leetcode 回溯算法——组合"/>
 <meta name="twitter:description" content="总结 1、子集 2、子集 II ——剪枝思想 3、组合 4、组合总和 candidates 中的数字可以无限制重复被选取，所以startindex递归时就不用&#43;1了 sum &gt; targ"/>
@@ -148,6 +148,7 @@
             <li><a href="#2子集-ii">2、子集 II</a></li>
             <li><a href="#3组合">3、组合</a></li>
             <li><a href="#4组合总和">4、组合总和</a></li>
+            <li><a href="#5组合总和-ii">5、组合总和 II</a></li>
           </ul>
         </li>
       </ul>
@@ -556,7 +557,7 @@
 </span><span class="c1"></span>            <span class="k">if</span><span class="p">(</span><span class="n">sum</span> <span class="o">&gt;</span> <span class="n">target</span><span class="p">)</span>
                 <span class="k">continue</span><span class="p">;</span> 
 
-            <span class="c1">// handle data
+            <span class="c1">// logic
 </span><span class="c1"></span>            <span class="n">path</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">candidates</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
             <span class="n">sum</span> <span class="o">+=</span> <span class="n">candidates</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
             
@@ -564,6 +565,137 @@
 </span><span class="c1"></span>            <span class="n">backtraceing</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">sum</span><span class="p">);</span>
             
             <span class="c1">// backtracking
+</span><span class="c1"></span>            <span class="n">path</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+            <span class="n">sum</span> <span class="o">-=</span> <span class="n">candidates</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="5组合总和-ii">5、组合总和 II</h3>
+<blockquote>
+<h4 id="40-组合总和-iihttpsleetcode-cncomproblemscombination-sum-ii"><a href="https://leetcode-cn.com/problems/combination-sum-ii/">40. 组合总和 II</a></h4>
+<p>给定一个数组 <code>candidates</code> 和一个目标数 <code>target</code> ，找出 <code>candidates</code> 中所有可以使数字和为 <code>target</code> 的组合。</p>
+<p><code>candidates</code> 中的每个数字在每个组合中只能使用一次。</p>
+<p><strong>说明：</strong></p>
+<ul>
+<li>所有数字（包括目标数）都是正整数。</li>
+<li>解集不能包含重复的组合。</li>
+</ul>
+<p><strong>示例 1:</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">输入: candidates = [10,1,2,7,6,1,5], target = 8,
+所求解集为:
+[
+  [1, 7],
+  [1, 2, 5],
+  [2, 6],
+  [1, 1, 6]
+]
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>示例 2:</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">输入: candidates = [2,5,2,1,2], target = 5,
+所求解集为:
+[
+  [1,2,2],
+  [5]
+]
+</code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">class</span> <span class="nc">Solution</span> <span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">path</span><span class="p">;</span>
+    <span class="n">vector</span><span class="o">&lt;</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="n">res</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">vector</span><span class="o">&lt;</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="n">combinationSum2</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span> <span class="n">candidates</span><span class="p">,</span> <span class="kt">int</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">sort</span><span class="p">(</span><span class="n">candidates</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="n">candidates</span><span class="p">.</span><span class="n">end</span><span class="p">());</span>
+        <span class="n">backtracking</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span><span class="n">target</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="nf">backtracking</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="n">candidates</span><span class="p">,</span> <span class="kt">int</span> <span class="n">target</span><span class="p">,</span> <span class="kt">int</span> <span class="n">startindex</span><span class="p">,</span> <span class="kt">int</span> <span class="n">sum</span><span class="p">){</span>
+        <span class="c1">//stop cond
+</span><span class="c1"></span>        <span class="k">if</span><span class="p">(</span><span class="n">target</span> <span class="o">==</span> <span class="n">sum</span><span class="p">){</span>
+            <span class="n">res</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="c1">//for
+</span><span class="c1"></span>        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span><span class="n">startindex</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">candidates</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+            <span class="c1">//cut
+</span><span class="c1"></span>            <span class="c1">//递归的时候下一个startIndex是i+1而不是0,可以使用i &gt; startindex 树枝去重
+</span><span class="c1"></span>            <span class="k">if</span><span class="p">(</span><span class="n">sum</span> <span class="o">&gt;</span> <span class="n">target</span> <span class="o">||</span><span class="p">(</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">startindex</span> <span class="o">&amp;&amp;</span> <span class="n">candidates</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">candidates</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="k">continue</span><span class="p">;</span>
+            <span class="c1">//logic
+</span><span class="c1"></span>            <span class="n">path</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">candidates</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+            <span class="n">sum</span> <span class="o">+=</span><span class="n">candidates</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+            <span class="c1">//recurse
+</span><span class="c1"></span>            <span class="n">backtracking</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span><span class="n">target</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">sum</span><span class="p">);</span>
+            <span class="c1">//backtrace
 </span><span class="c1"></span>            <span class="n">path</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
             <span class="n">sum</span> <span class="o">-=</span> <span class="n">candidates</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
         <span class="p">}</span>
