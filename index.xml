@@ -13,7 +13,7 @@
       <pubDate>Tue, 20 Apr 2021 01:12:06 +0800</pubDate>
       
       <guid>http://localhost:1313/post/leetcode-%E5%9B%9E%E6%BA%AF%E7%AE%97%E6%B3%95%E7%BB%84%E5%90%88/</guid>
-      <description>总结 1、子集 2、子集 II ——剪枝思想 3、组合总和 candidates 中的数字可以无限制重复被选取，所以startindex递归时就不用+1了 sum &amp;gt; target就剪</description>
+      <description>总结 1、子集 2、子集 II ——剪枝思想 3、组合 4、组合总和 candidates 中的数字可以无限制重复被选取，所以startindex递归时就不用+1了 sum &amp;gt; targ</description>
     </item>
     
     <item>
