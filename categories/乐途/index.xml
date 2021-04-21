@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>乐途 on Markyang&#39;s Blog</title>
+    <link>http://localhost:1313/categories/%E4%B9%90%E9%80%94/</link>
+    <description>Recent content in 乐途 on Markyang&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 12 Apr 2021 20:19:34 +0800</lastBuildDate><atom:link href="http://localhost:1313/categories/%E4%B9%90%E9%80%94/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>My First Post</title>
+      <link>http://localhost:1313/post/my-first-post/</link>
+      <pubDate>Mon, 12 Apr 2021 20:19:34 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/my-first-post/</guid>
+      <description>Github配合Hugo搭建静态网站 1、Github 创建 仓库 2、下载Hugo并配置环境变量等命令 1 2 3 hugo new site blog hugo hugo server 3、push to github fatal: unable to access</description>
+    </item>
+    
+  </channel>
+</rss>
