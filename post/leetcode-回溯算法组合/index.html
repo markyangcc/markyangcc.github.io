@@ -49,7 +49,7 @@
 <meta itemprop="name" content="Leetcode 回溯算法——组合">
 <meta itemprop="description" content="总结 1、子集 2、子集 II ——剪枝思想 3、组合 4、组合总和 candidates 中的数字可以无限制重复被选取，所以startindex递归时就不用&#43;1了 sum &gt; targ"><meta itemprop="datePublished" content="2021-04-20T01:12:06&#43;08:00" />
 <meta itemprop="dateModified" content="2021-04-20T01:12:06&#43;08:00" />
-<meta itemprop="wordCount" content="1472">
+<meta itemprop="wordCount" content="1769">
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Leetcode 回溯算法——组合"/>
 <meta name="twitter:description" content="总结 1、子集 2、子集 II ——剪枝思想 3、组合 4、组合总和 candidates 中的数字可以无限制重复被选取，所以startindex递归时就不用&#43;1了 sum &gt; targ"/>
@@ -149,6 +149,7 @@
             <li><a href="#3组合">3、组合</a></li>
             <li><a href="#4组合总和">4、组合总和</a></li>
             <li><a href="#5组合总和-ii">5、组合总和 II</a></li>
+            <li><a href="#6字母大小写全排列">6、字母大小写全排列</a></li>
           </ul>
         </li>
       </ul>
@@ -166,6 +167,8 @@
 <p>candidates 中的数字可以无限制重复被选取，所以<code>startindex</code>递归时就不用<code>+1</code>了</p>
 <p><code>sum &gt; target</code>就剪枝没必要继续下去了</p>
 <p>这道题，当时面试百度考了，很简单的一道题，面试的时候算法没看，A不出来特别尴尬……</p>
+<p>5、组合总和  II</p>
+<p>6、字母大小写全排列——本质是一个子集题目</p>
 <h3 id="1子集">1、子集</h3>
 <blockquote>
 <h4 id="78-子集httpsleetcode-cncomproblemssubsets"><a href="https://leetcode-cn.com/problems/subsets/">78. 子集</a></h4>
@@ -698,6 +701,97 @@
             <span class="c1">//backtrace
 </span><span class="c1"></span>            <span class="n">path</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
             <span class="n">sum</span> <span class="o">-=</span> <span class="n">candidates</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="6字母大小写全排列">6、字母大小写全排列</h3>
+<blockquote>
+<h4 id="784-字母大小写全排列httpsleetcode-cncomproblemsletter-case-permutation"><a href="https://leetcode-cn.com/problems/letter-case-permutation/">784. 字母大小写全排列</a></h4>
+<p>给定一个字符串<code>S</code>，通过将字符串<code>S</code>中的每个字母转变大小写，我们可以获得一个新的字符串。返回所有可能得到的字符串集合。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">示例：
+输入：S = &#34;a1b2&#34;
+输出：[&#34;a1b2&#34;, &#34;a1B2&#34;, &#34;A1b2&#34;, &#34;A1B2&#34;]
+
+输入：S = &#34;3z4&#34;
+输出：[&#34;3z4&#34;, &#34;3Z4&#34;]
+
+输入：S = &#34;12345&#34;
+输出：[&#34;12345&#34;]
+</code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">class</span> <span class="nc">Solution</span> <span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">vector</span> <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">res</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">vector</span> <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">letterCasePermutation</span><span class="p">(</span><span class="n">string</span> <span class="n">S</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">res</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">S</span><span class="p">);</span>
+        <span class="n">backtracking</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="nf">backtracking</span><span class="p">(</span><span class="n">string</span> <span class="n">S</span><span class="p">,</span> <span class="kt">int</span> <span class="n">startindex</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">//for
+</span><span class="c1"></span>        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">startindex</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">S</span><span class="p">.</span><span class="n">length</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">isalpha</span><span class="p">(</span><span class="n">S</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="p">{</span>
+                <span class="c1">// logic, 大写转小写,小写转大写
+</span><span class="c1"></span>                <span class="n">S</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">^=</span> <span class="mi">32</span><span class="p">;</span>
+                <span class="n">res</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">S</span><span class="p">);</span>
+                <span class="c1">//recurse
+</span><span class="c1"></span>                <span class="n">backtracking</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+                <span class="c1">// backtrack
+</span><span class="c1"></span>                <span class="n">S</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">^=</span> <span class="mi">32</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">continue</span><span class="p">;</span>
+            <span class="p">}</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">};</span>
