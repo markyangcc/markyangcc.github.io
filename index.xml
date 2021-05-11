@@ -13,7 +13,7 @@
       <pubDate>Tue, 11 May 2021 13:44:33 +0800</pubDate>
       
       <guid>http://localhost:1313/post/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</guid>
-      <description>1、quick sortt 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 // 辅函数 int partition(vector&amp;lt;int&amp;gt; &amp;amp;A, int low, int high) { int pivot = A[low]; while (low &amp;lt; high) { while (low &amp;lt; high &amp;amp;&amp;amp; A[high] &amp;gt;= pivot) { --high; } A[low] = A[high];</description>
+      <description>1、quick sort 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 // 辅函数 int partition(vector&amp;lt;int&amp;gt; &amp;amp;A, int low, int high) { int pivot = A[low]; while (low &amp;lt; high) { while (low &amp;lt; high &amp;amp;&amp;amp; A[high] &amp;gt;= pivot) { --high; } A[low] = A[high];</description>
     </item>
     
     <item>
