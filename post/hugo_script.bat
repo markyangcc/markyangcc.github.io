@@ -4,8 +4,9 @@ set blog=C:\Hugo\Sites\blog
 set repo=https://github.com/markyangcc/markyangcc.github.io.git
 set branch=main
 
-
 if exist %public% (
+    cd %blog%
+    hugo
     cd %public%
     echo git add and commit
     git add .
