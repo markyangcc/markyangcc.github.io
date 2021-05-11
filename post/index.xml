@@ -6,7 +6,34 @@
     <description>Recent content in Posts on Markyang&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 20 Apr 2021 01:12:06 +0800</lastBuildDate><atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 11 May 2021 13:44:33 +0800</lastBuildDate><atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>十大排序算法</title>
+      <link>http://localhost:1313/post/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Tue, 11 May 2021 13:44:33 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</guid>
+      <description>1、quick sort 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 // 辅函数 int partition(vector&amp;lt;int&amp;gt; &amp;amp;A, int low, int high) { int pivot = A[low]; while (low &amp;lt; high) { while (low &amp;lt; high &amp;amp;&amp;amp; A[high] &amp;gt;= pivot) { --high; } A[low] = A[high];</description>
+    </item>
+    
+    <item>
+      <title>Leetcode 贪心算法 种花问题</title>
+      <link>http://localhost:1313/post/leetcode-%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95-%E7%A7%8D%E8%8A%B1%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sat, 08 May 2021 22:04:38 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/leetcode-%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95-%E7%A7%8D%E8%8A%B1%E9%97%AE%E9%A2%98/</guid>
+      <description>605. 种花问题 假设有一个很长的花坛，一部分地块种植了花，另一部分却没有。可是，花不能种植在相邻的地块上，它们会争夺水源，两者都会死去。 给你一个整</description>
+    </item>
+    
+    <item>
+      <title>MySQL基础</title>
+      <link>http://localhost:1313/post/mysql%E5%9F%BA%E7%A1%80/</link>
+      <pubDate>Tue, 27 Apr 2021 15:55:13 +0800</pubDate>
+      
+      <guid>http://localhost:1313/post/mysql%E5%9F%BA%E7%A1%80/</guid>
+      <description>MySQL 中对一条 SQL 语句的执行时间进行分析。 1 2 3 4 5 6 # 开启profiling可以让 MySQL 收集在 SQL 执行时所使用的资源情况 mysql&amp;gt; select @@profiling; mysql&amp;gt; set profiling=1; # exec any select query mysql&amp;gt; show profile; mysql&amp;gt;</description>
+    </item>
+    
     <item>
       <title>Leetcode 回溯算法——组合</title>
       <link>http://localhost:1313/post/leetcode-%E5%9B%9E%E6%BA%AF%E7%AE%97%E6%B3%95%E7%BB%84%E5%90%88/</link>
@@ -23,24 +50,6 @@
       
       <guid>http://localhost:1313/post/leetcode-%E5%9B%9E%E6%BA%AF%E7%AE%97%E6%B3%95%E6%8E%92%E5%88%97/</guid>
       <description>总结 排列问题使用一个used[]存储元素是否被访问过，vector&amp;lt;bool&amp;gt; used(nums.size(),false), 组合问题使用int startindex = 0 1、全排列 2、全排列 II</description>
-    </item>
-    
-    <item>
-      <title>下载gcc源码</title>
-      <link>http://localhost:1313/post/%E4%B8%8B%E8%BD%BDgcc%E6%BA%90%E7%A0%81/</link>
-      <pubDate>Mon, 19 Apr 2021 00:04:33 +0800</pubDate>
-      
-      <guid>http://localhost:1313/post/%E4%B8%8B%E8%BD%BDgcc%E6%BA%90%E7%A0%81/</guid>
-      <description>想下载gcc源码分析一下 new的内存配置 打开vs, ubuntu gcc 都看不到源码 gnu.org下载太慢了，采用国内镜像下载 1、中科大镜像源 1 https://mirrors.ustc.edu.cn/gnu/gcc/ 2、选择一个</description>
-    </item>
-    
-    <item>
-      <title>My First Post</title>
-      <link>http://localhost:1313/post/my-first-post/</link>
-      <pubDate>Mon, 12 Apr 2021 20:19:34 +0800</pubDate>
-      
-      <guid>http://localhost:1313/post/my-first-post/</guid>
-      <description>Github配合Hugo搭建静态网站 1、Github 创建 仓库 2、下载Hugo并配置环境变量等命令 1 2 3 hugo new site blog hugo hugo server 3、push to github fatal: unable to access</description>
     </item>
     
   </channel>

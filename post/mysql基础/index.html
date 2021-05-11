@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>MySQL基础 - Markyang&#39;s Blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="markyangcc" /><meta name="description" content="MySQL 中对一条 SQL 语句的执行时间进行分析。 1 2 3 4 5 6 # 开启profiling可以让 MySQL 收集在 SQL 执行时所使用的资源情况 mysql&amp;gt; select @@profiling; mysql&amp;gt; set profiling=1; # exec any select query mysql&amp;gt; show profile; mysql&amp;gt;" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.82.0 with theme even" />
+
+
+<link rel="canonical" href="http://localhost:1313/post/mysql%E5%9F%BA%E7%A1%80/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.b5a744db6de49a86cadafb3b70f555ab443f83c307a483402259e94726b045ff.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="MySQL基础" />
+<meta property="og:description" content="MySQL 中对一条 SQL 语句的执行时间进行分析。 1 2 3 4 5 6 # 开启profiling可以让 MySQL 收集在 SQL 执行时所使用的资源情况 mysql&gt; select @@profiling; mysql&gt; set profiling=1; # exec any select query mysql&gt; show profile; mysql&gt;" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/mysql%E5%9F%BA%E7%A1%80/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-04-27T15:55:13&#43;08:00" />
+<meta property="article:modified_time" content="2021-04-27T15:55:13&#43;08:00" />
+
+<meta itemprop="name" content="MySQL基础">
+<meta itemprop="description" content="MySQL 中对一条 SQL 语句的执行时间进行分析。 1 2 3 4 5 6 # 开启profiling可以让 MySQL 收集在 SQL 执行时所使用的资源情况 mysql&gt; select @@profiling; mysql&gt; set profiling=1; # exec any select query mysql&gt; show profile; mysql&gt;"><meta itemprop="datePublished" content="2021-04-27T15:55:13&#43;08:00" />
+<meta itemprop="dateModified" content="2021-04-27T15:55:13&#43;08:00" />
+<meta itemprop="wordCount" content="3487">
+<meta itemprop="keywords" content="MySQL," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="MySQL基础"/>
+<meta name="twitter:description" content="MySQL 中对一条 SQL 语句的执行时间进行分析。 1 2 3 4 5 6 # 开启profiling可以让 MySQL 收集在 SQL 执行时所使用的资源情况 mysql&gt; select @@profiling; mysql&gt; set profiling=1; # exec any select query mysql&gt; show profile; mysql&gt;"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Blog</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">MySQL基础</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-04-27 </span>
+        <div class="post-category">
+            <a href="/categories/mysql/"> MySQL </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#sql提升查询效率">SQL提升查询效率</a></li>
+        <li><a href="#数据表的常见约束7种">数据表的常见约束（7种）</a></li>
+        <li><a href="#设计数据表的原则">设计数据表的原则</a>
+          <ul>
+            <li></li>
+          </ul>
+        </li>
+        <li><a href="#select">SELECT</a>
+          <ul>
+            <li><a href="#select-基础">select 基础</a></li>
+            <li><a href="#select-执行顺序">select 执行顺序</a></li>
+            <li><a href="#select--的缺点">select * 的缺点</a></li>
+          </ul>
+        </li>
+        <li><a href="#where-数据过滤">where 数据过滤</a></li>
+        <li><a href="#sql-函数">SQL 函数</a>
+          <ul>
+            <li><a href="#如何掌握sql函数">如何掌握SQL函数</a></li>
+          </ul>
+        </li>
+        <li><a href="#子查询">子查询</a>
+          <ul>
+            <li><a href="#定义">定义</a></li>
+            <li><a href="#in-any-all">IN ANY ALL</a></li>
+            <li><a href="#in-与-exists的效率选择">IN 与 EXISTS的效率选择</a></li>
+          </ul>
+        </li>
+        <li><a href="#连接">连接</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      <p><img src="C:%5CHugo%5CSites%5Cblog%5Cstatic%5Cimages%5Cimage-20210422083538679.png" alt="mysql-sql执行"></p>
+<p>MySQL 中对一条 SQL 语句的执行时间进行分析。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="c1">#  开启profiling可以让 MySQL 收集在 SQL 执行时所使用的资源情况
+</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">select</span> <span class="o">@@</span><span class="n">profiling</span><span class="p">;</span>
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="kt">set</span> <span class="n">profiling</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+<span class="c1"># exec any select query
+</span><span class="c1"></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">show</span> <span class="n">profile</span><span class="p">;</span>
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="k">show</span> <span class="n">profile</span> <span class="k">for</span> <span class="n">query</span> <span class="mi">2</span><span class="p">;</span> <span class="c1"># 也可以指定query ID， 在show profile;打印表里
+</span></code></pre></td></tr></table>
+</div>
+</div><p>MySQL 分析SQL语句是否走了索引</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">EXPLAIN</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">heros</span> <span class="k">where</span> <span class="n">hp_max</span> <span class="o">&gt;</span> <span class="mi">5000</span>
+<span class="mi">1</span>	<span class="n">SIMPLE</span>	<span class="n">heros</span>		<span class="k">ALL</span>					<span class="mi">69</span>	<span class="mi">33</span><span class="p">.</span><span class="mi">33</span>	<span class="k">Using</span> <span class="k">where</span>
+
+<span class="err">如果</span><span class="n">key显示为某个字段</span><span class="err">，就表示走了索引</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="sql提升查询效率">SQL提升查询效率</h2>
+<p>指定筛选条件</p>
+<p>避免全表扫描</p>
+<h2 id="数据表的常见约束7种">数据表的常见约束（7种）</h2>
+<p>约束的目的在于保证 RDBMS 里面数据的准确性和一致性</p>
+<ol>
+<li>首先是主键约束。</li>
+</ol>
+<p>主键起的作用是唯一标识一条记录，不能重复，不能为空，即 UNIQUE+NOT NULL。一个数据表的主键只能有一个。主键可以是一个字段，也可以由多个字段复合组成</p>
+<ol start="2">
+<li>其次还有外键约束。</li>
+</ol>
+<p>外键确保了表与表之间引用的完整性。一个表中的外键对应另一张表的主键。外键可以是重复的，也可以为空。</p>
+<ol start="3">
+<li>唯一性约束。</li>
+</ol>
+<p>唯一性约束表明了字段在表中的数值是唯一的，即使我们已经有了主键，还可以对其他字段进行唯一性约束。比如我们在 player 表中给 player_name 设置唯一性约束，就表明任何两个球员的姓名不能相同。</p>
+<blockquote>
+<p>唯一性约束和普通索引（NORMAL INDEX）之间是有区别的。唯一性约束相当于创建了一个约束和普通索引，目的是保证字段的正确性，而普通索引只是提升数据检索的速度，并不对字段的唯一性进行约束。</p>
+</blockquote>
+<ol start="4">
+<li>
+<p>NOT NULL 约束。对字段定义了 NOT NULL，即表明该字段不应为空，必须有取值。</p>
+</li>
+<li>
+<p>DEFAULT</p>
+</li>
+</ol>
+<p>表明了字段的默认值。如果在插入数据的时候，这个字段没有取值，就设置为默认值。比如我们将身高 height 字段的取值默认设置为 0.00，即<code>DEFAULT 0.00</code>。</p>
+<ol start="6">
+<li>CHECK 约束</li>
+</ol>
+<p>用来检查特定字段取值范围的有效性，CHECK 约束的结果不能为 FALSE，比如我们可以对身高 height 的数值进行 CHECK 约束，必须≥0，且＜3，即<code>CHECK(height&gt;=0 AND height&lt;3)</code>。</p>
+<h2 id="设计数据表的原则">设计数据表的原则</h2>
+<p>三少一多原则</p>
+<ol>
+<li><strong>数据表的个数越少越好</strong></li>
+</ol>
+<p>数据表越少，证明实体和联系设计得越简洁，既方便理解又方便操作。</p>
+<ol start="2">
+<li><strong>数据表中的字段个数越少越好</strong></li>
+</ol>
+<p>字段个数越多，数据冗余的可能性越大。有时候我们需要牺牲数据的冗余度来换取数据处理的效率。</p>
+<ol start="3">
+<li><strong>数据表中联合主键的字段个数越少越好</strong></li>
+</ol>
+<p>联合主键中的字段越多，占用的索引空间越大，不仅会加大理解难度，还会增加运行时间和索引空间</p>
+<ol start="4">
+<li><strong>使用主键和外键越多越好</strong>（待定）</li>
+</ol>
+<p>保证了数据表之间的独立性，还能提升相互之间的关联使用率。</p>
+<p>在阿里巴巴《JAVA开发手册》中有这么一条</p>
+<blockquote>
+<p>【强制】不得使用外键与级联，一切外键概念必须在应用层解决。”，说明指出</p>
+<p>“外键与级联更新适用于单机低并发，不适合分布式、高并发集群;</p>
+<p>级联更新是强阻塞，存在数据库更新风暴的风险;外键影响数据库的插入速度。”</p>
+</blockquote>
+<h4 id="说下主键外键和索引作用和区别">说下主键、外键和索引作用和区别？</h4>
+<p>主键是表中的记录的唯一标识，不能重复，不能为空，用来区分同一张表中不同的记录。</p>
+<p>一张表的外键是另一张表的主键，起到关联的作用，同时可以降低数据的冗余度，提高数据利用率。</p>
+<p>索引是对数据库表中一列或多列的值进行排序的一种结构，使用索引可快速访问数据库表中的特定信息，索引的一个主要目的就是加快检索表中数据。对于经常用来作为查询条件的字段，应该建立索引。但是对着数据量的增加，索引占用的空间也会越来越大</p>
+<h2 id="select">SELECT</h2>
+<h3 id="select-基础">select 基础</h3>
+<p>1、起别名，别名的作用是对原有名称进行简化，从而让 SQL 语句看起来更精简</p>
+<p>2、查询常数，想整合不同的数据源，用常数列作为这个表的标记，就需要查询常数。</p>
+<p>3、去除重复行</p>
+<p>DISTINCT 需要放到所有列名的前面</p>
+<p>DISTINCT 其实是对后面所有列名的组合进行去重</p>
+<p>4、排序数据</p>
+<p>ORDER BY 子句</p>
+<ol>
+<li>排序的列名：ORDER BY 后面多列，会按照后面第一个列先进行排序，当第一列的值相同，按照第二列进行排序，以此类推。</li>
+<li>排序的顺序：ASC 代表递增排序，DESC 代表递减排序。默认 ASC 。<strong>如果排序字段类型为文本数据，就需要参考数据库的设置方式了</strong>，这样才能判断 A 是在 B 之前，还是在 B 之后。比如使用 <strong>MySQL 在创建字段的时候设置为 BINARY 属性，就代表区分大小写。</strong></li>
+<li>非选择列排序：ORDER BY 可以使用非选择列进行排序，所以即使在 <strong>SELECT 后面没有这个列名，同样可以放到 ORDER BY 后面进行排序。</strong></li>
+<li>ORDER BY 的位置：ORDER BY 通常位于 SELECT 语句的最后一条子句，否则会报错。</li>
+</ol>
+<p>5、约束返回结果的数量</p>
+<p>约束返回结果的数量可以减少数据表的网络传输量，也可以提升查询效率</p>
+<p>在不同的 DBMS 中关键字可能不同，</p>
+<table>
+<thead>
+<tr>
+<th>DB</th>
+<th>Keyword</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MySQL</td>
+<td>LIMIT</td>
+</tr>
+<tr>
+<td>SQLServer</td>
+<td>TOP</td>
+</tr>
+<tr>
+<td>Oracle</td>
+<td>基于ROWNUM</td>
+</tr>
+</tbody>
+</table>
+<h3 id="select-执行顺序">select 执行顺序</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">FROM</span> <span class="o">&gt;</span> <span class="k">WHERE</span> <span class="o">&gt;</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="o">&gt;</span> <span class="k">HAVING</span> <span class="o">&gt;</span> <span class="k">SELECT</span> <span class="err">的字段</span> <span class="o">&gt;</span> <span class="k">DISTINCT</span> <span class="o">&gt;</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="o">&gt;</span> <span class="k">LIMIT</span>
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>语法关键字的顺序</p>
+<p><code>SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY ...</code></p>
+</blockquote>
+<p>在 SELECT 语句执行这些步骤的时候，每个步骤都会产生一个虚拟表，然后将这个虚拟表传入下一个步骤中作为输入。</p>
+<h3 id="select--的缺点">select * 的缺点</h3>
+<p>写清列名，可以减少数据表查询的网络传输量，在实际的工作中往往不需要全部的列名。</p>
+<h2 id="where-数据过滤">where 数据过滤</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="c1"># 比较运算符
+</span><span class="c1"></span><span class="o">&gt;</span> <span class="o">&lt;</span> <span class="o">=</span> <span class="o">&gt;=</span> <span class="o">&lt;=</span> <span class="o">!=</span> <span class="o">/</span> <span class="k">between</span> <span class="k">and</span> <span class="o">/</span> <span class="k">is</span> <span class="no">null</span> 
+<span class="c1"># 逻辑运算符
+</span><span class="c1"></span><span class="k">and</span> <span class="k">or</span> <span class="k">in</span> <span class="k">not</span>
+<span class="c1"># 通配符
+</span><span class="c1"></span><span class="o">%</span> <span class="c1">-- 匹配任意字符，0个字符也算任意字符
+</span><span class="c1"></span><span class="n">_</span> <span class="c1">-- 只匹配一个字符
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="sql-函数">SQL 函数</h2>
+<h3 id="如何掌握sql函数">如何掌握SQL函数</h3>
+<p>你需要从以下几个方面掌握 SQL 函数：</p>
+<ol>
+<li>什么是 SQL 函数？</li>
+<li>内置的 SQL 函数都包括哪些？</li>
+<li>什么情况下使用 SQL 函数？为什么使用 SQL 函数有时候会带来问题？</li>
+</ol>
+<h4 id="1什么是sql函数">1、什么是SQL函数？</h4>
+<p>当从数据表中检索出数据后，<strong>为了从这些数据中获得更有意义的数据，对提取出来的数值进行操作</strong>，比如求平均值等。可以使用SQL函数。</p>
+<h4 id="2内置的-sql-函数">2、内置的 SQL 函数</h4>
+<ol>
+<li>算术函数——算数处理</li>
+<li>字符串函数——字符串处理</li>
+<li>日期函数——日期处理</li>
+<li>转换函数——数据类型转换</li>
+<li>聚合函数——数据汇总，输入数据集合，输出单个值</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>算数函数</th>
+<th style="text-align:left">意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ABS(X)</td>
+<td style="text-align:left">SELECT ABS(-2) –&gt; 2</td>
+</tr>
+<tr>
+<td>MOD(N,M)</td>
+<td style="text-align:left">SELECT MOD(101,3) –&gt; 2</td>
+</tr>
+<tr>
+<td>ROUND(X,D)</td>
+<td style="text-align:left">SELECT ROUND(37.25,1) –&gt; 37.3 , 四舍五入，X表示数，D表示保留的位数</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>字符串函数</th>
+<th style="text-align:left">意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CONCAT(str1,str2,&hellip;)</td>
+<td style="text-align:left">SELECT ABS(-2) –&gt; 2</td>
+</tr>
+<tr>
+<td>LENGTH(str)</td>
+<td style="text-align:left">SELECT MOD(101,3) –&gt; 2</td>
+</tr>
+<tr>
+<td>CHAR_LENGTH(str)</td>
+<td style="text-align:left">SELECT ROUND(37.25,1) –&gt; 37.3 , 四舍五入，X表示数，D表示保留的位数</td>
+</tr>
+</tbody>
+</table>
+<p>还有 <code>LOWER(str) / UPPER(str) / REPLACE(str,from_str,to_str) / SUBSTR(str FROM pos FOR len)</code>等</p>
+<table>
+<thead>
+<tr>
+<th>日期函数</th>
+<th style="text-align:left">意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CURRENT_TIMESTAMP</td>
+<td style="text-align:left">CURRENT_TIMESTAMP –&gt; 2021-04-27 15:18:41</td>
+</tr>
+<tr>
+<td>EXTRACT(unit FROM date)</td>
+<td style="text-align:left">SELECT EXTRACT(YEAR FROM CURRENT_TIMESTAMP)  –&gt; 2021</td>
+</tr>
+<tr>
+<td>DATE(expr)</td>
+<td style="text-align:left">SELECT DATE(&lsquo;2021-04-27 15:22:05&rsquo;)  –&gt; 2021-04-27</td>
+</tr>
+</tbody>
+</table>
+<p>这里需要注意的是，<strong>DATE 日期格式必须是 yyyy-mm-dd 的形式，后面包含具体time并不是必须的</strong>。如果要进行日期比较，就要使用 DATE 函数，不要直接使用日期与字符串进行比较。</p>
+<p>原因是，很多时候你无法确认 birthdate 的数据类型是字符串，还是 datetime 类型，</p>
+<p><code>SELECT &quot;2016-01-02&quot; &gt; &quot;2016-1-1&quot; </code> 比如这个表达式使用字符串进行日期比较，返回结果是<code>0</code> false，并不符合题意</p>
+<p><code>SELECT DATE(&quot;2016-01-02&quot;) &gt; DATE(&quot;2016-1-1&quot;) </code> 返回结果正确，为<code>1</code> true，符合题意。</p>
+<table>
+<thead>
+<tr>
+<th>转换函数</th>
+<th style="text-align:left">意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CAST(expr AS type)</td>
+<td style="text-align:left">SELECT CAST(123.126 AS DECIMAL(8,2))  –&gt; 存在四舍五入，参数列[精度(总长度),小数位数]</td>
+</tr>
+<tr>
+<td></td>
+<td style="text-align:left">SELECT CAST(123.123 AS INT)  –&gt; 报错， 换成 <code>UNSIGNED</code> 即可</td>
+</tr>
+<tr>
+<td>COALESCE(value,&hellip;)</td>
+<td style="text-align:left">SELECT COALESCE(null,&ldquo;zzz&rdquo;,2)  –&gt; zzz</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关于为什么<code>CAST(123.123 AS INT)  ERROR</code> 但 <code>CAST(123.123 AS UNSIGNED) Works Fine, but maybe not correct</code></strong></p>
+<p>当涉及到强制转换时，会涉及到MySQL该如何解释这个数的附加信息，比如正负号等问题。考虑下面三个例子的结果，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">SELECT</span> <span class="nf">CAST</span><span class="p">(</span><span class="o">-</span><span class="mi">123</span><span class="p">.</span><span class="mi">526</span> <span class="k">AS</span> <span class="kt">INT</span><span class="p">)</span> 					<span class="c1"># ERROR
+</span><span class="c1"></span><span class="k">SELECT</span> <span class="nf">CAST</span><span class="p">(</span><span class="o">-</span><span class="mi">123</span><span class="p">.</span><span class="mi">526</span> <span class="k">AS</span> <span class="k">UNSIGNED</span><span class="p">)</span> 				<span class="c1"># 18446744073709551492
+</span><span class="c1"></span><span class="k">SELECT</span> <span class="nf">CAST</span><span class="p">(</span><span class="o">-</span><span class="mi">123</span><span class="p">.</span><span class="mi">526</span> <span class="k">AS</span> <span class="kt">DECIMAL</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span> 			<span class="c1"># -124
+</span></code></pre></td></tr></table>
+</div>
+</div><p>聚合函数</p>
+<table>
+<thead>
+<tr>
+<th>聚合函数</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>COUNT(col_name)</td>
+<td>忽略col_name为NULL的行</td>
+</tr>
+<tr>
+<td>COUNT(*)</td>
+<td>总行数，全部统计</td>
+</tr>
+</tbody>
+</table>
+<p><strong>HAVING 与  WHERE 的区别</strong></p>
+<p>1、HAVING 的作用和 WHERE 一样，都是起到过滤的作用， WHERE 是用于数据行， HAVING 则作用于分组。</p>
+<p>2、HAVING 支持所有 WHERE 的操作，需要 WHERE 子句实现的功能，都可以使用 HAVING 对分组进行筛选。</p>
+<p><strong>如何对中文字符串排序</strong></p>
+<p>先把 name 字段统一转化为 gbk 类型，使用<code>CONVERT(name USING gbk)</code></p>
+<h4 id="3使用sql函数注意的问题">3、使用SQL函数注意的问题</h4>
+<p>1、<strong>SQL 函数的代码可移植性是很差</strong>，不同DBSM同样的操作采用的函数也不一样。</p>
+<p>2、<strong>如果对字段做了函数运算，就不走索引</strong>，这是 MySQL 的规定。</p>
+<p>3、SQL 大小写规范</p>
+<p>在 Linux 的环境下，数据库名、表名、变量名是严格区分大小写的，而字段名是忽略大小写的。</p>
+<p>在 Windows 的环境下全部不区分大小写。</p>
+<p>推荐的大小写规范</p>
+<ol>
+<li>关键字和函数名称全部大写；</li>
+<li>数据库名、表名、字段名称全部小写；</li>
+<li>SQL 语句必须以分号结尾。</li>
+</ol>
+<h2 id="子查询">子查询</h2>
+<h3 id="定义">定义</h3>
+<p>关联子查询
+子查询从数据表中查询了数据结果，如果这个数据结果只执行一次
+<code>SELECT player_name, height FROM player WHERE height = (SELECT max(height) FROM player)</code>
+非关联子查询
+<code>SELECT player_name, height, team_id FROM player AS a WHERE height &gt; (SELECT avg(height) FROM player AS b WHERE a.team_id = b.team_id)</code></p>
+<h3 id="in-any-all">IN ANY ALL</h3>
+<p>注意 ANY, ALL——必须搭配比较运算符使用，否则没有意义 <code>&gt; ANY</code></p>
+<h3 id="in-与-exists的效率选择">IN 与 EXISTS的效率选择</h3>
+<p>IN是外表和内表进行hash连接，是先执行子查询。
+EXISTS是对外表进行循环，然后在内表进行查询。</p>
+<p>总结：外表大，用IN；内表大，用EXISTS。</p>
+<p>IN有一个缺陷是不能判断NULL，因此如果字段存在NULL值，则会出现返回，因为最好使用NOT EXISTS。</p>
+<h2 id="连接">连接</h2>
+<p><strong>笛卡尔积</strong></p>
+<p>X 和 Y 的笛卡尔积就是 X 和 Y 的所有可能组合</p>
+<p><strong>等值连接</strong></p>
+<p>两张表中都存在的列进行连接</p>
+<p>外连接</p>
+<p>左外连接，就是指左边的表是主表，需要显示左边表的全部行，而右侧的表是从表</p>
+<p>右外连接，指的就是右边的表是主表，需要显示右边表的全部行，而左侧的表是从表</p>
+<p><strong>自连接</strong></p>
+<p>自连接可以对多个表进行操作，也可以对同一个表进行操作。也就是说查询条件使用了当前表的字段。</p>
+<p>如果不用自连接的话，需要采用两次 SQL 查询，结果都是一样的</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">markyangcc</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2021-04-27
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/mysql/">MySQL</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/leetcode-%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95-%E7%A7%8D%E8%8A%B1%E9%97%AE%E9%A2%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Leetcode 贪心算法 种花问题</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/leetcode-%E5%9B%9E%E6%BA%AF%E7%AE%97%E6%B3%95%E7%BB%84%E5%90%88/">
+            <span class="next-text nav-default">Leetcode 回溯算法——组合</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2021<span class="copyright-and-others">Copyright &copy; 2020 <a href="https://github.com/markyangcc" style="color:#c05b4d">markyang</a></span>. All Rights Reserved
+    
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
