@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>CMU 15-445 Fall 2021 Project0: C++ Primer</title>
-    <url>/cmu-15-445-fall-2021-project0-c-primer</url>
+    <url>/cmu-15-445-fall-2021-project0-c-primer/</url>
     <content><![CDATA[<h1 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h1><p>第0个项目是熟悉C++，涉及模板，OO设计，unique_ptr，支持使用C++17特性。</p>
 <p>涉及的核心点：</p>
 <p><strong>使用flatten array来表示二维数组</strong>，使用一维数组来抽象表示二维数组可以提高CPU访存效率，最大程度应用上CPU L1，L2，L3 Cache。</p>
@@ -55,7 +55,7 @@
   </entry>
   <entry>
     <title>CMU 15-445 Fall 2021 Project1: Buffer Pool</title>
-    <url>/cmu-15-445-fall-2021-project1-buffer-pool</url>
+    <url>/cmu-15-445-fall-2021-project1-buffer-pool/</url>
     <content><![CDATA[<h1 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h1><p>第1个项目是实现<code>Buffer Pool Manager</code>，<code>BufferPoolManager</code> 负责在磁盘和内存之间搬运物理页面的，如果页面被标记为脏，那么需要写回磁盘，保证数据不丢失，如果<code>Buffer Pool</code> 满了，那么需要从内存总换出页面到磁盘上，空出空闲位置给新的页面请求。实现在内存和磁盘之间搬运数据，对请求者透明。 </p>
 <p>Buffer Pool 项目的实现包括三个部分</p>
 <ul>
@@ -120,7 +120,7 @@
   </entry>
   <entry>
     <title>Hexo Next主题配置（图片配置）</title>
-    <url>/hexo-next%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE%EF%BC%88%E5%9B%BE%E7%89%87%E9%85%8D%E7%BD%AE%EF%BC%89</url>
+    <url>/hexo-next%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE%EF%BC%88%E5%9B%BE%E7%89%87%E9%85%8D%E7%BD%AE%EF%BC%89/</url>
     <content><![CDATA[<h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
 <p><strong>修改引入图片路径即可解决，</strong></p>
 <p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
