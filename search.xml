@@ -166,4 +166,58 @@
         <tag>hexo</tag>
       </tags>
   </entry>
+  <entry>
+    <title>RPM Sign</title>
+    <url>/rpm-sign/</url>
+    <content><![CDATA[<h2 id="Gen-GPG-keyring"><a href="#Gen-GPG-keyring" class="headerlink" title="Gen GPG keyring"></a>Gen GPG keyring</h2><p>使用下面的命令生成 GPG keyring。输入 Name 和 Email 。输入 o 确认后，passphrase 可以不输入（保留为空即可），passphrase 保留为空代表不需要密码保护（公钥和私钥需要确认两次）。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --gen-key</span><br></pre></td></tr></table></figure>
+
+<p>查看生成的 GPG key</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg -K</span><br></pre></td></tr></table></figure>
+
+<h2 id="rpmsign"><a href="#rpmsign" class="headerlink" title="rpmsign"></a>rpmsign</h2><p>导出公钥，生成一个公钥文件，此公钥文件通常根据用途不同放到 repo 源中，或者直接导入系统用于安装 RPM 时进行 GPG 验证。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --armor --<span class="built_in">export</span> &gt; RPM-GPG-KEY-EXAMPLE</span><br></pre></td></tr></table></figure>
+
+<p>将所有的 RPM 包进行签名</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rpmsign --define <span class="string">&quot;_gpg_name security@example.com&quot;</span> --addsign *.rpm</span><br></pre></td></tr></table></figure>
+
+<h2 id="migrate-GPG-keyring"><a href="#migrate-GPG-keyring" class="headerlink" title="migrate GPG keyring"></a>migrate GPG keyring</h2><p>1、export GPG keyring</p>
+<p>-a, –armor, 以 ascii 方式导出</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># export public key</span></span><br><span class="line">gpg -a --<span class="built_in">export</span> &gt;mypubkeys.asc</span><br><span class="line"><span class="comment"># export private key</span></span><br><span class="line">gpg -a --export-secret-keys &gt;myprivatekeys.asc</span><br></pre></td></tr></table></figure>
+
+<p>2、export GPG trustdb (Optionally)</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># export gpg&#x27;s trustdb (Optionally)</span></span><br><span class="line">gpg --export-ownertrust &gt;mytrustdb.txt</span><br></pre></td></tr></table></figure>
+
+<p>3、import GPG keyring</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --import myprivatekeys.asc</span><br><span class="line">gpg --import mypubkeys.asc</span><br><span class="line"></span><br><span class="line"><span class="comment"># list public &amp; secret keys</span></span><br><span class="line">gpg -K</span><br><span class="line">gpg -k</span><br></pre></td></tr></table></figure>
+
+<p>4、import trustdb</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --import-ownertrust mytrustdb.txt</span><br></pre></td></tr></table></figure>
+
+<p>当我们导入 GPG keyrings 时，GPG 并不信任 keyrings，需要导入 trustdb 后，并更新下 trustdb</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --update-trustdb</span><br></pre></td></tr></table></figure>
+
+<p>5、force trust GPG keyring</p>
+<p>如果没有导入 trustdb，GPG 认为 keys 不可信。可以使用下面的命令信任所有的 GPG keyrings。</p>
+<p>注意，只信任自己创建的 keyring，不要信任互联网的其他 keyring。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --list-keys --fingerprint |grep pub -A 1|egrep -Ev <span class="string">&quot;pub|--&quot;</span>|<span class="built_in">tr</span> -d <span class="string">&#x27; &#x27;</span> \</span><br><span class="line"> | awk <span class="string">&#x27;BEGIN &#123; FS = &quot;\n&quot; &#125; ; &#123; print $1&quot;:6:&quot; &#125; &#x27;</span> | gpg --import-ownertrust</span><br></pre></td></tr></table></figure>
+
+<h2 id="QA"><a href="#QA" class="headerlink" title="QA"></a>QA</h2><h3 id="为什么需要迁移-GPG-keyring"><a href="#为什么需要迁移-GPG-keyring" class="headerlink" title="为什么需要迁移 GPG keyring"></a>为什么需要迁移 GPG keyring</h3><p>进行 RPM 打包的时候，都会给 RPM 包签名。同一个发行商都会给 RPM 包签名，不同的 build system，比如 OBS（open build service），Koji 等都可以实现自动签名。我们可以导入 GPG keyring，而不是让构建系统自己生成一个。</p>
+<h3 id="为什么需要导入-trustdb？"><a href="#为什么需要导入-trustdb？" class="headerlink" title="为什么需要导入 trustdb？"></a>为什么需要导入 trustdb？</h3><p>如果不导入 trustdb，当导入迁移后的 GPG keyring 时，GPG keyring 状态变为 unknown。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># gpg -K</span></span><br><span class="line">/root/.gnupg/pubring.kbx</span><br><span class="line">------------------------</span><br><span class="line">sec   rsa3072 2022-11-02 [SC] [expires: 2024-11-01]</span><br><span class="line">      024B8C9501E35519D203B3B6DCD37021E3793FD6</span><br><span class="line">uid           [ultimate] security &lt;@example.com&gt;</span><br><span class="line">ssb   rsa3072 2022-11-02 [E] [expires: 2024-11-01]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># gpg -K</span></span><br><span class="line">/root/.gnupg/pubring.kbx</span><br><span class="line">------------------------</span><br><span class="line">sec   rsa3072 2022-11-02 [SC] [expires: 2024-11-01]</span><br><span class="line">      024B8C9501E35519D203B3B6DCD37021E3793FD6</span><br><span class="line">uid           [unknown] security &lt;@example.com&gt;</span><br><span class="line">ssb   rsa3072 2022-11-02 [E] [expires: 2024-11-01]</span><br></pre></td></tr></table></figure>
+
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>1、<a class="link"   href="https://access.redhat.com/solutions/2115511" >https://access.redhat.com/solutions/2115511<i class="fas fa-external-link-alt"></i></a></p>
+<p>2、<a class="link"   href="https://docs.pagure.org/koji/signing/" >https://docs.pagure.org/koji/signing/<i class="fas fa-external-link-alt"></i></a></p>
+<p>3、<a class="link"   href="https://unix.stackexchange.com/questions/639514/unknown-validity-despite-having-signed-the-key-myself" >https://unix.stackexchange.com/questions/639514/unknown-validity-despite-having-signed-the-key-myself<i class="fas fa-external-link-alt"></i></a></p>
+<p>4、<a class="link"   href="https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually" >https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>rpm</category>
+      </categories>
+      <tags>
+        <tag>rpm</tag>
+      </tags>
+  </entry>
 </search>
