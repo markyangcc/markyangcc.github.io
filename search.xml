@@ -1,56 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>CMU 15-445 Fall 2021 Project0: C++ Primer</title>
-    <url>/cmu-15-445-fall-2021-project0-c-primer/</url>
-    <content><![CDATA[<h1 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h1><p>第0个项目是熟悉C++，涉及模板，OO设计，unique_ptr，支持使用C++17特性。</p>
-<p>涉及的核心点：</p>
-<p><strong>使用flatten array来表示二维数组</strong>，使用一维数组来抽象表示二维数组可以提高CPU访存效率，最大程度应用上CPU L1，L2，L3 Cache。</p>
-<p>我觉得这是这个项目的核心点，其次就是C++ OOP需要注意的一些点，比如构造析构，array new&#x2F; array delete，exception，template等。这些并不是难点，属于C++基础部分。</p>
-<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><h2 id="Matrix-constructor-x2F-destructor"><a href="#Matrix-constructor-x2F-destructor" class="headerlink" title="Matrix constructor&#x2F;destructor"></a>Matrix constructor&#x2F;destructor</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Matrix</span>(<span class="type">int</span> rows, <span class="type">int</span> cols) &#123;</span><br><span class="line">   rows_ = rows;</span><br><span class="line">   cols_ = cols;</span><br><span class="line">   linear_ = <span class="keyword">new</span> T[rows * cols];  <span class="comment">// key point is flattened array</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">virtual</span> ~<span class="built_in">Matrix</span>() &#123; <span class="keyword">delete</span>[] linear_; &#125;</span><br></pre></td></tr></table></figure>
+    <title>如何为 RPM 包签名</title>
+    <url>/how-to-sign-rpm-package/</url>
+    <content><![CDATA[<h2 id="Generate-GPG-keyring"><a href="#Generate-GPG-keyring" class="headerlink" title="Generate GPG keyring"></a>Generate GPG keyring</h2><p>使用下面的命令生成 GPG keyring。输入 Name 和 Email 。输入 o 确认后，passphrase 可以不输入（保留为空即可），passphrase 保留为空代表不需要密码保护（公钥和私钥需要确认两次）。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --gen-key</span><br></pre></td></tr></table></figure>
 
-<h2 id="Matrix-get-x2F-set"><a href="#Matrix-get-x2F-set" class="headerlink" title="Matrix get&#x2F;set"></a>Matrix get&#x2F;set</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="type">int</span> <span class="title">GetRowCount</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> rows_; &#125;</span><br><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="type">int</span> <span class="title">GetColumnCount</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> cols_; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">virtual</span> T <span class="title">GetElement</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">   <span class="keyword">if</span> (i &lt; <span class="number">0</span> || i &gt;= rows_ || j &lt; <span class="number">0</span> || j &gt;= cols_) &#123;</span><br><span class="line">     <span class="keyword">throw</span> <span class="built_in">Exception</span>(ExceptionType::OUT_OF_RANGE, <span class="string">&quot;Invalid arguments: out of range.&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">this</span>-&gt;linear_[i * cols_ + j];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SetElement</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j, T val)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">if</span> (i &lt; <span class="number">0</span> || i &gt;= rows_ || j &lt; <span class="number">0</span> || j &gt;= cols_) &#123;</span><br><span class="line">     <span class="keyword">throw</span> <span class="built_in">Exception</span>(ExceptionType::OUT_OF_RANGE, <span class="string">&quot;Invalid arguments: out of range&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">this</span>-&gt;linear_[i * cols_ + j] = val;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>查看生成的 GPG key</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg -K</span><br></pre></td></tr></table></figure>
 
-<h2 id="Matrix-Fill-Data"><a href="#Matrix-Fill-Data" class="headerlink" title="Matrix Fill Data"></a>Matrix Fill Data</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">FillFrom</span><span class="params">(<span class="type">const</span> std::vector&lt;T&gt; &amp;source)</span> </span>&#123;</span><br><span class="line">   <span class="type">size_t</span> size = rows_ * cols_;</span><br><span class="line">   <span class="keyword">if</span> (source.<span class="built_in">size</span>() != size) &#123;</span><br><span class="line">     <span class="keyword">throw</span> <span class="built_in">Exception</span>(ExceptionType::OUT_OF_RANGE, <span class="string">&quot;Invalid arguments: size not fit&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; source.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">     <span class="keyword">this</span>-&gt;linear_[i] = source[i];</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="rpmsign"><a href="#rpmsign" class="headerlink" title="rpmsign"></a>rpmsign</h2><p>导出公钥，生成一个公钥文件，此公钥文件通常根据用途不同放到 repo 源中，或者直接导入系统用于安装 RPM 时进行 GPG 验证。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --armor --<span class="built_in">export</span> &gt; RPM-GPG-KEY-EXAMPLE</span><br></pre></td></tr></table></figure>
+
+<p>将所有的 RPM 包进行签名</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rpmsign --define <span class="string">&quot;_gpg_name security@example.com&quot;</span> --addsign *.rpm</span><br></pre></td></tr></table></figure>
+
+<h2 id="migrate-GPG-keyring"><a href="#migrate-GPG-keyring" class="headerlink" title="migrate GPG keyring"></a>migrate GPG keyring</h2><p>1、export GPG keyring</p>
+<p>-a, –armor, 以 ascii 方式导出</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># export public key</span></span><br><span class="line">gpg -a --<span class="built_in">export</span> &gt;mypubkeys.asc</span><br><span class="line"><span class="comment"># export private key</span></span><br><span class="line">gpg -a --export-secret-keys &gt;myprivatekeys.asc</span><br></pre></td></tr></table></figure>
+
+<p>2、export GPG trustdb (Optionally)</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># export gpg&#x27;s trustdb (Optionally)</span></span><br><span class="line">gpg --export-ownertrust &gt;mytrustdb.txt</span><br></pre></td></tr></table></figure>
+
+<p>3、import GPG keyring</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --import myprivatekeys.asc</span><br><span class="line">gpg --import mypubkeys.asc</span><br><span class="line"></span><br><span class="line"><span class="comment"># list public &amp; secret keys</span></span><br><span class="line">gpg -K</span><br><span class="line">gpg -k</span><br></pre></td></tr></table></figure>
+
+<p>4、import trustdb</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --import-ownertrust mytrustdb.txt</span><br></pre></td></tr></table></figure>
+
+<p>当我们导入 GPG keyrings 时，GPG 并不信任 keyrings，需要导入 trustdb 后，并更新下 trustdb</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --update-trustdb</span><br></pre></td></tr></table></figure>
+
+<p>5、force trust GPG keyring</p>
+<p>如果没有导入 trustdb，GPG 认为 keys 不可信。可以使用下面的命令信任所有的 GPG keyrings。</p>
+<p>注意，只信任自己创建的 keyring，不要信任互联网的其他 keyring。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --list-keys --fingerprint |grep pub -A 1|egrep -Ev <span class="string">&quot;pub|--&quot;</span>|<span class="built_in">tr</span> -d <span class="string">&#x27; &#x27;</span> \</span><br><span class="line"> | awk <span class="string">&#x27;BEGIN &#123; FS = &quot;\n&quot; &#125; ; &#123; print $1&quot;:6:&quot; &#125; &#x27;</span> | gpg --import-ownertrust</span><br></pre></td></tr></table></figure>
+
+<h2 id="搭配-OBS-使用"><a href="#搭配-OBS-使用" class="headerlink" title="搭配 OBS 使用"></a>搭配 OBS 使用</h2><p>OBS(Open Build Service) 是一个可以用于为各个发行版打包的编译系统。OBS 系统默认会使用自己生成的签名，但是如果能让 OBS 系统使用我们自己的签名不是很好，接下来就介绍如何让 OBS 使用我们的 GPG Keyring 为 RPM 包进行签名。</p>
+<p>平时我们使用 rpmbuild 命令在虚拟机或者 docker 中打包的时候签名的公钥都是存放在 <code>~/.gnupg</code> 目录下，这也是 gpg -k 等命令的默认搜索路径，但是 OBS 是一个单独的系统，他的配置都放在单独的 <code>/srv</code> 目录下。rpmsign 使用的公钥的存放目录是 <code>/srv/obs/gnupg</code>。</p>
+<p>因此，只需要在导入 GPG Keyring 时候，通过 <code>--homedir</code> 指定目录即可，</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gpg --import  my-publickey.asc</span><br><span class="line">gpg --import my-privatekey.asc</span><br><span class="line">gpg --import-ownertrust my-gpgtrustdb.txt</span><br></pre></td></tr></table></figure>
 
 
+<h2 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h2><h3 id="为什么需要迁移-GPG-keyring"><a href="#为什么需要迁移-GPG-keyring" class="headerlink" title="为什么需要迁移 GPG keyring"></a>为什么需要迁移 GPG keyring</h3><p>进行 RPM 打包的时候，都会给 RPM 包签名。同一个发行商都会给 RPM 包签名，不同的 build system，比如 OBS（open build service），Koji 等都可以实现自动签名。我们可以导入 GPG keyring，而不是让构建系统自己生成一个。</p>
+<h3 id="为什么需要导入-trustdb？"><a href="#为什么需要导入-trustdb？" class="headerlink" title="为什么需要导入 trustdb？"></a>为什么需要导入 trustdb？</h3><p>如果不导入 trustdb，当导入迁移后的 GPG keyring 时，GPG keyring 状态变为 unknown。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># gpg -K</span></span><br><span class="line">/root/.gnupg/pubring.kbx</span><br><span class="line">------------------------</span><br><span class="line">sec   rsa3072 2022-11-02 [SC] [expires: 2024-11-01]</span><br><span class="line">      024B8C9501E35519D203B3B6DCD37021E3793FD6</span><br><span class="line">uid           [ultimate] security &lt;@example.com&gt;</span><br><span class="line">ssb   rsa3072 2022-11-02 [E] [expires: 2024-11-01]</span><br></pre></td></tr></table></figure>
 
-<h2 id="RowMatrix-constructor-x2F-destructor"><a href="#RowMatrix-constructor-x2F-destructor" class="headerlink" title="RowMatrix constructor&#x2F;destructor"></a>RowMatrix constructor&#x2F;destructor</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">RowMatrix</span>(<span class="type">int</span> rows, <span class="type">int</span> cols) : <span class="built_in">Matrix</span>&lt;T&gt;(rows, cols) &#123;</span><br><span class="line">  data_ = <span class="keyword">new</span> T *[rows];</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; rows; ++i) &#123;</span><br><span class="line">    data_[i] = Matrix&lt;T&gt;::linear_ + i * cols;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">~<span class="built_in">RowMatrix</span>() <span class="keyword">override</span> &#123; <span class="keyword">delete</span>[] data_; &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># gpg -K</span></span><br><span class="line">/root/.gnupg/pubring.kbx</span><br><span class="line">------------------------</span><br><span class="line">sec   rsa3072 2022-11-02 [SC] [expires: 2024-11-01]</span><br><span class="line">      024B8C9501E35519D203B3B6DCD37021E3793FD6</span><br><span class="line">uid           [unknown] security &lt;@example.com&gt;</span><br><span class="line">ssb   rsa3072 2022-11-02 [E] [expires: 2024-11-01]</span><br></pre></td></tr></table></figure>
 
-<h2 id="RowMatrix-get-x2F-set"><a href="#RowMatrix-get-x2F-set" class="headerlink" title="RowMatrix get&#x2F;set"></a>RowMatrix get&#x2F;set</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">GetRowCount</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> <span class="keyword">this</span>-&gt;rows_; &#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">GetColumnCount</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> <span class="keyword">this</span>-&gt;cols_; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function">T <span class="title">GetElement</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j)</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (i &lt; <span class="number">0</span> || i &gt;= <span class="keyword">this</span>-&gt;rows_ || j &lt; <span class="number">0</span> || j &gt;= <span class="keyword">this</span>-&gt;cols_) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="built_in">Exception</span>(ExceptionType::OUT_OF_RANGE, <span class="string">&quot;Invalid arguments: out of range&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> data_[i][j];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">SetElement</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j, T val)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (i &lt; <span class="number">0</span> || i &gt;= <span class="keyword">this</span>-&gt;rows_ || j &lt; <span class="number">0</span> || j &gt;= <span class="keyword">this</span>-&gt;cols_) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="built_in">Exception</span>(ExceptionType::OUT_OF_RANGE, <span class="string">&quot;Invalid arguments: out of range&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  data_[i][j] = val;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="RowMatrix-Fill-Data"><a href="#RowMatrix-Fill-Data" class="headerlink" title="RowMatrix Fill Data"></a>RowMatrix Fill Data</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">FillFrom</span><span class="params">(<span class="type">const</span> std::vector&lt;T&gt; &amp;source)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">  <span class="type">size_t</span> size = <span class="keyword">this</span>-&gt;rows_ * <span class="keyword">this</span>-&gt;cols_;</span><br><span class="line">  <span class="keyword">if</span> (source.<span class="built_in">size</span>() != size) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="built_in">Exception</span>(ExceptionType::OUT_OF_RANGE, <span class="string">&quot;Invalid arguments: size not fit&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; source.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">    <span class="keyword">this</span>-&gt;linear_[i] = source[i];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="RowMatrixOperations-ADD"><a href="#RowMatrixOperations-ADD" class="headerlink" title="RowMatrixOperations ADD"></a>RowMatrixOperations ADD</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; <span class="built_in">Add</span>(<span class="type">const</span> RowMatrix&lt;T&gt; *matrixA,</span><br><span class="line">                                          <span class="type">const</span> RowMatrix&lt;T&gt; *matrixB) &#123;</span><br><span class="line">  <span class="type">int</span> arow = matrixA-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> acol = matrixA-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> brow = matrixB-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> bcol = matrixB-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (arow == brow &amp;&amp; acol == bcol) &#123;</span><br><span class="line">    std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; res =</span><br><span class="line">        std::make_unique&lt;RowMatrix&lt;T&gt;&gt;(arow, acol);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; arow; ++i) &#123;</span><br><span class="line">      <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; acol; ++j) &#123;</span><br><span class="line">        res-&gt;<span class="built_in">SetElement</span>(</span><br><span class="line">            i, j, matrixA-&gt;<span class="built_in">GetElement</span>(i, j) + matrixB-&gt;<span class="built_in">GetElement</span>(i, j));</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">  &#125;</span><br><span class="line">    <span class="keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="literal">nullptr</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="RowMatrixOperations-Multiply"><a href="#RowMatrixOperations-Multiply" class="headerlink" title="RowMatrixOperations Multiply"></a>RowMatrixOperations Multiply</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; <span class="built_in">Multiply</span>(<span class="type">const</span> RowMatrix&lt;T&gt; *matrixA,</span><br><span class="line">                                              <span class="type">const</span> RowMatrix&lt;T&gt; *matrixB) &#123;</span><br><span class="line">  <span class="type">int</span> arow = matrixA-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> acol = matrixA-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> brow = matrixB-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> bcol = matrixB-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (acol == brow) &#123;</span><br><span class="line">    std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; res =</span><br><span class="line">        std::make_unique&lt;RowMatrix&lt;T&gt;&gt;(arow, bcol);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; arow; ++i) &#123;</span><br><span class="line">      <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; bcol; ++j) &#123;</span><br><span class="line">        T val = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> k = <span class="number">0</span>; k &lt; acol; ++k) &#123;</span><br><span class="line">          val += matrixA-&gt;<span class="built_in">GetElement</span>(i, k) * matrixB-&gt;<span class="built_in">GetElement</span>(k, j);</span><br><span class="line">        &#125;</span><br><span class="line">        res-&gt;<span class="built_in">SetElement</span>(i, j, val);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="literal">nullptr</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="RowMatrixOperations-GEMM"><a href="#RowMatrixOperations-GEMM" class="headerlink" title="RowMatrixOperations GEMM"></a>RowMatrixOperations GEMM</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; <span class="built_in">GEMM</span>(<span class="type">const</span> RowMatrix&lt;T&gt; *matrixA,</span><br><span class="line">                                          <span class="type">const</span> RowMatrix&lt;T&gt; *matrixB,</span><br><span class="line">                                          <span class="type">const</span> RowMatrix&lt;T&gt; *matrixC) &#123;</span><br><span class="line">  <span class="comment">// TODO(P0): Add implementation</span></span><br><span class="line">  <span class="type">int</span> arow = matrixA-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> acol = matrixA-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> brow = matrixB-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> bcol = matrixB-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> crow = matrixC-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> ccol = matrixC-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// A*B时，A的列必须等于B的行</span></span><br><span class="line">  <span class="keyword">if</span> (acol != brow) &#123;</span><br><span class="line">    <span class="keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="literal">nullptr</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// res和 C进行加法，行列必须完全对应</span></span><br><span class="line">  <span class="comment">// A(n*m) * B(p*m) = res(n*p),所以检查原矩阵的对应关系即可</span></span><br><span class="line">  <span class="keyword">if</span> (arow != crow || bcol != ccol) &#123;</span><br><span class="line">    <span class="keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="literal">nullptr</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; res = <span class="built_in">Multiply</span>(matrixA, matrixB);</span><br><span class="line">  std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; ret = <span class="built_in">Add</span>(res.<span class="built_in">get</span>(), matrixC);</span><br><span class="line">  <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="Googletest"><a href="#Googletest" class="headerlink" title="Googletest"></a>Googletest</h1><p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../img/cmu15445_p0_gtest.png"
-                      alt="gtest"
-                ></p>
-<h1 id="Gradescope"><a href="#Gradescope" class="headerlink" title="Gradescope"></a>Gradescope</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">make format</span><br><span class="line">make check-lint</span><br><span class="line">make check-clang-tidy</span><br><span class="line"><span class="built_in">cd</span> ..</span><br><span class="line">zip project0-submission.zip src/include/primer/p0_starter.h</span><br></pre></td></tr></table></figure>
-
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../img/cmu15445_p0_gradescope.png"
-                      alt="gradescope"
-                ></p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>1、<a class="link"   href="https://access.redhat.com/solutions/2115511" >https://access.redhat.com/solutions/2115511<i class="fas fa-external-link-alt"></i></a></p>
+<p>2、<a class="link"   href="https://docs.pagure.org/koji/signing/" >https://docs.pagure.org/koji/signing/<i class="fas fa-external-link-alt"></i></a></p>
+<p>3、<a class="link"   href="https://unix.stackexchange.com/questions/639514/unknown-validity-despite-having-signed-the-key-myself" >https://unix.stackexchange.com/questions/639514/unknown-validity-despite-having-signed-the-key-myself<i class="fas fa-external-link-alt"></i></a></p>
+<p>4、<a class="link"   href="https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually" >https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually<i class="fas fa-external-link-alt"></i></a></p>
+<p>5、<a class="link"   href="https://www.gnupg.org/documentation/manuals/gnupg/GPG-Configuration.html" >https://www.gnupg.org/documentation/manuals/gnupg/GPG-Configuration.html<i class="fas fa-external-link-alt"></i></a></p>
 ]]></content>
       <categories>
-        <category>cmu15445</category>
+        <category>rpm</category>
       </categories>
       <tags>
-        <tag>cmu15445</tag>
-        <tag>project0</tag>
-        <tag>c++ Primer</tag>
+        <tag>rpm</tag>
       </tags>
   </entry>
   <entry>
@@ -119,64 +127,104 @@
       </tags>
   </entry>
   <entry>
-    <title>如何为 RPM 包签名</title>
-    <url>/how-to-sign-rpm-package/</url>
-    <content><![CDATA[<h2 id="Generate-GPG-keyring"><a href="#Generate-GPG-keyring" class="headerlink" title="Generate GPG keyring"></a>Generate GPG keyring</h2><p>使用下面的命令生成 GPG keyring。输入 Name 和 Email 。输入 o 确认后，passphrase 可以不输入（保留为空即可），passphrase 保留为空代表不需要密码保护（公钥和私钥需要确认两次）。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --gen-key</span><br></pre></td></tr></table></figure>
-
-<p>查看生成的 GPG key</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg -K</span><br></pre></td></tr></table></figure>
-
-<h2 id="rpmsign"><a href="#rpmsign" class="headerlink" title="rpmsign"></a>rpmsign</h2><p>导出公钥，生成一个公钥文件，此公钥文件通常根据用途不同放到 repo 源中，或者直接导入系统用于安装 RPM 时进行 GPG 验证。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --armor --<span class="built_in">export</span> &gt; RPM-GPG-KEY-EXAMPLE</span><br></pre></td></tr></table></figure>
-
-<p>将所有的 RPM 包进行签名</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rpmsign --define <span class="string">&quot;_gpg_name security@example.com&quot;</span> --addsign *.rpm</span><br></pre></td></tr></table></figure>
-
-<h2 id="migrate-GPG-keyring"><a href="#migrate-GPG-keyring" class="headerlink" title="migrate GPG keyring"></a>migrate GPG keyring</h2><p>1、export GPG keyring</p>
-<p>-a, –armor, 以 ascii 方式导出</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># export public key</span></span><br><span class="line">gpg -a --<span class="built_in">export</span> &gt;mypubkeys.asc</span><br><span class="line"><span class="comment"># export private key</span></span><br><span class="line">gpg -a --export-secret-keys &gt;myprivatekeys.asc</span><br></pre></td></tr></table></figure>
-
-<p>2、export GPG trustdb (Optionally)</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># export gpg&#x27;s trustdb (Optionally)</span></span><br><span class="line">gpg --export-ownertrust &gt;mytrustdb.txt</span><br></pre></td></tr></table></figure>
-
-<p>3、import GPG keyring</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --import myprivatekeys.asc</span><br><span class="line">gpg --import mypubkeys.asc</span><br><span class="line"></span><br><span class="line"><span class="comment"># list public &amp; secret keys</span></span><br><span class="line">gpg -K</span><br><span class="line">gpg -k</span><br></pre></td></tr></table></figure>
-
-<p>4、import trustdb</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --import-ownertrust mytrustdb.txt</span><br></pre></td></tr></table></figure>
-
-<p>当我们导入 GPG keyrings 时，GPG 并不信任 keyrings，需要导入 trustdb 后，并更新下 trustdb</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --update-trustdb</span><br></pre></td></tr></table></figure>
-
-<p>5、force trust GPG keyring</p>
-<p>如果没有导入 trustdb，GPG 认为 keys 不可信。可以使用下面的命令信任所有的 GPG keyrings。</p>
-<p>注意，只信任自己创建的 keyring，不要信任互联网的其他 keyring。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --list-keys --fingerprint |grep pub -A 1|egrep -Ev <span class="string">&quot;pub|--&quot;</span>|<span class="built_in">tr</span> -d <span class="string">&#x27; &#x27;</span> \</span><br><span class="line"> | awk <span class="string">&#x27;BEGIN &#123; FS = &quot;\n&quot; &#125; ; &#123; print $1&quot;:6:&quot; &#125; &#x27;</span> | gpg --import-ownertrust</span><br></pre></td></tr></table></figure>
-
-<h2 id="搭配-OBS-使用"><a href="#搭配-OBS-使用" class="headerlink" title="搭配 OBS 使用"></a>搭配 OBS 使用</h2><p>OBS(Open Build Service) 是一个可以用于为各个发行版打包的编译系统。OBS 系统默认会使用自己生成的签名，但是如果能让 OBS 系统使用我们自己的签名不是很好，接下来就介绍如何让 OBS 使用我们的 GPG Keyring 为 RPM 包进行签名。</p>
-<p>平时我们使用 rpmbuild 命令在虚拟机或者 docker 中打包的时候签名的公钥都是存放在 <code>~/.gnupg</code> 目录下，这也是 gpg -k 等命令的默认搜索路径，但是 OBS 是一个单独的系统，他的配置都放在单独的 <code>/srv</code> 目录下。rpmsign 使用的公钥的存放目录是 <code>/srv/obs/gnupg</code>。</p>
-<p>因此，只需要在导入 GPG Keyring 时候，通过 <code>--homedir</code> 指定目录即可，</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gpg --import  my-publickey.asc</span><br><span class="line">gpg --import my-privatekey.asc</span><br><span class="line">gpg --import-ownertrust my-gpgtrustdb.txt</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h2><h3 id="为什么需要迁移-GPG-keyring"><a href="#为什么需要迁移-GPG-keyring" class="headerlink" title="为什么需要迁移 GPG keyring"></a>为什么需要迁移 GPG keyring</h3><p>进行 RPM 打包的时候，都会给 RPM 包签名。同一个发行商都会给 RPM 包签名，不同的 build system，比如 OBS（open build service），Koji 等都可以实现自动签名。我们可以导入 GPG keyring，而不是让构建系统自己生成一个。</p>
-<h3 id="为什么需要导入-trustdb？"><a href="#为什么需要导入-trustdb？" class="headerlink" title="为什么需要导入 trustdb？"></a>为什么需要导入 trustdb？</h3><p>如果不导入 trustdb，当导入迁移后的 GPG keyring 时，GPG keyring 状态变为 unknown。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># gpg -K</span></span><br><span class="line">/root/.gnupg/pubring.kbx</span><br><span class="line">------------------------</span><br><span class="line">sec   rsa3072 2022-11-02 [SC] [expires: 2024-11-01]</span><br><span class="line">      024B8C9501E35519D203B3B6DCD37021E3793FD6</span><br><span class="line">uid           [ultimate] security &lt;@example.com&gt;</span><br><span class="line">ssb   rsa3072 2022-11-02 [E] [expires: 2024-11-01]</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># gpg -K</span></span><br><span class="line">/root/.gnupg/pubring.kbx</span><br><span class="line">------------------------</span><br><span class="line">sec   rsa3072 2022-11-02 [SC] [expires: 2024-11-01]</span><br><span class="line">      024B8C9501E35519D203B3B6DCD37021E3793FD6</span><br><span class="line">uid           [unknown] security &lt;@example.com&gt;</span><br><span class="line">ssb   rsa3072 2022-11-02 [E] [expires: 2024-11-01]</span><br></pre></td></tr></table></figure>
-
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>1、<a class="link"   href="https://access.redhat.com/solutions/2115511" >https://access.redhat.com/solutions/2115511<i class="fas fa-external-link-alt"></i></a></p>
-<p>2、<a class="link"   href="https://docs.pagure.org/koji/signing/" >https://docs.pagure.org/koji/signing/<i class="fas fa-external-link-alt"></i></a></p>
-<p>3、<a class="link"   href="https://unix.stackexchange.com/questions/639514/unknown-validity-despite-having-signed-the-key-myself" >https://unix.stackexchange.com/questions/639514/unknown-validity-despite-having-signed-the-key-myself<i class="fas fa-external-link-alt"></i></a></p>
-<p>4、<a class="link"   href="https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually" >https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually<i class="fas fa-external-link-alt"></i></a></p>
-<p>5、<a class="link"   href="https://www.gnupg.org/documentation/manuals/gnupg/GPG-Configuration.html" >https://www.gnupg.org/documentation/manuals/gnupg/GPG-Configuration.html<i class="fas fa-external-link-alt"></i></a></p>
+    <title>Hexo-Next主题配置</title>
+    <url>/hexo-next-theme-configuration-picture-configuration/</url>
+    <content><![CDATA[<h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
+<p><strong>修改引入图片路径即可解决，</strong></p>
+<p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
+<p><code>../img/gris.png</code> (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常预览&#x2F;显示图片，<strong>但是文件名不要有空格</strong>，有空格云端显示不出来。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../img/gris.png"
+                      alt="Gris"
+                ></p>
+<p><strong>结构展示</strong></p>
+<p>如果没有理解的话，看看这张结构图</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../img/dict_tree.png"
+                     
+                ></p>
+<h1 id="二、插件"><a href="#二、插件" class="headerlink" title="二、插件"></a>二、插件</h1><p>安装插件的时候要多搜索，寻找最近的文章看，如果你也是使用Next 主题，尽量找Hexo Next 官方最近更新的文档看，因为随着<code>Hexo/Next</code>的版本更新，很多功能都被开发者集成进去了，只需要修改一下主题配置文件即可，<strong>简而言之，找最新的文章&#x2F;文档参考。</strong></p>
+<blockquote>
+<p>Hexo-Next 文档地址</p>
+<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<h2 id="安装的插件"><a href="#安装的插件" class="headerlink" title="安装的插件"></a>安装的插件</h2><p>安装的插件并不多，主要是够用即可</p>
+<p>hexo-symbols-count-time</p>
+<p>hexo-excerpt —— Because, auto_excerpt not working</p>
+<p>hexo-generator-searchdb——站内搜索</p>
+<p>大家都喜欢的插件，Next 文档都已经列出来了，去找就行了🤣</p>
+<blockquote>
+<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../img/Next_dos_advanced.png"
+                     
+                ></p>
 ]]></content>
       <categories>
-        <category>rpm</category>
+        <category>hexo</category>
       </categories>
       <tags>
-        <tag>rpm</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CMU 15-445 Fall 2021 Project0: C++ Primer</title>
+    <url>/cmu-15-445-fall-2021-project0-c-primer/</url>
+    <content><![CDATA[<h1 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h1><p>第0个项目是熟悉C++，涉及模板，OO设计，unique_ptr，支持使用C++17特性。</p>
+<p>涉及的核心点：</p>
+<p><strong>使用flatten array来表示二维数组</strong>，使用一维数组来抽象表示二维数组可以提高CPU访存效率，最大程度应用上CPU L1，L2，L3 Cache。</p>
+<p>我觉得这是这个项目的核心点，其次就是C++ OOP需要注意的一些点，比如构造析构，array new&#x2F; array delete，exception，template等。这些并不是难点，属于C++基础部分。</p>
+<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><h2 id="Matrix-constructor-x2F-destructor"><a href="#Matrix-constructor-x2F-destructor" class="headerlink" title="Matrix constructor&#x2F;destructor"></a>Matrix constructor&#x2F;destructor</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">Matrix</span>(<span class="type">int</span> rows, <span class="type">int</span> cols) &#123;</span><br><span class="line">   rows_ = rows;</span><br><span class="line">   cols_ = cols;</span><br><span class="line">   linear_ = <span class="keyword">new</span> T[rows * cols];  <span class="comment">// key point is flattened array</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">virtual</span> ~<span class="built_in">Matrix</span>() &#123; <span class="keyword">delete</span>[] linear_; &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Matrix-get-x2F-set"><a href="#Matrix-get-x2F-set" class="headerlink" title="Matrix get&#x2F;set"></a>Matrix get&#x2F;set</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="type">int</span> <span class="title">GetRowCount</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> rows_; &#125;</span><br><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="type">int</span> <span class="title">GetColumnCount</span><span class="params">()</span> <span class="type">const</span> </span>&#123; <span class="keyword">return</span> cols_; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">virtual</span> T <span class="title">GetElement</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">   <span class="keyword">if</span> (i &lt; <span class="number">0</span> || i &gt;= rows_ || j &lt; <span class="number">0</span> || j &gt;= cols_) &#123;</span><br><span class="line">     <span class="keyword">throw</span> <span class="built_in">Exception</span>(ExceptionType::OUT_OF_RANGE, <span class="string">&quot;Invalid arguments: out of range.&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">this</span>-&gt;linear_[i * cols_ + j];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">SetElement</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j, T val)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">if</span> (i &lt; <span class="number">0</span> || i &gt;= rows_ || j &lt; <span class="number">0</span> || j &gt;= cols_) &#123;</span><br><span class="line">     <span class="keyword">throw</span> <span class="built_in">Exception</span>(ExceptionType::OUT_OF_RANGE, <span class="string">&quot;Invalid arguments: out of range&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">this</span>-&gt;linear_[i * cols_ + j] = val;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Matrix-Fill-Data"><a href="#Matrix-Fill-Data" class="headerlink" title="Matrix Fill Data"></a>Matrix Fill Data</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">FillFrom</span><span class="params">(<span class="type">const</span> std::vector&lt;T&gt; &amp;source)</span> </span>&#123;</span><br><span class="line">   <span class="type">size_t</span> size = rows_ * cols_;</span><br><span class="line">   <span class="keyword">if</span> (source.<span class="built_in">size</span>() != size) &#123;</span><br><span class="line">     <span class="keyword">throw</span> <span class="built_in">Exception</span>(ExceptionType::OUT_OF_RANGE, <span class="string">&quot;Invalid arguments: size not fit&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; source.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">     <span class="keyword">this</span>-&gt;linear_[i] = source[i];</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="RowMatrix-constructor-x2F-destructor"><a href="#RowMatrix-constructor-x2F-destructor" class="headerlink" title="RowMatrix constructor&#x2F;destructor"></a>RowMatrix constructor&#x2F;destructor</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">RowMatrix</span>(<span class="type">int</span> rows, <span class="type">int</span> cols) : <span class="built_in">Matrix</span>&lt;T&gt;(rows, cols) &#123;</span><br><span class="line">  data_ = <span class="keyword">new</span> T *[rows];</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; rows; ++i) &#123;</span><br><span class="line">    data_[i] = Matrix&lt;T&gt;::linear_ + i * cols;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">~<span class="built_in">RowMatrix</span>() <span class="keyword">override</span> &#123; <span class="keyword">delete</span>[] data_; &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RowMatrix-get-x2F-set"><a href="#RowMatrix-get-x2F-set" class="headerlink" title="RowMatrix get&#x2F;set"></a>RowMatrix get&#x2F;set</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">GetRowCount</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> <span class="keyword">this</span>-&gt;rows_; &#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">GetColumnCount</span><span class="params">()</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123; <span class="keyword">return</span> <span class="keyword">this</span>-&gt;cols_; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function">T <span class="title">GetElement</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j)</span> <span class="type">const</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (i &lt; <span class="number">0</span> || i &gt;= <span class="keyword">this</span>-&gt;rows_ || j &lt; <span class="number">0</span> || j &gt;= <span class="keyword">this</span>-&gt;cols_) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="built_in">Exception</span>(ExceptionType::OUT_OF_RANGE, <span class="string">&quot;Invalid arguments: out of range&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> data_[i][j];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">SetElement</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j, T val)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (i &lt; <span class="number">0</span> || i &gt;= <span class="keyword">this</span>-&gt;rows_ || j &lt; <span class="number">0</span> || j &gt;= <span class="keyword">this</span>-&gt;cols_) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="built_in">Exception</span>(ExceptionType::OUT_OF_RANGE, <span class="string">&quot;Invalid arguments: out of range&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  data_[i][j] = val;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RowMatrix-Fill-Data"><a href="#RowMatrix-Fill-Data" class="headerlink" title="RowMatrix Fill Data"></a>RowMatrix Fill Data</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">FillFrom</span><span class="params">(<span class="type">const</span> std::vector&lt;T&gt; &amp;source)</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">  <span class="type">size_t</span> size = <span class="keyword">this</span>-&gt;rows_ * <span class="keyword">this</span>-&gt;cols_;</span><br><span class="line">  <span class="keyword">if</span> (source.<span class="built_in">size</span>() != size) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="built_in">Exception</span>(ExceptionType::OUT_OF_RANGE, <span class="string">&quot;Invalid arguments: size not fit&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; source.<span class="built_in">size</span>(); ++i) &#123;</span><br><span class="line">    <span class="keyword">this</span>-&gt;linear_[i] = source[i];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="RowMatrixOperations-ADD"><a href="#RowMatrixOperations-ADD" class="headerlink" title="RowMatrixOperations ADD"></a>RowMatrixOperations ADD</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; <span class="built_in">Add</span>(<span class="type">const</span> RowMatrix&lt;T&gt; *matrixA,</span><br><span class="line">                                          <span class="type">const</span> RowMatrix&lt;T&gt; *matrixB) &#123;</span><br><span class="line">  <span class="type">int</span> arow = matrixA-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> acol = matrixA-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> brow = matrixB-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> bcol = matrixB-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (arow == brow &amp;&amp; acol == bcol) &#123;</span><br><span class="line">    std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; res =</span><br><span class="line">        std::make_unique&lt;RowMatrix&lt;T&gt;&gt;(arow, acol);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; arow; ++i) &#123;</span><br><span class="line">      <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; acol; ++j) &#123;</span><br><span class="line">        res-&gt;<span class="built_in">SetElement</span>(</span><br><span class="line">            i, j, matrixA-&gt;<span class="built_in">GetElement</span>(i, j) + matrixB-&gt;<span class="built_in">GetElement</span>(i, j));</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">  &#125;</span><br><span class="line">    <span class="keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="literal">nullptr</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RowMatrixOperations-Multiply"><a href="#RowMatrixOperations-Multiply" class="headerlink" title="RowMatrixOperations Multiply"></a>RowMatrixOperations Multiply</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; <span class="built_in">Multiply</span>(<span class="type">const</span> RowMatrix&lt;T&gt; *matrixA,</span><br><span class="line">                                              <span class="type">const</span> RowMatrix&lt;T&gt; *matrixB) &#123;</span><br><span class="line">  <span class="type">int</span> arow = matrixA-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> acol = matrixA-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> brow = matrixB-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> bcol = matrixB-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (acol == brow) &#123;</span><br><span class="line">    std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; res =</span><br><span class="line">        std::make_unique&lt;RowMatrix&lt;T&gt;&gt;(arow, bcol);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; arow; ++i) &#123;</span><br><span class="line">      <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; bcol; ++j) &#123;</span><br><span class="line">        T val = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> k = <span class="number">0</span>; k &lt; acol; ++k) &#123;</span><br><span class="line">          val += matrixA-&gt;<span class="built_in">GetElement</span>(i, k) * matrixB-&gt;<span class="built_in">GetElement</span>(k, j);</span><br><span class="line">        &#125;</span><br><span class="line">        res-&gt;<span class="built_in">SetElement</span>(i, j, val);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="literal">nullptr</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="RowMatrixOperations-GEMM"><a href="#RowMatrixOperations-GEMM" class="headerlink" title="RowMatrixOperations GEMM"></a>RowMatrixOperations GEMM</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; <span class="built_in">GEMM</span>(<span class="type">const</span> RowMatrix&lt;T&gt; *matrixA,</span><br><span class="line">                                          <span class="type">const</span> RowMatrix&lt;T&gt; *matrixB,</span><br><span class="line">                                          <span class="type">const</span> RowMatrix&lt;T&gt; *matrixC) &#123;</span><br><span class="line">  <span class="comment">// TODO(P0): Add implementation</span></span><br><span class="line">  <span class="type">int</span> arow = matrixA-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> acol = matrixA-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> brow = matrixB-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> bcol = matrixB-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> crow = matrixC-&gt;<span class="built_in">GetRowCount</span>();</span><br><span class="line">  <span class="type">int</span> ccol = matrixC-&gt;<span class="built_in">GetColumnCount</span>();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// A*B时，A的列必须等于B的行</span></span><br><span class="line">  <span class="keyword">if</span> (acol != brow) &#123;</span><br><span class="line">    <span class="keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="literal">nullptr</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// res和 C进行加法，行列必须完全对应</span></span><br><span class="line">  <span class="comment">// A(n*m) * B(p*m) = res(n*p),所以检查原矩阵的对应关系即可</span></span><br><span class="line">  <span class="keyword">if</span> (arow != crow || bcol != ccol) &#123;</span><br><span class="line">    <span class="keyword">return</span> std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt;(<span class="literal">nullptr</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; res = <span class="built_in">Multiply</span>(matrixA, matrixB);</span><br><span class="line">  std::unique_ptr&lt;RowMatrix&lt;T&gt;&gt; ret = <span class="built_in">Add</span>(res.<span class="built_in">get</span>(), matrixC);</span><br><span class="line">  <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Googletest"><a href="#Googletest" class="headerlink" title="Googletest"></a>Googletest</h1><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../img/cmu15445_p0_gtest.png"
+                      alt="gtest"
+                ></p>
+<h1 id="Gradescope"><a href="#Gradescope" class="headerlink" title="Gradescope"></a>Gradescope</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">make format</span><br><span class="line">make check-lint</span><br><span class="line">make check-clang-tidy</span><br><span class="line"><span class="built_in">cd</span> ..</span><br><span class="line">zip project0-submission.zip src/include/primer/p0_starter.h</span><br></pre></td></tr></table></figure>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../img/cmu15445_p0_gradescope.png"
+                      alt="gradescope"
+                ></p>
+]]></content>
+      <categories>
+        <category>cmu15445</category>
+      </categories>
+      <tags>
+        <tag>cmu15445</tag>
+        <tag>project0</tag>
+        <tag>c++ Primer</tag>
       </tags>
   </entry>
   <entry>
@@ -281,54 +329,6 @@
         <tag>OBS</tag>
         <tag>rpmbuild</tag>
         <tag>rpmsign</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hexo-Next主题配置</title>
-    <url>/hexo-next-theme-configuration-picture-configuration/</url>
-    <content><![CDATA[<h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
-<p><strong>修改引入图片路径即可解决，</strong></p>
-<p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
-<p><code>../img/gris.png</code> (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常预览&#x2F;显示图片，<strong>但是文件名不要有空格</strong>，有空格云端显示不出来。</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../img/gris.png"
-                      alt="Gris"
-                ></p>
-<p><strong>结构展示</strong></p>
-<p>如果没有理解的话，看看这张结构图</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../img/dict_tree.png"
-                     
-                ></p>
-<h1 id="二、插件"><a href="#二、插件" class="headerlink" title="二、插件"></a>二、插件</h1><p>安装插件的时候要多搜索，寻找最近的文章看，如果你也是使用Next 主题，尽量找Hexo Next 官方最近更新的文档看，因为随着<code>Hexo/Next</code>的版本更新，很多功能都被开发者集成进去了，只需要修改一下主题配置文件即可，<strong>简而言之，找最新的文章&#x2F;文档参考。</strong></p>
-<blockquote>
-<p>Hexo-Next 文档地址</p>
-<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
-</blockquote>
-<h2 id="安装的插件"><a href="#安装的插件" class="headerlink" title="安装的插件"></a>安装的插件</h2><p>安装的插件并不多，主要是够用即可</p>
-<p>hexo-symbols-count-time</p>
-<p>hexo-excerpt —— Because, auto_excerpt not working</p>
-<p>hexo-generator-searchdb——站内搜索</p>
-<p>大家都喜欢的插件，Next 文档都已经列出来了，去找就行了🤣</p>
-<blockquote>
-<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
-</blockquote>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../img/Next_dos_advanced.png"
-                     
-                ></p>
-]]></content>
-      <categories>
-        <category>hexo</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
       </tags>
   </entry>
 </search>
