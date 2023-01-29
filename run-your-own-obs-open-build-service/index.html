@@ -249,6 +249,7 @@
 <p>可以使用 virt-install 命令行快速创建一个 OBS 实例,</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/usr/bin/bash</span></span><br><span class="line"></span><br><span class="line">VM_NAME=&quot;OBS&quot;</span><br><span class="line">DISK=&quot;obs-server.x86_64-qcow2.qcow2&quot;</span><br><span class="line"></span><br><span class="line">virt-install \</span><br><span class="line">--name &quot;$&#123;VM_NAME&#125;&quot; \</span><br><span class="line">--memory 32768 \</span><br><span class="line">--vcpus 16 \</span><br><span class="line">--import \</span><br><span class="line">--os-variant opensuse15.3 \</span><br><span class="line">--disk &quot;$&#123;DISK&#125;&quot; \</span><br><span class="line">--network network=default,model=virtio \</span><br><span class="line">--graphics none \</span><br><span class="line">--virt-type kvm</span><br></pre></td></tr></table></figure>
 <p>注：cpu 和 内存可以根据 host 机器的实际 cpu 和内存进行调整，示例是 16 核 32g 的配置，网络默认是 nat 网络。</p>
+<p>默认的登录名和密码分别是 <code>root</code> &#x2F; <code>opensuse</code></p>
 <h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>当我们成功创建了一个 OBS 实例，打开浏览器访问OBS对应的 ip 地址就可以访问到 OBS 网页了。<br>OBS 镜像首次启动至少需要 10 分钟，使用 vnc 连接服务器就可以看到 OBS 实例的启动卡在这个地方，待会会介绍这里进行的实际是 OBS 读取 fqdn，默认超时时间是 10 mins</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A start job is running for OBS API Setup (8min 34s / no limit )</span><br></pre></td></tr></table></figure>
 
@@ -333,7 +334,7 @@
 
 <h3 id="obs-页面点击下载会被重定向回首页"><a href="#obs-页面点击下载会被重定向回首页" class="headerlink" title="obs 页面点击下载会被重定向回首页"></a>obs 页面点击下载会被重定向回首页</h3><p>修改 external_frontend 可以解决这个问题。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /srv/www/obs/api/config/options.yml</span></span><br><span class="line"></span><br><span class="line">external_frontend_host: &lt;ip or hostname&gt;</span><br><span class="line">external_frontend_port: 443</span><br><span class="line">external_frontend_protocol: https</span><br></pre></td></tr></table></figure>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>1、Archive:Build Service adding build targets<br><a class="link"   target="_blank" rel="noopener" href="https://en.opensuse.org/Archive:Build_Service_adding_build_targets" >https://en.opensuse.org/Archive:Build_Service_adding_build_targets<i class="fas fa-external-link-alt"></i></a><br>2、openBuildService MailList<br><a class="link"   target="_blank" rel="noopener" href="https://lists.opensuse.org/archives/list/buildservice@lists.opensuse.org/thread/EGWPVEZXSBAB3TTFKPERUNBU5SWECYNB/" >https://lists.opensuse.org/archives/list/buildservice@lists.opensuse.org/thread/EGWPVEZXSBAB3TTFKPERUNBU5SWECYNB/<i class="fas fa-external-link-alt"></i></a><br>3、Enhancing RHEL Security: Understanding SHA-1 deprecation on RHEL 9<br><a class="link"   target="_blank" rel="noopener" href="https://www.redhat.com/en/blog/rhel-security-sha-1-package-signatures-distrusted-rhel-9" >https://www.redhat.com/en/blog/rhel-security-sha-1-package-signatures-distrusted-rhel-9<i class="fas fa-external-link-alt"></i></a><br>4、man sign.conf<br>5、初始化Linux数据盘<br> <a class="link"   target="_blank" rel="noopener" href="https://support.huaweicloud.com/qs-ecs/zh-cn_topic_0085634797.html" >https://support.huaweicloud.com/qs-ecs/zh-cn_topic_0085634797.html<i class="fas fa-external-link-alt"></i></a><br>6、openSUSE 源使用帮助<br><a class="link"   target="_blank" rel="noopener" href="https://mirrors.ustc.edu.cn/help/opensuse.html" >https://mirrors.ustc.edu.cn/help/opensuse.html<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>1、Archive:Build Service adding build targets<br><a class="link"   target="_blank" rel="noopener" href="https://en.opensuse.org/Archive:Build_Service_adding_build_targets" >https://en.opensuse.org/Archive:Build_Service_adding_build_targets<i class="fas fa-external-link-alt"></i></a><br>2、Local OBS doesn’t build anymore (waiting for 4 compliant workers (4 of them bad))<br><a class="link"   target="_blank" rel="noopener" href="https://lists.opensuse.org/archives/list/buildservice@lists.opensuse.org/thread/EGWPVEZXSBAB3TTFKPERUNBU5SWECYNB/" >https://lists.opensuse.org/archives/list/buildservice@lists.opensuse.org/thread/EGWPVEZXSBAB3TTFKPERUNBU5SWECYNB/<i class="fas fa-external-link-alt"></i></a><br>3、Enhancing RHEL Security: Understanding SHA-1 deprecation on RHEL 9<br><a class="link"   target="_blank" rel="noopener" href="https://www.redhat.com/en/blog/rhel-security-sha-1-package-signatures-distrusted-rhel-9" >https://www.redhat.com/en/blog/rhel-security-sha-1-package-signatures-distrusted-rhel-9<i class="fas fa-external-link-alt"></i></a><br>4、man sign.conf<br>5、初始化Linux数据盘<br> <a class="link"   target="_blank" rel="noopener" href="https://support.huaweicloud.com/qs-ecs/zh-cn_topic_0085634797.html" >https://support.huaweicloud.com/qs-ecs/zh-cn_topic_0085634797.html<i class="fas fa-external-link-alt"></i></a><br>6、openSUSE 源使用帮助<br><a class="link"   target="_blank" rel="noopener" href="https://mirrors.ustc.edu.cn/help/opensuse.html" >https://mirrors.ustc.edu.cn/help/opensuse.html<i class="fas fa-external-link-alt"></i></a></p>
 
         </div>
 
@@ -568,9 +569,43 @@
         </aside>
     
 
-    <div class="image-viewer-container">
-    <img src="">
-</div>
+    .image-viewer-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0);
+  visibility: hidden;
+  z-index: $z-index-8;
+  padding: 6%;
+  box-sizing: border-box;
+  transition-t("visibility, background", "0, 0", "0.3, 0.3", "ease, ease");
+
+  &.active {
+    background: rgba(0, 0, 0, 0.5);
+    visibility: visible;
+
+    img {
+      cursor: zoom-out;
+      transform: scale(1);
+      padding: 2px;
+      background: var(--background-color);
+    }
+  }
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    transform: scale(0);
+    transition-t("transform", "0", "0.3", "ease");
+  }
+}
+
+
 
 
     
