@@ -17,14 +17,19 @@
 <link rel="stylesheet" href="/css/style.css">
 
     <link rel="shortcut icon" href="/images/logo.svg">
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/regular.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/solid.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/brands.min.css">
     <script id="hexo-configurations">
-    let KEEP = window.KEEP || {};
-    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.xml"};
-    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar_folklore.png","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":true}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":true},"lazyload":{"enable":true},"version":"3.4.5"};
-    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    let KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.xml"}
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066cc","logo":"/images/logo.svg","favicon":"/images/logo.svg","avatar":"/images/avatar_folklore.png","font_size":null,"font_family":null,"hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"header_transparent":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving.","font_color":null,"hitokoto":false},"scroll":{"progress_bar":true,"percent":true}},"local_search":{"enable":true,"preload":true},"code_copy":{},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"obsidian"},"side_tools":{},"pjax":{"enable":true},"lazyload":{"enable":true},"comment":{"enable":true,"use":"valine","valine":{"appid":"qRv6si8r4jUsBpjFlotXQBmP-gzGzoHsz","appkey":"upvGfvF70Sd2tCMoFM1ehslV","server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.8"},"waline":{"server_url":null,"reaction":false,"version":2}},"post":{"author_label":{"enable":true,"auto":true,"custom_label_list":["Trainee","Engineer","Architect"]},"word_count":{"enable":true,"wordcount":true,"min2read":true},"img_align":"left","copyright_info":false},"version":"3.6.1"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original article title","author":"Original article author","link":"Original article link"}
   </script>
-<meta name="generator" content="Hexo 6.2.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 
 <body>
@@ -35,9 +40,7 @@
 
     
         <span class="pjax-progress-bar"></span>
-        <span class="pjax-progress-icon">
-            <i class="fas fa-circle-notch fa-spin"></i>
-        </span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
     
 </div>
 
@@ -49,13 +52,18 @@
     <div class="page-main-content">
 
         <div class="page-main-content-top">
-            <header class="header-wrapper">
+            
+<header class="header-wrapper">
 
     <div class="header-content">
         <div class="left">
             
+                <a class="logo-image" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
             <a class="logo-title" href="/">
-                Lapin Gris
+               Lapin Gris
             </a>
         </div>
 
@@ -81,17 +89,17 @@
                     
                         <li class="menu-item">
                             <a class=""
-                               href="/categories"
+                               href="/tags"
                             >
-                                CATEGORIES
+                                TAGS
                             </a>
                         </li>
                     
                         <li class="menu-item">
                             <a class=""
-                               href="/tags"
+                               href="/categories"
                             >
-                                TAGS
+                                CATEGORIES
                             </a>
                         </li>
                     
@@ -136,12 +144,12 @@
             
                 <li class="drawer-menu-item flex-center">
                     <a class=""
-                       href="/categories">CATEGORIES</a>
+                       href="/tags">TAGS</a>
                 </li>
             
                 <li class="drawer-menu-item flex-center">
                     <a class=""
-                       href="/tags">TAGS</a>
+                       href="/categories">CATEGORIES</a>
                 </li>
             
                 <li class="drawer-menu-item flex-center">
@@ -165,31 +173,41 @@
 
                 
                     <div class="fade-in-down-animation">
-    <div class="article-content-container">
+    <div class="post-page-container">
+        <div class="article-content-container">
 
-        <div class="article-title">
-            <span class="title-hover-animation">Run Your Own OBS 编译系统</span>
-        </div>
+            <div class="article-title">
+                <span class="title-hover-animation">Run Your Own OBS 编译系统</span>
+            </div>
 
-        
-            <div class="article-header">
-                <div class="avatar">
-                    <img src="/images/avatar_folklore.png">
-                </div>
-                <div class="info">
-                    <div class="author">
-                        <span class="name">Lapin Gris</span>
-                        
-                            <span class="author-label">Trainee</span>
-                        
+            
+                <div class="article-header">
+                    <div class="avatar">
+                        <img src="/images/avatar_folklore.png">
                     </div>
-                    <div class="meta-info">
-                        <div class="article-meta-info">
+                    <div class="info">
+                        <div class="author">
+                            <span class="name">Lapin Gris</span>
+                            
+                                <span class="author-label">Lv1</span>
+                            
+                        </div>
+                        <div class="meta-info">
+                            
+<div class="article-meta-info">
     <span class="article-date article-meta-item">
-        <i class="fas fa-edit"></i>&nbsp;
+        
+            <i class="fa-regular fa-calendar-plus"></i>&nbsp;
+        
         <span class="pc">2023-01-22 15:31:46</span>
         <span class="mobile">2023-01-22 15:31</span>
     </span>
+    
+        <span class="article-update-date article-meta-item">
+        <i class="fas fa-file-pen"></i>&nbsp;
+        <span class="pc">2023-01-29 15:27:36</span>
+    </span>
+    
     
         <span class="article-categories article-meta-item">
             <i class="fas fa-folder"></i>&nbsp;
@@ -235,15 +253,21 @@
         </span>
     
     
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
 </div>
 
+                        </div>
                     </div>
                 </div>
-            </div>
-        
+            
 
-        <div class="article-content markdown-body">
-            <p>OBS（Open Build Service）是一个由 SUSE 开源的操作系统发行版的构建系统，可以用来创建和分发软件包。OBS支持几乎所有的主流发行版的包，比如说 SUSE系，RedHat系，Debian系，Arch系等等。</p>
+            <div class="article-content keep-markdown-body">
+                
+
+                <p>OBS（Open Build Service）是一个由 SUSE 开源的操作系统发行版的构建系统，可以用来创建和分发软件包。OBS支持几乎所有的主流发行版的包，比如说 SUSE系，RedHat系，Debian系，Arch系等等。</p>
 <h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p>安装 OBS 最简单的方式就是使用 <a class="link"   target="_blank" rel="noopener" href="https://openbuildservice.org/download/" >openbuildservice<i class="fas fa-external-link-alt"></i></a> 网站提供的镜像（iso&#x2F;qcow2&#x2F;vmdk&#x2F;vdi），将镜像部署机器上就获得一个 OBS 实例。<br>通常情况下，使用 SUSE 制作好的虚拟机镜像是最省时间的，比如使用 qemu-kvm 下载 qcow2 镜像，使用 VMware 下载 vmdk 镜像，使用 virtualbox 下载 vdi 镜像。也可以使用 SUSE 提供的 iso 镜像重新安装一台 OBS 实例，缺点是需要等待 iso 安装完成才能得到一台 OBS 实例，使用虚拟机镜像，启动后就可以获得 OBS 实例，节省了 iso 的安装时间。</p>
 <h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><p>在 Linux 平台部署 OBS 应该是大多数人的需求。当然也很简单，Linux 平台下大家经常使用 libvirt&#x2F;qemu 组合创建虚拟机，使用 <code>virt-install</code> 会比写 libvirt xml 或写 qemu 命令行简单一些</p>
 <p>可以使用 virt-install 命令行快速创建一个 OBS 实例,</p>
@@ -255,7 +279,7 @@
 
 <p>journal 看日志可以看到，setup-appliance.sh 脚本在持续等待 fqdn，而且超时时间设置为 600 秒，也就是 10mins，感觉时间设置的过长了，如果本地网络比较好的话，改下脚本将超时时间设置为 十几秒就够了<br><img  
                      lazyload
-                     src="/images/loading.svg"
+                     alt="image"
                      data-src="/../img/obs-set-fqdn-journal-log.png"
                       alt="image.png"
                 ></p>
@@ -297,7 +321,7 @@
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir /srv/obs/build/Meta:AlmaLinux:9/standard/x86_64/:full</span><br><span class="line"></span><br><span class="line">cp &lt;needed-packages-to-build-packages&gt;/*.rpm /srv/obs/build/Meta:AlmaLinux:9/standard/x86_64/:full/</span><br><span class="line">chown -R obsrun.obsrun /srv/obs/build/Meta:AlmaLinux:9</span><br></pre></td></tr></table></figure>
 <h3 id="3-添加项目的配置文件"><a href="#3-添加项目的配置文件" class="headerlink" title="3) 添加项目的配置文件"></a>3) 添加项目的配置文件</h3><p>没添加 project config 之前，项目是处于 broken 状态的<br><img  
                      lazyload
-                     src="/images/loading.svg"
+                     alt="image"
                      data-src="/../img/obs-broken-status.png"
                       alt="obs-broken-status"
                 ></p>
@@ -308,7 +332,7 @@
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">ls</span> /srv/obs/build/AlmaLinux:9/standard/x86_64</span></span><br><span class="line">:bininfo  :depends  :full  :full.solv  :packstatus  :repodone  :repoinfo  :schedulerstate</span><br></pre></td></tr></table></figure>
 <p>5）以 meta 项目为基础创建发行版编译项目<br>添加完 build target 之后，就可以为这个发行版构建软件包了<br><img  
                      lazyload
-                     src="/images/loading.svg"
+                     alt="image"
                      data-src="/../img/obs-public-status.png"
                       alt="obs-public-status"
                 ></p>
@@ -319,7 +343,7 @@
 
 <p>现在可以为 AlmaLinux 编译软件包了，如下图<br><img  
                      lazyload
-                     src="/images/loading.svg"
+                     alt="image"
                      data-src="/img/obs-build-success-status.png"
                       alt="obs-build-success-status"
                 ></p>
@@ -336,134 +360,141 @@
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /srv/www/obs/api/config/options.yml</span></span><br><span class="line"></span><br><span class="line">external_frontend_host: &lt;ip or hostname&gt;</span><br><span class="line">external_frontend_port: 443</span><br><span class="line">external_frontend_protocol: https</span><br></pre></td></tr></table></figure>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>1、Archive:Build Service adding build targets<br><a class="link"   target="_blank" rel="noopener" href="https://en.opensuse.org/Archive:Build_Service_adding_build_targets" >https://en.opensuse.org/Archive:Build_Service_adding_build_targets<i class="fas fa-external-link-alt"></i></a><br>2、Local OBS doesn’t build anymore (waiting for 4 compliant workers (4 of them bad))<br><a class="link"   target="_blank" rel="noopener" href="https://lists.opensuse.org/archives/list/buildservice@lists.opensuse.org/thread/EGWPVEZXSBAB3TTFKPERUNBU5SWECYNB/" >https://lists.opensuse.org/archives/list/buildservice@lists.opensuse.org/thread/EGWPVEZXSBAB3TTFKPERUNBU5SWECYNB/<i class="fas fa-external-link-alt"></i></a><br>3、Enhancing RHEL Security: Understanding SHA-1 deprecation on RHEL 9<br><a class="link"   target="_blank" rel="noopener" href="https://www.redhat.com/en/blog/rhel-security-sha-1-package-signatures-distrusted-rhel-9" >https://www.redhat.com/en/blog/rhel-security-sha-1-package-signatures-distrusted-rhel-9<i class="fas fa-external-link-alt"></i></a><br>4、man sign.conf<br>5、初始化Linux数据盘<br> <a class="link"   target="_blank" rel="noopener" href="https://support.huaweicloud.com/qs-ecs/zh-cn_topic_0085634797.html" >https://support.huaweicloud.com/qs-ecs/zh-cn_topic_0085634797.html<i class="fas fa-external-link-alt"></i></a><br>6、openSUSE 源使用帮助<br><a class="link"   target="_blank" rel="noopener" href="https://mirrors.ustc.edu.cn/help/opensuse.html" >https://mirrors.ustc.edu.cn/help/opensuse.html<i class="fas fa-external-link-alt"></i></a></p>
 
-        </div>
+            </div>
 
-        
+            
 
-        
-            <ul class="post-tags-box">
-                
-                    <li class="tag-item">
-                        <a href="/tags/OBS/">#OBS</a>&nbsp;
-                    </li>
-                
-                    <li class="tag-item">
-                        <a href="/tags/rpmbuild/">#rpmbuild</a>&nbsp;
-                    </li>
-                
-                    <li class="tag-item">
-                        <a href="/tags/rpmsign/">#rpmsign</a>&nbsp;
-                    </li>
-                
-            </ul>
-        
+            
+                <ul class="post-tags-box">
+                    
+                        <li class="tag-item">
+                            <a href="/tags/OBS/">#OBS</a>&nbsp;
+                        </li>
+                    
+                        <li class="tag-item">
+                            <a href="/tags/rpmbuild/">#rpmbuild</a>&nbsp;
+                        </li>
+                    
+                        <li class="tag-item">
+                            <a href="/tags/rpmsign/">#rpmsign</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            
 
-        
-            <div class="article-nav">
-                
-                    <div class="article-prev">
-                        <a class="prev"
-                           rel="prev"
-                           href="/extend-system-ram-using-pmem/"
-                        >
+            
+                <div class="article-nav">
+                    
+                        <div class="article-prev">
+                            <a class="prev"
+                               rel="prev"
+                               href="/extend-system-ram-using-pmem/"
+                            >
                             <span class="left arrow-icon flex-center">
                               <i class="fas fa-chevron-left"></i>
                             </span>
-                            <span class="title flex-center">
+                                <span class="title flex-center">
                                 <span class="post-nav-title-item">PMEM 扩展系统内存用法介绍</span>
                                 <span class="post-nav-item">Prev posts</span>
                             </span>
-                        </a>
-                    </div>
-                
-                
-                    <div class="article-next">
-                        <a class="next"
-                           rel="next"
-                           href="/how-to-sign-rpm-package/"
-                        >
+                            </a>
+                        </div>
+                    
+                    
+                        <div class="article-next">
+                            <a class="next"
+                               rel="next"
+                               href="/how-to-sign-rpm-package/"
+                            >
                             <span class="title flex-center">
                                 <span class="post-nav-title-item">如何为 RPM 包签名</span>
                                 <span class="post-nav-item">Next posts</span>
                             </span>
-                            <span class="right arrow-icon flex-center">
+                                <span class="right arrow-icon flex-center">
                               <i class="fas fa-chevron-right"></i>
                             </span>
-                        </a>
-                    </div>
-                
-            </div>
-        
+                            </a>
+                        </div>
+                    
+                </div>
+            
 
-        
-            <div class="comment-container">
-                <div class="comments-container">
-    <div id="comment-anchor"></div>
+            
+                <div class="comment-container">
+                    
+<div class="comments-container">
+    <div id="comments-anchor"></div>
     <div class="comment-area-title">
-        <i class="fas fa-comments">&nbsp;Comments</i>
+        <i class="fas fa-comments"></i>&nbsp;Comments
     </div>
     
-
         
             
+
     <div class="valine-container">
-        <script data-pjax
-                src="//cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script>
+        <script data-pjax src="//cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script>
         <div id="vcomments"></div>
         <script data-pjax>
-            function loadValine() {
-                new Valine({
-                    el: '#vcomments',
-                    appId: 'qRv6si8r4jUsBpjFlotXQBmP-gzGzoHsz',
-                    appKey: 'upvGfvF70Sd2tCMoFM1ehslV',
-                    meta: ['nick', 'mail', 'link'],
-                    avatar: 'wavatar',
-                    enableQQ: true,
-                    placeholder: '',
-                    lang: 'en'.toLowerCase()
-                });
+          function loadValine() {
 
-                function getAuthor(language) {
-                    switch (language) {
-                        case 'en':
-                            return 'Author';
-                        case 'zh-CN':
-                            return '博主';
-                        default:
-                            return 'Master';
+            const config = {
+              el: '#vcomments',
+              appId: 'qRv6si8r4jUsBpjFlotXQBmP-gzGzoHsz',
+              appKey: 'upvGfvF70Sd2tCMoFM1ehslV',
+              meta: ['nick', 'mail', 'link'],
+              avatar: 'wavatar',
+              enableQQ: true,
+              placeholder: '',
+              lang: 'en'.toLowerCase()
+            }
+
+            if ('') {
+              config.serverURLs = ''
+            }
+
+            new Valine(config)
+
+            function getAuthor(language) {
+              switch (language) {
+                case 'en':
+                  return 'Author'
+                case 'zh-CN':
+                  return '博主'
+                default:
+                  return 'Master'
+              }
+            }
+
+            // Add "Author" identify
+            const getValineDomTimer = setInterval(() => {
+              const vcards = document.querySelectorAll('#vcomments .vcards .vcard')
+              if (vcards.length > 0) {
+                let author = 'Lapin Gris'
+
+                if (author) {
+                  for (let vcard of vcards) {
+                    const vnick_dom = vcard.querySelector('.vhead .vnick')
+                    const vnick = vnick_dom.innerHTML
+                    if (vnick === author) {
+                      vnick_dom.innerHTML = `${vnick} <span class="author">${getAuthor(KEEP.hexo_config.language)}</span>`
                     }
+                  }
                 }
+                clearInterval(getValineDomTimer)
+              } else {
+                clearInterval(getValineDomTimer)
+              }
+            }, 2000)
+          }
 
-                // Add "Author" identify
-                const getValineDomTimer = setInterval(() => {
-                    const vcards = document.querySelectorAll('#vcomments .vcards .vcard');
-                    if (vcards.length > 0) {
-                        let author = 'Lapin Gris';
-
-                        if (author) {
-                            for (let vcard of vcards) {
-                                const vnick_dom = vcard.querySelector('.vhead .vnick');
-                                const vnick = vnick_dom.innerHTML;
-                                if (vnick === author) {
-                                    vnick_dom.innerHTML = `${vnick} <span class="author">${getAuthor(KEEP.hexo_config.language)}</span>`
-                                }
-                            }
-                        }
-                        clearInterval(getValineDomTimer);
-                    } else {
-                        clearInterval(getValineDomTimer);
-                    }
-                }, 2000);
-            }
-
-            if ('true') {
-                const loadValineTimeout = setTimeout(() => {
-                    loadValine();
-                    clearTimeout(loadValineTimeout);
-                }, 1000);
-            } else {
-                window.addEventListener('DOMContentLoaded', loadValine);
-            }
+          if ('true' === 'true') {
+            const loadValineTimeout = setTimeout(() => {
+              loadValine()
+              clearTimeout(loadValineTimeout)
+            }, 1000)
+          } else {
+            window.addEventListener('DOMContentLoaded', loadValine)
+          }
         </script>
     </div>
 
@@ -471,6 +502,18 @@
 
         
     
+</div>
+
+                </div>
+            
+        </div>
+
+        
+            <div class="toc-content-container">
+                <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD"><span class="nav-text">下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8"><span class="nav-text">启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE-ssh-%E6%9C%8D%E5%8A%A1%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="nav-text">设置 ssh 服务开机自启</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8F%E6%BA%90"><span class="nav-text">更换国内镜像源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%88%86%E7%9B%98%EF%BC%88%E5%BC%BA%E7%83%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-text">数据分盘（强烈推荐）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%9B%98%E6%93%8D%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-text">分盘操作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E7%A3%81%E7%9B%98%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-text">查看磁盘的情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E9%9C%80%E8%A6%81%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%B8%BA%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-text">磁盘需要格式化为文件系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E5%BC%80%E6%9C%BA%E6%8C%82%E8%BD%BD"><span class="nav-text">设置开机挂载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA-OBS-%E6%B7%BB%E5%8A%A0-build-target"><span class="nav-text">为 OBS 添加 build target</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%B8%BA%E5%8F%91%E8%A1%8C%E7%89%88%E7%BC%96%E8%AF%91%E9%A1%B9%E7%9B%AE%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA-meta-%E9%A1%B9%E7%9B%AE"><span class="nav-text">1) 为发行版编译项目创建一个 meta 项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%B7%BB%E5%8A%A0%E7%BC%96%E8%AF%91%E4%BE%9D%E8%B5%96-rpm-%E5%8C%85%EF%BC%88BuildRequire-%EF%BC%89"><span class="nav-text">2) 添加编译依赖 rpm 包（BuildRequire ）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%B7%BB%E5%8A%A0%E9%A1%B9%E7%9B%AE%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-text">3) 添加项目的配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%89%AB%E6%8F%8F%E9%A1%B9%E7%9B%AE%E8%A7%A3%E5%86%B3%E4%BE%9D%E8%B5%96"><span class="nav-text">4) 扫描项目解决依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%EF%BC%89%E5%A6%82%E6%B3%95%E7%82%AE%E5%88%B6%EF%BC%8C%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E7%94%A8%E4%BA%8E%E5%8F%91%E8%A1%8C%E7%89%88%E7%BC%96%E8%AF%91%E7%9A%84%E9%A1%B9%E7%9B%AE"><span class="nav-text">5）如法炮制，创建一个用于发行版编译的项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%B2%E7%9F%A5%E9%97%AE%E9%A2%98"><span class="nav-text">已知问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OBS-%E4%BD%BF%E7%94%A8-qemu-kvm-%E4%BD%9C%E4%B8%BA%E6%9E%84%E5%BB%BA%E7%8E%AF%E5%A2%83%E4%BC%9A%E6%9E%84%E5%BB%BA%E5%A4%B1%E8%B4%A5"><span class="nav-text">OBS 使用 qemu-kvm 作为构建环境会构建失败</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#waiting-for-8-compliant-workers-8-of-them-bad"><span class="nav-text">waiting for 8 compliant workers (8 of them bad)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#warning-Signature-not-supported-Hash-algorithm-SHA1-not-available"><span class="nav-text">warning: Signature not supported. Hash algorithm SHA1 not available</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#obs-%E9%A1%B5%E9%9D%A2%E7%82%B9%E5%87%BB%E4%B8%8B%E8%BD%BD%E4%BC%9A%E8%A2%AB%E9%87%8D%E5%AE%9A%E5%90%91%E5%9B%9E%E9%A6%96%E9%A1%B5"><span class="nav-text">obs 页面点击下载会被重定向回首页</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-text">Reference</span></a></li></ol>
+    </div>
 </div>
 
             </div>
@@ -485,19 +528,30 @@
         </div>
 
         <div class="page-main-content-bottom">
-            <footer class="footer">
+            
+<footer class="footer">
     <div class="info-container">
         <div class="copyright-info info-item">
             &copy;
             
-              <span>2022</span>
-              -
+                <span>2022</span> -
             
-            2023&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">Lapin Gris</a>
+            2023
+            
+                &nbsp;<i class="fas fa-heart icon-animate"></i>
+                &nbsp;<a href="/">Lapin Gris</a>
+            
         </div>
         
+            <script async data-pjax
+                    src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                
+            </div>
+        
         <div class="theme-info info-item">
-            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.6.1</a>
         </div>
         
         
@@ -513,15 +567,16 @@
     <ul class="tools-list">
         <!-- TOC aside toggle -->
         
-            <li class="tools-item page-aside-toggle">
-                <i class="fas fa-outdent"></i>
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
             </li>
         
 
         <!-- go comment -->
         
-            <li class="go-comment">
+            <li class="tools-item flex-center go-to-comments">
                 <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
             </li>
         
     </ul>
@@ -539,10 +594,6 @@
 
         <li class="tools-item tool-font-adjust-minus flex-center">
             <i class="fas fa-search-minus"></i>
-        </li>
-
-        <li class="tools-item tool-expand-width flex-center">
-            <i class="fas fa-arrows-alt-h"></i>
         </li>
 
         <li class="tools-item tool-dark-light-toggle flex-center">
@@ -574,18 +625,8 @@
 
     </div>
 
-    
-        <aside class="page-aside">
-            <div class="post-toc-wrap">
-    <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD"><span class="nav-text">下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8"><span class="nav-text">启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE-ssh-%E6%9C%8D%E5%8A%A1%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="nav-text">设置 ssh 服务开机自启</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8F%E6%BA%90"><span class="nav-text">更换国内镜像源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%88%86%E7%9B%98%EF%BC%88%E5%BC%BA%E7%83%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-text">数据分盘（强烈推荐）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%9B%98%E6%93%8D%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-text">分盘操作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E7%A3%81%E7%9B%98%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-text">查看磁盘的情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E9%9C%80%E8%A6%81%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%B8%BA%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-text">磁盘需要格式化为文件系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E5%BC%80%E6%9C%BA%E6%8C%82%E8%BD%BD"><span class="nav-text">设置开机挂载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA-OBS-%E6%B7%BB%E5%8A%A0-build-target"><span class="nav-text">为 OBS 添加 build target</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%B8%BA%E5%8F%91%E8%A1%8C%E7%89%88%E7%BC%96%E8%AF%91%E9%A1%B9%E7%9B%AE%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA-meta-%E9%A1%B9%E7%9B%AE"><span class="nav-text">1) 为发行版编译项目创建一个 meta 项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%B7%BB%E5%8A%A0%E7%BC%96%E8%AF%91%E4%BE%9D%E8%B5%96-rpm-%E5%8C%85%EF%BC%88BuildRequire-%EF%BC%89"><span class="nav-text">2) 添加编译依赖 rpm 包（BuildRequire ）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%B7%BB%E5%8A%A0%E9%A1%B9%E7%9B%AE%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-text">3) 添加项目的配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%89%AB%E6%8F%8F%E9%A1%B9%E7%9B%AE%E8%A7%A3%E5%86%B3%E4%BE%9D%E8%B5%96"><span class="nav-text">4) 扫描项目解决依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%EF%BC%89%E5%A6%82%E6%B3%95%E7%82%AE%E5%88%B6%EF%BC%8C%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E7%94%A8%E4%BA%8E%E5%8F%91%E8%A1%8C%E7%89%88%E7%BC%96%E8%AF%91%E7%9A%84%E9%A1%B9%E7%9B%AE"><span class="nav-text">5）如法炮制，创建一个用于发行版编译的项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%B2%E7%9F%A5%E9%97%AE%E9%A2%98"><span class="nav-text">已知问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OBS-%E4%BD%BF%E7%94%A8-qemu-kvm-%E4%BD%9C%E4%B8%BA%E6%9E%84%E5%BB%BA%E7%8E%AF%E5%A2%83%E4%BC%9A%E6%9E%84%E5%BB%BA%E5%A4%B1%E8%B4%A5"><span class="nav-text">OBS 使用 qemu-kvm 作为构建环境会构建失败</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#waiting-for-8-compliant-workers-8-of-them-bad"><span class="nav-text">waiting for 8 compliant workers (8 of them bad)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#warning-Signature-not-supported-Hash-algorithm-SHA1-not-available"><span class="nav-text">warning: Signature not supported. Hash algorithm SHA1 not available</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#obs-%E9%A1%B5%E9%9D%A2%E7%82%B9%E5%87%BB%E4%B8%8B%E8%BD%BD%E4%BC%9A%E8%A2%AB%E9%87%8D%E5%AE%9A%E5%90%91%E5%9B%9E%E9%A6%96%E9%A1%B5"><span class="nav-text">obs 页面点击下载会被重定向回首页</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-text">Reference</span></a></li></ol>
-    </div>
-</div>
-        </aside>
-    
-
-    <div class="image-viewer-container">
-    <img src="">
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
 </div>
 
 
@@ -606,7 +647,7 @@
                        class="search-input"
                 >
             </div>
-            <span class="popup-btn-close">
+            <span class="close-popup-btn">
                 <i class="fas fa-times"></i>
             </span>
         </div>
@@ -624,28 +665,36 @@
 
 
 
-<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
-
-
-    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/dark-light-toggle.js"></script>
 
 
 
-    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/local-search.js"></script>
 
 
 
-    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/lazyload.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/code-block.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/lazyload.js"></script>
 
 
 <div class="post-scripts pjax">
     
-        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/post-helper.js"></script>
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/anime.min.js"></script>
+        
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/toc.js"></script>
+        
     
 </div>
 
 
-    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/pjax.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/pjax.min.js"></script>
 <script>
     window.addEventListener('DOMContentLoaded', () => {
         window.pjax = new Pjax({
