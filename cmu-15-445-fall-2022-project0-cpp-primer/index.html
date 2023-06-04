@@ -205,7 +205,7 @@
     
         <span class="article-update-date article-meta-item">
         <i class="fas fa-file-pen"></i>&nbsp;
-        <span class="pc">2023-06-04 03:49:43</span>
+        <span class="pc">2023-06-04 20:12:14</span>
     </span>
     
     
@@ -303,7 +303,7 @@
                      data-src="/../img/1685814178989-21743ecf-471d-4df5-8854-540ff1b1a2cf.png"
                       alt="image.png"
                 ></p>
-<h1 id="实现-TrieNodeWithValue"><a href="#实现-TrieNodeWithValue" class="headerlink" title="实现 TrieNodeWithValue"></a>实现 TrieNodeWithValue</h1><h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p>第一次碰到这个函数，有一点懵，没明白子类怎么移动构造，现在想想其实很简单，利用 初始化列表将父类 move，然后在大括号里最定制化修改。果然， C++ 好久不用就容易忘。<br><img  
+<h1 id="实现-TrieNodeWithValue"><a href="#实现-TrieNodeWithValue" class="headerlink" title="实现 TrieNodeWithValue"></a>实现 TrieNodeWithValue</h1><h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p>第一次碰到这个函数，有一点懵，没明白子类怎么移动构造，现在想想其实很简单，利用初始化列表将父类 move，然后在大括号里最定制化修改。果然， C++ 好久不用就容易忘。<br><img  
                      lazyload
                      alt="image"
                      data-src="/../img/1685814224952-0f2eb4d9-6b50-44f5-a46e-2de2d6a803d6.png"
@@ -315,7 +315,7 @@
                      data-src="/../img/1685814249460-e7710c91-d861-4e26-8ba2-33394a92c6ba.png"
                       alt="image.png"
                 ></p>
-<h2 id="Insert"><a href="#Insert" class="headerlink" title="Insert"></a>Insert</h2><p>可以先实现不加锁版本的 Insert，在实现加锁版本的 Insert。混在一起看起来挺乱的，但是看我的代码，发现逻辑代码和加锁代码基本分开了，代码还挺整洁的。其实最初版本，我的逻辑代码和加锁也是混合在一起的，各种 for loop 中间 return， return 就需要再 return 之前把锁释放掉。。。就挺混乱的，主要多个 return 点，容易忘记解锁。后来，我参考内核调度器那块代码，用 goto 实现了把锁放到同一个地方释放，代码看起来舒服多了。<br>其实更好的办法是像 DPDK 那样实现一个 unsafe 版本的函数，在实现一个 safe 版本的，锁加在 safe 版本的函数里，在 safe 调用 unsafe 函数，这样实现了逻辑代码和加锁代码分离。唯一的缺点可能是锁的粒度大，不容易优化锁的粒度吧。</p>
+<h2 id="Insert"><a href="#Insert" class="headerlink" title="Insert"></a>Insert</h2><p>项目要求要支持并发访问，加锁是必须的了。当然在实现的视线可以先实现不加锁版本的 Insert 保证代码没有逻辑错误，然后再为代码加锁。<br>其实我的最初版本，我的逻辑代码和加锁是混合在一起的，各种 for loop 中间 return，有了 return 就需要在 return 之前把之前加的锁释放掉。。。就挺混乱的，另外因为多个 return 位置，容易忘记解锁。<br>后来，我参考内核调度器那块代码，把解锁放到函数末尾做，当代码中需要 return 的时候，用 goto 跳转到 out label，这样也就统一了解锁的位置，代码看起来舒服多了。<br>其实更好的办法是像 DPDK 那样实现一个 unsafe 版本的函数，在实现一个 safe 版本的，锁加在 safe 版本的函数里，在 safe 调用 unsafe 函数，这样实现了逻辑代码和加锁代码分离。唯一的缺点可能是锁的粒度大，不容易优化锁的粒度吧。</p>
 <p>首先从 <code>root_</code> 的指针，开始遍历 Tree，执行插入操作<br>我们选择是遍历整个 string，我们把 string 分成两部分，[0, key.size()-1) 和 [key.size()-1] 两部分来实现。这样写的代码更加简单，感觉项目里的注释描述稍微有点引导学生将字符串分成两部分处理。其实完全没有必要，这样作为一个整体处理逻辑也更简单。<br>遍历整个 string 会把整个路径所有节点类型设置为 TrieNode，所以最后需要将 Terminal Node move 一下，转为  TrieNodeWithValue 类型。然后让 unique_ptr 指针指向 TrieNodeWithValue即可。<br><img  
                      lazyload
                      alt="image"
