@@ -205,7 +205,7 @@
     
         <span class="article-update-date article-meta-item">
         <i class="fas fa-file-pen"></i>&nbsp;
-        <span class="pc">2023-08-01 22:21:39</span>
+        <span class="pc">2023-08-19 11:02:31</span>
     </span>
     
     
@@ -227,10 +227,6 @@
                 
                     <li>
                         <a href="/tags/cmu15445/">cmu15445</a>&nbsp;
-                    </li>
-                
-                    <li>
-                        | <a href="/tags/project0/">project0</a>&nbsp;
                     </li>
                 
                     <li>
@@ -278,7 +274,7 @@
                 <p>这个项目是实现 bpm，简而言之是实现一个磁盘缓冲区，用于加速数据库应用的 IO 操作。</p>
 <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>众所周知，磁盘（SSD&#x2F;HDD）的访问速度是很慢的，内存 DRAM 访问相比较很快了。我们希望为磁盘经常访问的数据在内存建立对应的缓存来加速数据库应用的访问延迟。</p>
 <p>那我们把所有的数据都搬到内存里不就行了？</p>
-<p>说的有道理，但我们不能这样做，一个原因是我们不是内存数据库(e.g. redis)，我们是类似 <a class="link"   target="_blank" rel="noopener" href="https://www.mysql.com/" >MySQL<i class="fas fa-external-link-alt"></i></a> &#x2F; <a class="link"   target="_blank" rel="noopener" href="https://www.postgresql.org/" >PostgreSQL<i class="fas fa-external-link-alt"></i></a> 主要解决数据的持久化存储问题，因此数据量会很大，如果将持久性数据库的所有数据全部搬到内存里对内存需求会很大，需要购买更多的更大的内存才能满足需求。（注：<strong>内存比磁盘贵，贵很多</strong>。。。会有经济压力）</p>
+<p>说的有道理，但我们不能这样做，一个原因是我们不是内存数据库(e.g. redis)，我们是类似 <a class="link"   target="_blank" rel="noopener" href="https://www.mysql.com/" >MySQL<i class="fas fa-external-link-alt"></i></a> &#x2F; <a class="link"   target="_blank" rel="noopener" href="https://www.postgresql.org/" >PostgreSQL<i class="fas fa-external-link-alt"></i></a> 的 disk-based 磁盘数据库，主要解决数据的持久化存储问题，因此数据是存储在磁盘上的。同时因为数据量会很大，如果将持久性数据库的所有数据全部搬到内存里对内存需求会很大，需要购买更多的更大的内存才能满足需求。（注：<strong>内存比磁盘贵，贵很多</strong>。。。会有经济压力）</p>
 <p>另外一个原因是，数据访问是具有局部性特点的，并不是所有数据都是热点数据，我们只需要在内存里缓存热点数据，保证绝大多数磁盘访问请求可以得到加速即可。</p>
 <p>所以我们不能把所有磁盘的数据都搬到内存里来加速，我们请求一个固定大小的一块内存区域作为的 buffer pool，把最常用的页在内存里建立缓存。</p>
 <p><img  
@@ -393,10 +389,6 @@
                     
                         <li class="tag-item">
                             <a href="/tags/cmu15445/">#cmu15445</a>&nbsp;
-                        </li>
-                    
-                        <li class="tag-item">
-                            <a href="/tags/project0/">#project0</a>&nbsp;
                         </li>
                     
                         <li class="tag-item">
