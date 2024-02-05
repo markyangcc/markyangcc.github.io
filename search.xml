@@ -1,85 +1,479 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>CMU 15-445 Fall 2022 Project0: C++ Primer</title>
-    <url>/cmu-15-445-fall-2022-project0-cpp-primer/</url>
-    <content><![CDATA[<p>这个项目是使用 Modern C++ 17 实现一个 字典树（<code>Trie</code>）<br>项目难点在于理解项目里如何使用 TrieNode 和 TrieTerminalNode 来组合实现一个 Trie Tree。另外一个难点是对 unique_ptr 的理解。理解 unique_ptr 智能指针对生命周期的管理。</p>
-<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>项目提供了图对 Trie Tree 介绍的，理解这两张图，基本理解了这个项目里我们需要实现什么了。<br>下面这张图是我们最终实现的 Trie Tree。图中红色的格子是要实现的 Terminal Node（TrieNodeWithValue），<br>图中包含字母的格子是要实现的 Trie Node。其中 Terminal Node 算是 Trie Node 的一个特殊情况。</p>
-<p>回来继续介绍 TrieNode，他有三个成员</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">char</span> key_char_;</span><br><span class="line"><span class="type">bool</span> is_end_&#123;<span class="literal">false</span>&#125;;</span><br><span class="line">std::unordered_map&lt;<span class="type">char</span>, std::unique_ptr&lt;TrieNode&gt;&gt; children_;</span><br></pre></td></tr></table></figure>
-<p><code>key_char_</code> 是路径的字符，比如 H，A，E<br><code>is_end_</code> 是表示当前 Node 是否是 Terminal Node，默认初始化为 false<br><code>children_</code> 是一个 hashmap，key 是当前节点的 <code>key_char_</code> ，value 是一个指向下一个节点的独占指针 unique_ptr 。图中代表 <code>children_</code> 是 T 和 V 的那一部分。T 和 V 都是 A 节点的子节点。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814840719-8f6f1d8e-6e09-4030-bdb3-d65e14f17057.png"
-                      alt="image.png"
-                ></p>
-<p>为什么说 Terminal Node 是 Trie Node 的特殊情况，因为项目中TrieNodeWithValue 是从 TrieNode 继承过来的，算是子类了。<br>比如，我们现在要用 Trie Tree 存储N个键值对，其中两个键值对是 (ab, 1) (ac, “val”) 。那么他们存放在书上就是下图展示的样子，因为我们要实现的 TrieNodeWithValue 的 value 被设计成支持任意类型的 value 存储，所以 TrieNodeWithValue 是一个模板类。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814852620-97e656e5-5d1b-4825-8b3c-580e59a63b3b.png"
-                      alt="image.png"
-                ></p>
-<h1 id="实现-TrieNode"><a href="#实现-TrieNode" class="headerlink" title="实现 TrieNode"></a>实现 TrieNode</h1><h2 id="InsertChildNode-amp-GetChildNode-amp-RemoveChildNode"><a href="#InsertChildNode-amp-GetChildNode-amp-RemoveChildNode" class="headerlink" title="InsertChildNode &amp; GetChildNode &amp; RemoveChildNode"></a>InsertChildNode &amp; GetChildNode &amp; RemoveChildNode</h2><p>实现 ChildNode 相关操作就是玩 unordered_map 。C++ 里面是 unordered_map 就是通常所说的 hashmap。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814082740-b9cc70ec-2a11-498f-9230-af89469726ac.png"
-                      alt="image.png"
-                ><br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814148701-eb8add28-1474-4ec5-b18e-718690c95809.png"
-                      alt="image.png"
-                ><br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814178989-21743ecf-471d-4df5-8854-540ff1b1a2cf.png"
-                      alt="image.png"
-                ></p>
-<h1 id="实现-TrieNodeWithValue"><a href="#实现-TrieNodeWithValue" class="headerlink" title="实现 TrieNodeWithValue"></a>实现 TrieNodeWithValue</h1><h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p>第一次碰到这个函数，有一点懵，没明白子类怎么移动构造，现在想想其实很简单，利用初始化列表将父类 move，然后在大括号里最定制化修改。果然， C++ 好久不用就容易忘。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814224952-0f2eb4d9-6b50-44f5-a46e-2de2d6a803d6.png"
-                      alt="image.png"
-                ></p>
-<h1 id="实现-Trie"><a href="#实现-Trie" class="headerlink" title="实现 Trie"></a>实现 Trie</h1><h2 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h2><p>我们 <code>root_</code> Node 是一个空节点，而且要是一个由 unique_ptr 管理的 TrieNode。最初时候没想到使用 make_unique 来构造一个，想了挺久的（蠢哭了……）<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814249460-e7710c91-d861-4e26-8ba2-33394a92c6ba.png"
-                      alt="image.png"
-                ></p>
-<h2 id="Insert"><a href="#Insert" class="headerlink" title="Insert"></a>Insert</h2><p>项目要求要支持并发访问，加锁是必须的了。当然在实现的视线可以先实现不加锁版本的 Insert 保证代码没有逻辑错误，然后再为代码加锁。<br>其实我的最初版本，我的逻辑代码和加锁是混合在一起的，各种 for loop 中间 return，有了 return 就需要在 return 之前把之前加的锁释放掉。。。就挺混乱的，另外因为多个 return 位置，容易忘记解锁。<br>后来，我参考内核调度器那块代码，把解锁放到函数末尾做，当代码中需要 return 的时候，用 goto 跳转到 out label，这样也就统一了解锁的位置，代码看起来舒服多了。<br>其实更好的办法是像 DPDK 那样实现一个 unsafe 版本的函数，在实现一个 safe 版本的，锁加在 safe 版本的函数里，在 safe 调用 unsafe 函数，这样实现了逻辑代码和加锁代码分离。唯一的缺点可能是锁的粒度大，不容易优化锁的粒度吧。</p>
-<p>首先从 <code>root_</code> 的指针，开始遍历 Tree，执行插入操作<br>我们选择是遍历整个 string，我们把 string 分成两部分，[0, key.size()-1) 和 [key.size()-1] 两部分来实现。这样写的代码更加简单，感觉项目里的注释描述稍微有点引导学生将字符串分成两部分处理。其实完全没有必要，这样作为一个整体处理逻辑也更简单。<br>遍历整个 string 会把整个路径所有节点类型设置为 TrieNode，所以最后需要将 Terminal Node move 一下，转为  TrieNodeWithValue 类型。然后让 unique_ptr 指针指向 TrieNodeWithValue即可。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814266393-3af38181-5068-4c7c-9de9-5d61d4539944.png"
-                      alt="image.png"
-                ></p>
-<h2 id="Remove"><a href="#Remove" class="headerlink" title="Remove"></a>Remove</h2><p>删除要求如果需要中间节点没有 child 节点，这个节点也需要被 remove 掉。这就说明在遍历的时候我们要记录父节点的指针，但是指针一旦调到下一个节点，就回不去了，我们用的也不是双向版本的指针。所有，我们要记录我们的遍历的路径，我们用 vector 存，其实用 stack 也没问题。<br>最终，我们先遍历一遍 string，走到底部。然后开始反向遍历，检查节点有没有子节点，没有就将节点删除。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814387701-325c9397-b39d-4577-8dc8-1abf27a9dd2c.png"
-                      alt="image.png"
-                ></p>
-<h2 id="GetValue"><a href="#GetValue" class="headerlink" title="GetValue"></a>GetValue</h2><p>从 <code>root_</code> 开始遍历,项目要求检查存储在 Terminal Node 的 value 类型。这里借助 <code>dynamic_cast</code>  来判断。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814364319-80f212cb-0856-424b-b227-1a8582a6fb66.png"
-                      alt="image.png"
-                ></p>
-<h1 id="Gradescope"><a href="#Gradescope" class="headerlink" title="Gradescope"></a>Gradescope</h1><p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685818990987-6e025706-9621-4ca9-b691-6b4a81f141aa.png"
-                      alt="image.png"
-                ></p>
+    <title>Intel &amp; AMD 指令集之间的差异</title>
+    <url>/Intel_AMD_ISA_difference/</url>
+    <content><![CDATA[<p>促进我写这篇文章的起因是，线上机器会使用基于 SPDK 的云盘存储方案，需要编译一个 RPM 包。<br>这个包在 Intel 机器是运行正常的，在 AMD 的机器上无法运行报不支持 AVX512 指令。</p>
+<p>这个问题很常见，是指令集不兼容造成的。AMD 虽然是 x86 厂商，即使是同一代其生产的 CPU 也不是和 Intel 的 CPU 是指令集完全兼容的。两家厂商的 CPU 会有一些对方不支持的指令集。</p>
+<p>出现问题的原因也很简单，这个 RPM 包是在一台编译机器上编译的，这台编译机器是 Intel 机器，正好支持部分 AVX512 指令集。但线上的 AMD 机器是不支持 AVX512 指令集的。解决这个问题很简单，只要使用 I 家 和 A 家 这两款 CPU 共同支持的指令集即可。实际上，是不需要我们手动对比指令集的差异，寻找交集。因为 CPU 指令集之间的差异会对软件的移植性造成重大影响，所以业界早早就有了对应的指令集基线(baseline)。</p>
+<h2 id="指令集的演进"><a href="#指令集的演进" class="headerlink" title="指令集的演进"></a>指令集的演进</h2><p>gcc 编译器执行 <code>gcc -Q --help=target</code>，输出会包含如下部分,</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">Known valid arguments <span class="keyword">for</span> -march= option:</span><br><span class="line">  i386 i486 i586 pentium lakemont pentium-mmx [...]</span><br></pre></td></tr></table></figure>
+<p>其中 march option 下面罗列的就是 gcc 的支持的各种指令集，重点关注其中 <code>x86-64/x86-64-v2/x86-64-v3/x86-64-v4</code> 这几个，这几个是 x86 平台最常用的指令集了。绝大多数软件都会使用这几个指令集进行编译，保证不同 CPU 之间的指令集兼容。<br>指令集从 x86-64 到 x86-64-v4 ，每一个版本都往 baseline 中加入了新的指令集，性能会更好，但移植会变差，一些比较老的 CPU 可能跑不了使用 x86-64-v4 指令集编译的软件了。</p>
+<ul>
+<li>x86-64-v2 brings support (among other things) for vector instructions up to Streaming SIMD Extensions 4.2 (SSE4.2)  and Supplemental Streaming SIMD Extensions 3 (SSSE3), the POPCNT instruction (useful for data analysis and bit-fiddling in some data structures), and CMPXCHG16B (a two-word compare-and-swap instruction useful for concurrent algorithms).</li>
+<li>x86-64-v3 adds vector instructions up to AVX2, MOVBE (for big-endian data access), and additional bit-manipulation instructions.</li>
+<li>x86-64-v4 includes vector instructions from some of the AVX-512 variants.</li>
+</ul>
+<h2 id="对比-Intel-与-AMD-指令集差异"><a href="#对比-Intel-与-AMD-指令集差异" class="headerlink" title="对比 Intel 与 AMD 指令集差异"></a>对比 Intel 与 AMD 指令集差异</h2><p>查看两款 CPU 支持的指令集之间的差异</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gcc -Q -march=native --help=target | grep enabled</span><br></pre></td></tr></table></figure>
+<p>当 march 为 native 可以获得当前 CPU 支持的所有指令集。</p>
+<p>表格中是 AMD EPYC 和 Intel Ice Lake CPU 的其中一款 CPU 指令集差异图， 两家的 CPU 每一代都会有各种各样的型号，这里是其中两款的对比，<br>从图中看到，这个两款 CPU 都是比较新的，均支持 AVX512 系列指令集。两款 CPU 支持的指令集大部分都是重合的，一小部分是自家 CPU 独有的。如果我们使用 <code>-march=native </code> 在其中一款 CPU 上编译软件，计划运行在这两款 CPU 上，那么编译器使用到了任何一家的独有的指令集，软件在这两款 CPU 上就存在移植性问题了。</p>
+<table>
+<thead>
+<tr>
+<th><strong>AMD EPYC Bergamo</strong></th>
+<th>仅 AMD 支持</th>
+<th>仅 Intel 支持</th>
+<th><strong>Intel Ice Lake</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-m128bit-long-double</td>
+<td></td>
+<td></td>
+<td>-m128bit-long-double</td>
+</tr>
+<tr>
+<td>-m64</td>
+<td></td>
+<td></td>
+<td>-m64</td>
+</tr>
+<tr>
+<td>-m80387</td>
+<td></td>
+<td></td>
+<td>-m80387</td>
+</tr>
+<tr>
+<td>-mabm</td>
+<td></td>
+<td></td>
+<td>-mabm</td>
+</tr>
+<tr>
+<td>-madx</td>
+<td></td>
+<td></td>
+<td>-madx</td>
+</tr>
+<tr>
+<td>-maes</td>
+<td></td>
+<td></td>
+<td>-maes</td>
+</tr>
+<tr>
+<td>-malign-stringops</td>
+<td></td>
+<td></td>
+<td>-malign-stringops</td>
+</tr>
+<tr>
+<td>-mavx</td>
+<td></td>
+<td></td>
+<td>-mavx</td>
+</tr>
+<tr>
+<td>-mavx2</td>
+<td></td>
+<td></td>
+<td>-mavx2</td>
+</tr>
+<tr>
+<td>-mavx512bf16</td>
+<td><strong>AMD ONLY</strong></td>
+<td></td>
+<td>-mavx512bitalg</td>
+</tr>
+<tr>
+<td>-mavx512bitalg</td>
+<td></td>
+<td></td>
+<td>-mavx512bw</td>
+</tr>
+<tr>
+<td>-mavx512bw</td>
+<td></td>
+<td></td>
+<td>-mavx512cd</td>
+</tr>
+<tr>
+<td>-mavx512cd</td>
+<td></td>
+<td></td>
+<td>-mavx512dq</td>
+</tr>
+<tr>
+<td>-mavx512dq</td>
+<td></td>
+<td></td>
+<td>-mavx512f</td>
+</tr>
+<tr>
+<td>-mavx512f</td>
+<td></td>
+<td></td>
+<td>-mavx512ifma</td>
+</tr>
+<tr>
+<td>-mavx512ifma</td>
+<td></td>
+<td></td>
+<td>-mavx512vbmi</td>
+</tr>
+<tr>
+<td>-mavx512vbmi</td>
+<td></td>
+<td></td>
+<td>-mavx512vbmi2</td>
+</tr>
+<tr>
+<td>-mavx512vbmi2</td>
+<td></td>
+<td></td>
+<td>-mavx512vl</td>
+</tr>
+<tr>
+<td>-mavx512vl</td>
+<td></td>
+<td></td>
+<td>-mavx512vnni</td>
+</tr>
+<tr>
+<td>-mavx512vnni</td>
+<td></td>
+<td></td>
+<td>-mavx512vpopcntdq</td>
+</tr>
+<tr>
+<td>-mavx512vpopcntdq</td>
+<td></td>
+<td></td>
+<td>-mbmi</td>
+</tr>
+<tr>
+<td>-mbmi</td>
+<td></td>
+<td></td>
+<td>-mbmi2</td>
+</tr>
+<tr>
+<td>-mbmi2</td>
+<td></td>
+<td></td>
+<td>-mclflushopt</td>
+</tr>
+<tr>
+<td>-mclflushopt</td>
+<td></td>
+<td></td>
+<td>-mclwb</td>
+</tr>
+<tr>
+<td>-mclwb</td>
+<td></td>
+<td></td>
+<td>-mcrc32</td>
+</tr>
+<tr>
+<td>-mclzero</td>
+<td><strong>AMD ONLY</strong></td>
+<td></td>
+<td>-mcx16</td>
+</tr>
+<tr>
+<td>-mcrc32</td>
+<td></td>
+<td></td>
+<td>-mf16c</td>
+</tr>
+<tr>
+<td>-mcx16</td>
+<td></td>
+<td></td>
+<td>-mfancy-math-387</td>
+</tr>
+<tr>
+<td>-mf16c</td>
+<td></td>
+<td></td>
+<td>-mfma</td>
+</tr>
+<tr>
+<td>-mfancy-math-387</td>
+<td></td>
+<td></td>
+<td>-mfp-ret-in-387</td>
+</tr>
+<tr>
+<td>-mfma</td>
+<td></td>
+<td></td>
+<td>-mfsgsbase</td>
+</tr>
+<tr>
+<td>-mfp-ret-in-387</td>
+<td></td>
+<td></td>
+<td>-mfxsr</td>
+</tr>
+<tr>
+<td>-mfsgsbase</td>
+<td></td>
+<td><strong>Intel ONLY</strong></td>
+<td>-mgfni</td>
+</tr>
+<tr>
+<td>-mfxsr</td>
+<td></td>
+<td></td>
+<td>-mglibc</td>
+</tr>
+<tr>
+<td>-mglibc</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>-mhard-float</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>-mhard-float</td>
+<td></td>
+<td><strong>Intel ONLY</strong></td>
+<td>-mhle</td>
+</tr>
+<tr>
+<td>-mieee-fp</td>
+<td></td>
+<td></td>
+<td>-mieee-fp</td>
+</tr>
+<tr>
+<td>-mlong-double-80</td>
+<td></td>
+<td></td>
+<td>-mlong-double-80</td>
+</tr>
+<tr>
+<td>-mlzcnt</td>
+<td></td>
+<td></td>
+<td>-mlzcnt</td>
+</tr>
+<tr>
+<td>-mmmx</td>
+<td></td>
+<td></td>
+<td>-mmmx</td>
+</tr>
+<tr>
+<td>-mmovbe</td>
+<td></td>
+<td></td>
+<td>-mmovbe</td>
+</tr>
+<tr>
+<td>-mmwait</td>
+<td></td>
+<td></td>
+<td>-mmwait</td>
+</tr>
+<tr>
+<td>-mpclmul</td>
+<td></td>
+<td></td>
+<td>-mpclmul</td>
+</tr>
+<tr>
+<td>-mpopcnt</td>
+<td></td>
+<td></td>
+<td>-mpopcnt</td>
+</tr>
+<tr>
+<td>-mprfchw</td>
+<td></td>
+<td></td>
+<td>-mprfchw</td>
+</tr>
+<tr>
+<td>-mpush-args</td>
+<td></td>
+<td></td>
+<td>-mpush-args</td>
+</tr>
+<tr>
+<td>-mrdpid</td>
+<td><strong>AMD ONLY</strong></td>
+<td></td>
+<td>-mrdrnd</td>
+</tr>
+<tr>
+<td>-mrdrnd</td>
+<td></td>
+<td></td>
+<td>-mrdseed</td>
+</tr>
+<tr>
+<td>-mrdseed</td>
+<td></td>
+<td></td>
+<td>-mred-zone</td>
+</tr>
+<tr>
+<td>-mred-zone</td>
+<td></td>
+<td><strong>Intel ONLY</strong></td>
+<td>-mrtm</td>
+</tr>
+<tr>
+<td>-msahf</td>
+<td></td>
+<td></td>
+<td>-msahf</td>
+</tr>
+<tr>
+<td>-msha</td>
+<td></td>
+<td></td>
+<td>-msha</td>
+</tr>
+<tr>
+<td>-msse</td>
+<td></td>
+<td></td>
+<td>-msse</td>
+</tr>
+<tr>
+<td>-msse2</td>
+<td></td>
+<td></td>
+<td>-msse2</td>
+</tr>
+<tr>
+<td>-msse3</td>
+<td></td>
+<td></td>
+<td>-msse3</td>
+</tr>
+<tr>
+<td>-msse4</td>
+<td></td>
+<td></td>
+<td>-msse4</td>
+</tr>
+<tr>
+<td>-msse4.1</td>
+<td></td>
+<td></td>
+<td>-msse4.1</td>
+</tr>
+<tr>
+<td>-msse4.2</td>
+<td></td>
+<td></td>
+<td>-msse4.2</td>
+</tr>
+<tr>
+<td>-msse4a</td>
+<td><strong>AMD ONLY</strong></td>
+<td></td>
+<td>-mssse3</td>
+</tr>
+<tr>
+<td>-mssse3</td>
+<td></td>
+<td></td>
+<td>-mstv</td>
+</tr>
+<tr>
+<td>-mstv</td>
+<td></td>
+<td></td>
+<td>-mtls-direct-seg-refs</td>
+</tr>
+<tr>
+<td>-mtls-direct-seg-refs</td>
+<td></td>
+<td></td>
+<td>-mvaes</td>
+</tr>
+<tr>
+<td>-mvaes</td>
+<td></td>
+<td></td>
+<td>-mvpclmulqdq</td>
+</tr>
+<tr>
+<td>-mvpclmulqdq</td>
+<td></td>
+<td></td>
+<td>-mvzeroupper</td>
+</tr>
+<tr>
+<td>-mvzeroupper</td>
+<td></td>
+<td></td>
+<td>-mwbnoinvd</td>
+</tr>
+<tr>
+<td>-mwbnoinvd</td>
+<td></td>
+<td></td>
+<td>-mxsave</td>
+</tr>
+<tr>
+<td>-mxsave</td>
+<td></td>
+<td></td>
+<td>-mxsavec</td>
+</tr>
+<tr>
+<td>-mxsavec</td>
+<td></td>
+<td></td>
+<td>-mxsaveopt</td>
+</tr>
+<tr>
+<td>-mxsaveopt</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="指令集的基线-baseline"><a href="#指令集的基线-baseline" class="headerlink" title="指令集的基线 baseline"></a>指令集的基线 baseline</h2><p>不同 CPU 指令集之间的差异，会导致软件的移植性产生重大影响。通常的情况下，我们希望我在 x86 平台编译的软件，能在任意 x86 机器（无论 Intel 还是 AMD）上运行，而不是在每一 款 CPU 上都要重新编译。这种问题就是指令集的移植性问题。</p>
+<p>目前已经有解决方案了，那就是 gcc 的 <code>-march</code> 选项，通过在编译的时候指定 <code>-march</code> 实现一次编译，任意运行。<br>gcc 编译的 <code>-march</code> 选项会限定是编译过程可以使用的指令集，目前这个阶段 <code>x86-64-v2</code> 架构是当前推荐的 <code>-march</code> 选项，在性能和移植性之间取得了比较好的平衡。</p>
+<p>感兴趣的小伙伴可以在不同 CPU 平台上查询 <code>x86-64-v2</code> 指令集是否存在差异，结论肯定是不存在差异，因为这是一个 baseline，已经被标准化了。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">gcc -Q -march=x86<span class="number">-64</span>-v2 --help=target | grep enabled</span><br></pre></td></tr></table></figure>
+
+<p>那这些指令集的 baseline 是怎么标准化的？<br>有些同学可能会对标准的由来感兴趣，通俗来说，是 CPU&#x2F;OS&#x2F;Compiler (具有影响力的头部)厂商大家一起坐下来开个会，在会上确定下一代指令集标准，也就是 baseline，确定后，软件厂商按照这个指令集标准编译软件，CPU 厂商按照这个标准设计 CPU。共同保证软件的移植性。其他非头部厂商也会跟进这个标准。</p>
+<p><a class="link"   href="https://developers.redhat.com/blog/2021/01/05/building-red-hat-enterprise-linux-9-for-the-x86-64-v2-microarchitecture-level#" >https://developers.redhat.com/blog/2021/01/05/building-red-hat-enterprise-linux-9-for-the-x86-64-v2-microarchitecture-level#<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="其他语言-go-x2F-java-x2F-python-编译"><a href="#其他语言-go-x2F-java-x2F-python-编译" class="headerlink" title="其他语言 go&#x2F;java&#x2F;python 编译"></a>其他语言 go&#x2F;java&#x2F;python 编译</h2><p>前面的介绍，主要是 C 语言，那其他语言比如（go&#x2F;java&#x2F;python&#x2F;rust）编译的&#x2F;运行的软件是否需要考虑指令集兼容？<br><strong>理论上，所有的语言，无论是编译型还是解释性语言都会面临兼容性的问题</strong>。毕竟写的软件总要在 CPU 上跑的。。。 前面介绍 C 语言，主要是因为 C 和硬件打交道的多，对性能和可移植性都有较高的要求，其他语言更多的集中在应用层。</p>
+<ul>
+<li>python 是解释性语言，用户侧不存在指令集兼容问题。指令集差异在 cpython 那块。我们就认为不存在吧</li>
+<li>go 是编译型语言。用户侧存在指令集兼容问题。但是因为 go 的默认配置使用的是最原始版本的 x86-64 指令集(go env 中 GOAMD64 环境变量代表是指令集版本)，所以兼容性很好。。。。我们就认为不存在吧</li>
+<li>java 是运行在 JVM 上的，指令集差异在 JVM 那层被屏蔽了，和 python 情况一样。我们也认为不存在</li>
+<li>rust 是编译型语言，存在指令集兼容问题，情况类似 go，取决于默认配置。</li>
+</ul>
+<h2 id="编译优化与可移植性的矛盾"><a href="#编译优化与可移植性的矛盾" class="headerlink" title="编译优化与可移植性的矛盾"></a>编译优化与可移植性的矛盾</h2><p>这里有一个规律，当我们使用 native 指令集(编译器使用机器上所有可用的指令集来优化) 编译的软件性能是最好的，同时可移植性也是最差的。</p>
+<p>还有一个规律，所有语言都存在指令集的兼容性问题，但是实际使用中，我们并不需要考虑，这是因为语言的设计者已经将指令集兼容通过各种方式屏蔽掉了，比如 go 是使用最原始的 x86-64 指令集来屏蔽，java 通过 JVM 来屏蔽等等。</p>
+<p>实际上往往只有像 C 语言会考虑指令集的兼容性，因为为了性能，编译器应该使用所有支持的指令集进行编译期优化，但是为了可移植性，又不能使用独有指令集。这本身就是一个矛盾。举个例子，像 DPDK&#x2F;SPDK 这种专门为了性能而生的软件框架，他们在编译的时候，默认采用 native 进行编译，实际上为了可移植性，我么在编译时会使用 x86-64-v2&#x2F;corei7 这些指令集，牺牲一些性能，提高可移植性。</p>
+<p>在现实场景中，如果 CPU 型号是可控的，那么在编译时候，可以激进一些。如果 CPU 型号不可控的，那么还是保守一些。</p>
 ]]></content>
       <categories>
-        <category>cmu15445</category>
+        <category>ISA</category>
       </categories>
       <tags>
-        <tag>cmu15445</tag>
-        <tag>c++ Primer</tag>
-        <tag>Trie</tag>
+        <tag>isa</tag>
+        <tag>compile</tag>
+        <tag>arch</tag>
       </tags>
   </entry>
   <entry>
@@ -205,41 +599,51 @@
       </tags>
   </entry>
   <entry>
-    <title>PMEM 扩展系统内存用法介绍</title>
-    <url>/extend-system-ram-using-pmem/</url>
-    <content><![CDATA[<p>在介绍 pmem 的几种用法之前，我们先来介绍 pmem 的几种模式，因为后面介绍的用法与 pmem 的这几种模式是分不开的。</p>
-<h1 id="PMEM-的三种模式"><a href="#PMEM-的三种模式" class="headerlink" title="PMEM 的三种模式"></a>PMEM 的三种模式</h1><h2 id="1、Memory-Mode"><a href="#1、Memory-Mode" class="headerlink" title="1、Memory Mode"></a>1、Memory Mode</h2><p>pmem 配置为内存模式时，pmem 作为系统内存（system ram），原有的系统内存作为 cache。pmem 本身是比 DRAM 慢的，这种情况下，应用的访存延迟也会上升。内存模式屏蔽了本身的系统内存，针对虚拟化场景下一台物理机插了好几个内存的情况 几百G 的内存相当于被浪费了。</p>
-<h2 id="2、App-Direct-Mode"><a href="#2、App-Direct-Mode" class="headerlink" title="2、App Direct Mode"></a>2、App Direct Mode</h2><p>pmem 配置为 AD 模式时，这种模式，pmem 作为一个额外的内存资源暴露给 OS。通常情况下，我们也是采用 AD 模式，然后将 pmem 配置为 system-ram ，这样针对 redis 这种大内存的场景提供了大内存的适中的解决方案，因为 pmem 比 DRAM 便宜不少，完全采用 DRAM 比较贵。</p>
-<h2 id="3、Mixed-Mode"><a href="#3、Mixed-Mode" class="headerlink" title="3、Mixed Mode"></a>3、Mixed Mode</h2><p>用的少，混合模式的意思是，一部分配置为内存模式，剩下的容量自动为 AD 模式（配置内存模式时容量不配置为 100% 即代表混合模式）<br>pmem 提供了低成本大容量的内存解决方案。在 pmem 的三种模式的选择中，一般选择将 pmem 配置为 AD 模式来扩展系统内存，为 redis 等数据库场景提供更廉价的内存方案（相对来说，性能比完全采用 DRAM 会低一些）。</p>
-<h1 id="PMEM-的用法"><a href="#PMEM-的用法" class="headerlink" title="PMEM 的用法"></a>PMEM 的用法</h1><h2 id="a-用作磁盘"><a href="#a-用作磁盘" class="headerlink" title="a) 用作磁盘"></a>a) 用作磁盘</h2><p>将原有的 NVME SSD盘换成 pmem，可以获得更高的IOPS和带宽、更低的延时，解决性能瓶颈问题。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ndctl create-namespace --region region0 --mode fsdax</span><br><span class="line"></span><br><span class="line">mkfs -t ext4 /dev/pmem0 &amp;&amp; \</span><br><span class="line">mkdir /mnt/sdb &amp;&amp; \</span><br><span class="line">mount -o dax,noatime /dev/pmem0 /mnt/sdb</span><br></pre></td></tr></table></figure>
-<p>执行 <code>df -h</code> 查看刚刚挂载的磁盘。</p>
-<h2 id="b-用作-ram（DRAM-作为-cache）"><a href="#b-用作-ram（DRAM-作为-cache）" class="headerlink" title="b) 用作 ram（DRAM 作为 cache）"></a>b) 用作 ram（DRAM 作为 cache）</h2><p>将 pmem 当做一个系统内存来使用，原有的系统内存会看做一层 cache。这种用法下， pmem 是易失的，和 DRAM 的易失特性一样。这种用法，唯一的感觉是比较浪费，系统原有的内存被当做 cache 了，没有得到好的运用。</p>
-<h2 id="c-用作-numa-node"><a href="#c-用作-numa-node" class="headerlink" title="c) 用作 numa node"></a>c) 用作 numa node</h2><p>pmem 的另一个种用法是当做一个 numa node。当机器上被插上几根 pmem 内存时，pmem 内存会被识别为 numa 节点（配置方式如下），相较于 用作 ram 的方式，优点是显而易见的，扩展了系统可用内存。原有的系统内存也不会对上层屏蔽掉，依然可以被上层应用使用。</p>
-<p>现在的数据中心级别的服务器操作系统通常都会配置大页来获得更好的性能。通常的大页配置为 2M 大页和 1G 大页。这里我们也介绍在 pmem 所在的 numa node 开启大页。</p>
-<h3 id="开启-2M-大页"><a href="#开启-2M-大页" class="headerlink" title="开启 2M 大页"></a>开启 2M 大页</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">daxctl migrate-device-model</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建 namespace</span></span><br><span class="line">ndctl create-namespace --region=region0 --mode=devdax</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将 dax 设陪配置为 system-ram 模式</span></span><br><span class="line">daxctl reconfigure-device dax0.0 --mode=system-ram</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">分配 1024 个 2M 大页</span></span><br><span class="line">echo 1024 &gt; /sys/devices/system/node/node2/hugepages/hugepages-2048kB/nr_hugepages</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看 2M 页分配结果</span></span><br><span class="line">cat /sys/devices/system/node/node2/hugepages/hugepages-2048kB/nr_hugepages</span><br><span class="line">1024</span><br></pre></td></tr></table></figure>
-<p><code>cat nr_hugepages</code> 返回值可以看到，成功开启了 1024 个 hugepage。<br>注：dax 设备默认的对齐就是 2M，所以 <code>ndctl create-namespace</code>  可以省略掉对齐参数。</p>
-<h3 id="开启-1G-大页"><a href="#开启-1G-大页" class="headerlink" title="开启 1G 大页"></a>开启 1G 大页</h3><p>我们按照下面的方式开启 1G 大页，</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">daxctl migrate-device-model</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">按照 1G 对齐</span></span><br><span class="line">ndctl create-namespace --region=region0 --align 1g --mode=devdax </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将 dax 设陪配置为 system-ram 模式</span></span><br><span class="line">daxctl reconfigure-device dax0.0 --mode=system-ram </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">分配 248 个 1G 内存页</span></span><br><span class="line">echo 248 &gt; /sys/devices/system/node/node2/hugepages/hugepages-1048576kB/nr_hugepages</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看 1G 页分配结果</span></span><br><span class="line">cat /sys/devices/system/node/node2/hugepages/hugepages-1048576kB/nr_hugepages</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
-<p>1G 页分配失败了，原因往下看，一句话概括是 kernel 拒绝将 1G 页面放到 ZONE_MOVABLE 里进行管理。</p>
-<h3 id="为什么同样的方式不能开启-1G-大页？"><a href="#为什么同样的方式不能开启-1G-大页？" class="headerlink" title="为什么同样的方式不能开启 1G 大页？"></a>为什么同样的方式不能开启 1G 大页？</h3><p>这里先介绍一个背景，linux 里大页通常由两种，一种是 2M 大页，另一种是 1G 大页。1G 大页在理论上是可以迁移的，但是实际上是不可以迁移的。<br>不可迁移的原因是，当系统运行了一段时间后，系统内存已经碎了，很难找到一个空闲的 1G 大页将内存页里的数据搬运过去。因此，内核认为 1G 大页是不可以迁移的，不把 1G 大页放在 ZONE_MOVABLE 里进行管理。这也是造成照葫芦画瓢失败的原因。</p>
-<h3 id="如何在-PMEM-上分配-1G-大页？"><a href="#如何在-PMEM-上分配-1G-大页？" class="headerlink" title="如何在 PMEM 上分配 1G 大页？"></a>如何在 PMEM 上分配 1G 大页？</h3><p>当前操作系统（RHEL Family）环境下，很多因素会导致 pmem 会被自动 online 到 ZONE_MOVABLE。这也是我们为什么按照 2M 页方式开启 1G 页的方式失败的原因。</p>
-<p>可能得原因有，daxtctl 工具本身，system udev 规则 或者 auto_online_blocks 。这三个因素，每一个都有可能导致 pmem online 到 ZONE_MOVABLE 上，进而导致分配失败</p>
-<h4 id="1、禁用-auto-online-blocks"><a href="#1、禁用-auto-online-blocks" class="headerlink" title="1、禁用 auto_online_blocks"></a>1、禁用 auto_online_blocks</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cat /sys/devices/system/memory/auto_online_blocks</span><br><span class="line">offline</span><br></pre></td></tr></table></figure>
-<h4 id="2、修改系统-udev-规则"><a href="#2、修改系统-udev-规则" class="headerlink" title="2、修改系统 udev 规则"></a>2、修改系统 udev 规则</h4><p>注释掉 Memory hotadd request 部分</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">vim /usr/lib/udev/rules.d/40-redhat.rules</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Memory hotadd request</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">SUBSYSTEM!=<span class="string">&quot;memory&quot;</span>, GOTO=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ACTION!=<span class="string">&quot;add&quot;</span>, GOTO=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">CONST&#123;<span class="built_in">arch</span>&#125;==<span class="string">&quot;s390*&quot;</span>, GOTO=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">CONST&#123;<span class="built_in">arch</span>&#125;==<span class="string">&quot;ppc64*&quot;</span>, GOTO=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ENV&#123;.state&#125;=<span class="string">&quot;online&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">CONST&#123;virt&#125;==<span class="string">&quot;none&quot;</span>, ENV&#123;.state&#125;=<span class="string">&quot;online_movable&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ATTR&#123;state&#125;==<span class="string">&quot;offline&quot;</span>, ATTR&#123;state&#125;=<span class="string">&quot;<span class="variable">$env</span>&#123;.state&#125;&quot;</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">LABEL=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h4 id="3、daxctl-配置-ZONE-MOVABLE"><a href="#3、daxctl-配置-ZONE-MOVABLE" class="headerlink" title="3、daxctl 配置 !ZONE_MOVABLE"></a>3、daxctl 配置 !ZONE_MOVABLE</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">daxctl reconfigure-device dax0.0 --mode=system-ram --no-movable</span><br></pre></td></tr></table></figure>
-
-<p>经过上诉几个步骤，现在可以正常开启 1G 大页了。</p>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>1、man daxctl reconfigure-device movable<br>2、<a class="link"   href="https://docs.kernel.org/admin-guide/mm/memory-hotplug.html#zone-movable:~:text=Gigantic%20pages%20are%20unmovable" >Memory Hot(Un)Plug Docs in Linux Kernel<i class="fas fa-external-link-alt"></i></a><br>3、<a class="link"   href="https://mp.weixin.qq.com/s/RLU1f-7ckETrQhl7mZigyQ" >Linux Kernel中AEP的现状和发展<i class="fas fa-external-link-alt"></i></a><br>4、<a class="link"   href="https://stevescargall.com/2019/07/09/how-to-extend-volatile-system-memory-ram-using-persistent-memory-on-linux/" >How To Extend Volatile System Memory (RAM) using Persistent Memory on Linux – Steve Scargall<i class="fas fa-external-link-alt"></i></a></p>
+    <title>Hexo-Next主题配置</title>
+    <url>/hexo-next-theme-configuration-picture-configuration/</url>
+    <content><![CDATA[<h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
+<p><strong>修改引入图片路径即可解决，</strong></p>
+<p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
+<p><code>../img/gris.png</code> (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常预览&#x2F;显示图片，<strong>但是文件名不要有空格</strong>，有空格云端显示不出来。</p>
+<p><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/gris.png"
+                      alt="Gris"
+                ></p>
+<p><strong>结构展示</strong></p>
+<p>如果没有理解的话，看看这张结构图</p>
+<p><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/dict_tree.png"
+                     
+                ></p>
+<h1 id="二、插件"><a href="#二、插件" class="headerlink" title="二、插件"></a>二、插件</h1><p>安装插件的时候要多搜索，寻找最近的文章看，如果你也是使用Next 主题，尽量找Hexo Next 官方最近更新的文档看，因为随着<code>Hexo/Next</code>的版本更新，很多功能都被开发者集成进去了，只需要修改一下主题配置文件即可，<strong>简而言之，找最新的文章&#x2F;文档参考。</strong></p>
+<blockquote>
+<p>Hexo-Next 文档地址</p>
+<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<h2 id="安装的插件"><a href="#安装的插件" class="headerlink" title="安装的插件"></a>安装的插件</h2><p>安装的插件并不多，主要是够用即可</p>
+<p>hexo-symbols-count-time</p>
+<p>hexo-excerpt —— Because, auto_excerpt not working</p>
+<p>hexo-generator-searchdb——站内搜索</p>
+<p>大家都喜欢的插件，Next 文档都已经列出来了，去找就行了🤣</p>
+<blockquote>
+<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<p><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/Next_dos_advanced.png"
+                     
+                ></p>
 ]]></content>
       <categories>
-        <category>pmem</category>
+        <category>hexo</category>
       </categories>
       <tags>
-        <tag>pmem</tag>
-        <tag>system-ram</tag>
-        <tag>gigantic page</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -304,51 +708,186 @@
       </tags>
   </entry>
   <entry>
-    <title>Hexo-Next主题配置</title>
-    <url>/hexo-next-theme-configuration-picture-configuration/</url>
-    <content><![CDATA[<h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
-<p><strong>修改引入图片路径即可解决，</strong></p>
-<p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
-<p><code>../img/gris.png</code> (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常预览&#x2F;显示图片，<strong>但是文件名不要有空格</strong>，有空格云端显示不出来。</p>
+    <title>查询 Intel 处理器安全漏洞</title>
+    <url>/intel-cpu-cve/</url>
+    <content><![CDATA[<h2 id="Intel-处理器安全漏洞表"><a href="#Intel-处理器安全漏洞表" class="headerlink" title="Intel 处理器安全漏洞表"></a>Intel 处理器安全漏洞表</h2><p><a class="link"   href="https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html" >https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html<i class="fas fa-external-link-alt"></i></a></p>
 <p><img  
                      lazyload
                      alt="image"
-                     data-src="/../img/gris.png"
-                      alt="Gris"
+                     data-src="/../img/1701078889956-2908e693-214c-4762-9897-53c5924ec88c.png"
+                      alt="image.png"
                 ></p>
-<p><strong>结构展示</strong></p>
-<p>如果没有理解的话，看看这张结构图</p>
-<p><img  
+<h2 id="处理器安全漏洞只需要关注这两个方面"><a href="#处理器安全漏洞只需要关注这两个方面" class="headerlink" title="处理器安全漏洞只需要关注这两个方面"></a>处理器安全漏洞只需要关注这两个方面</h2><p>Intel 处理器的漏洞表，包含了所有漏洞，每个漏洞一列（图中右上角），漏洞描述包含 CVE 名称，编号以及 Intel 的编号。新披露的漏洞靠左，老披露的靠右。</p>
+<p>1、我用的是哪一款 CPU？<br>通过 <code>Family</code>、<code>Model</code> 、<code>Stepping</code> 三项就可以定位到列表中的特定型号所在行（<strong>图中左上角</strong>），查看 CPU 型号通过 lscpu 命令。<br>2、我是否受到此次 CVE 的影响？<br>观察<strong>图中右下角</strong>的字段，</p>
+<ul>
+<li>Not Affected: 代表不受影响</li>
+<li>MCU：代表需要更新微码</li>
+<li>Software：代表需要升级软件</li>
+</ul>
+<h2 id="如何查看我的-CPU-的型号？"><a href="#如何查看我的-CPU-的型号？" class="headerlink" title="如何查看我的 CPU 的型号？"></a>如何查看我的 CPU 的型号？</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">lscpu | grep -E <span class="string">&quot;CPU family:|Model:|Stepping:&quot;</span></span></span><br><span class="line">CPU family:          6</span><br><span class="line">Model:               85</span><br><span class="line">Stepping:            4</span><br></pre></td></tr></table></figure>
+<p>其中 Model 输出结果都是 10 进制，Intel 处理器漏洞表面里使用的是 16 进制（后缀是 H，代表是 16 进制），85 的 16 进制表示 55H，所以这款 CPU 的 Family_Model 是 06_55H, Steeping 是 4。</p>
+]]></content>
+      <categories>
+        <category>Intel</category>
+      </categories>
+      <tags>
+        <tag>CVE</tag>
+        <tag>processor</tag>
+        <tag>lscpu</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CMU 15-445 Fall 2022 Project0: C++ Primer</title>
+    <url>/cmu-15-445-fall-2022-project0-cpp-primer/</url>
+    <content><![CDATA[<p>这个项目是使用 Modern C++ 17 实现一个 字典树（<code>Trie</code>）<br>项目难点在于理解项目里如何使用 TrieNode 和 TrieTerminalNode 来组合实现一个 Trie Tree。另外一个难点是对 unique_ptr 的理解。理解 unique_ptr 智能指针对生命周期的管理。</p>
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>项目提供了图对 Trie Tree 介绍的，理解这两张图，基本理解了这个项目里我们需要实现什么了。<br>下面这张图是我们最终实现的 Trie Tree。图中红色的格子是要实现的 Terminal Node（TrieNodeWithValue），<br>图中包含字母的格子是要实现的 Trie Node。其中 Terminal Node 算是 Trie Node 的一个特殊情况。</p>
+<p>回来继续介绍 TrieNode，他有三个成员</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">char</span> key_char_;</span><br><span class="line"><span class="type">bool</span> is_end_&#123;<span class="literal">false</span>&#125;;</span><br><span class="line">std::unordered_map&lt;<span class="type">char</span>, std::unique_ptr&lt;TrieNode&gt;&gt; children_;</span><br></pre></td></tr></table></figure>
+<p><code>key_char_</code> 是路径的字符，比如 H，A，E<br><code>is_end_</code> 是表示当前 Node 是否是 Terminal Node，默认初始化为 false<br><code>children_</code> 是一个 hashmap，key 是当前节点的 <code>key_char_</code> ，value 是一个指向下一个节点的独占指针 unique_ptr 。图中代表 <code>children_</code> 是 T 和 V 的那一部分。T 和 V 都是 A 节点的子节点。<br><img  
                      lazyload
                      alt="image"
-                     data-src="/../img/dict_tree.png"
-                     
+                     data-src="/../img/1685814840719-8f6f1d8e-6e09-4030-bdb3-d65e14f17057.png"
+                      alt="image.png"
                 ></p>
-<h1 id="二、插件"><a href="#二、插件" class="headerlink" title="二、插件"></a>二、插件</h1><p>安装插件的时候要多搜索，寻找最近的文章看，如果你也是使用Next 主题，尽量找Hexo Next 官方最近更新的文档看，因为随着<code>Hexo/Next</code>的版本更新，很多功能都被开发者集成进去了，只需要修改一下主题配置文件即可，<strong>简而言之，找最新的文章&#x2F;文档参考。</strong></p>
-<blockquote>
-<p>Hexo-Next 文档地址</p>
-<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
-</blockquote>
-<h2 id="安装的插件"><a href="#安装的插件" class="headerlink" title="安装的插件"></a>安装的插件</h2><p>安装的插件并不多，主要是够用即可</p>
-<p>hexo-symbols-count-time</p>
-<p>hexo-excerpt —— Because, auto_excerpt not working</p>
-<p>hexo-generator-searchdb——站内搜索</p>
-<p>大家都喜欢的插件，Next 文档都已经列出来了，去找就行了🤣</p>
-<blockquote>
-<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
-</blockquote>
-<p><img  
+<p>为什么说 Terminal Node 是 Trie Node 的特殊情况，因为项目中TrieNodeWithValue 是从 TrieNode 继承过来的，算是子类了。<br>比如，我们现在要用 Trie Tree 存储N个键值对，其中两个键值对是 (ab, 1) (ac, “val”) 。那么他们存放在书上就是下图展示的样子，因为我们要实现的 TrieNodeWithValue 的 value 被设计成支持任意类型的 value 存储，所以 TrieNodeWithValue 是一个模板类。<br><img  
                      lazyload
                      alt="image"
-                     data-src="/../img/Next_dos_advanced.png"
-                     
+                     data-src="/../img/1685814852620-97e656e5-5d1b-4825-8b3c-580e59a63b3b.png"
+                      alt="image.png"
+                ></p>
+<h1 id="实现-TrieNode"><a href="#实现-TrieNode" class="headerlink" title="实现 TrieNode"></a>实现 TrieNode</h1><h2 id="InsertChildNode-amp-GetChildNode-amp-RemoveChildNode"><a href="#InsertChildNode-amp-GetChildNode-amp-RemoveChildNode" class="headerlink" title="InsertChildNode &amp; GetChildNode &amp; RemoveChildNode"></a>InsertChildNode &amp; GetChildNode &amp; RemoveChildNode</h2><p>实现 ChildNode 相关操作就是玩 unordered_map 。C++ 里面是 unordered_map 就是通常所说的 hashmap。<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/1685814082740-b9cc70ec-2a11-498f-9230-af89469726ac.png"
+                      alt="image.png"
+                ><br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/1685814148701-eb8add28-1474-4ec5-b18e-718690c95809.png"
+                      alt="image.png"
+                ><br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/1685814178989-21743ecf-471d-4df5-8854-540ff1b1a2cf.png"
+                      alt="image.png"
+                ></p>
+<h1 id="实现-TrieNodeWithValue"><a href="#实现-TrieNodeWithValue" class="headerlink" title="实现 TrieNodeWithValue"></a>实现 TrieNodeWithValue</h1><h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p>第一次碰到这个函数，有一点懵，没明白子类怎么移动构造，现在想想其实很简单，利用初始化列表将父类 move，然后在大括号里最定制化修改。果然， C++ 好久不用就容易忘。<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/1685814224952-0f2eb4d9-6b50-44f5-a46e-2de2d6a803d6.png"
+                      alt="image.png"
+                ></p>
+<h1 id="实现-Trie"><a href="#实现-Trie" class="headerlink" title="实现 Trie"></a>实现 Trie</h1><h2 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h2><p>我们 <code>root_</code> Node 是一个空节点，而且要是一个由 unique_ptr 管理的 TrieNode。最初时候没想到使用 make_unique 来构造一个，想了挺久的（蠢哭了……）<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/1685814249460-e7710c91-d861-4e26-8ba2-33394a92c6ba.png"
+                      alt="image.png"
+                ></p>
+<h2 id="Insert"><a href="#Insert" class="headerlink" title="Insert"></a>Insert</h2><p>项目要求要支持并发访问，加锁是必须的了。当然在实现的视线可以先实现不加锁版本的 Insert 保证代码没有逻辑错误，然后再为代码加锁。<br>其实我的最初版本，我的逻辑代码和加锁是混合在一起的，各种 for loop 中间 return，有了 return 就需要在 return 之前把之前加的锁释放掉。。。就挺混乱的，另外因为多个 return 位置，容易忘记解锁。<br>后来，我参考内核调度器那块代码，把解锁放到函数末尾做，当代码中需要 return 的时候，用 goto 跳转到 out label，这样也就统一了解锁的位置，代码看起来舒服多了。<br>其实更好的办法是像 DPDK 那样实现一个 unsafe 版本的函数，在实现一个 safe 版本的，锁加在 safe 版本的函数里，在 safe 调用 unsafe 函数，这样实现了逻辑代码和加锁代码分离。唯一的缺点可能是锁的粒度大，不容易优化锁的粒度吧。</p>
+<p>首先从 <code>root_</code> 的指针，开始遍历 Tree，执行插入操作<br>我们选择是遍历整个 string，我们把 string 分成两部分，[0, key.size()-1) 和 [key.size()-1] 两部分来实现。这样写的代码更加简单，感觉项目里的注释描述稍微有点引导学生将字符串分成两部分处理。其实完全没有必要，这样作为一个整体处理逻辑也更简单。<br>遍历整个 string 会把整个路径所有节点类型设置为 TrieNode，所以最后需要将 Terminal Node move 一下，转为  TrieNodeWithValue 类型。然后让 unique_ptr 指针指向 TrieNodeWithValue即可。<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/1685814266393-3af38181-5068-4c7c-9de9-5d61d4539944.png"
+                      alt="image.png"
+                ></p>
+<h2 id="Remove"><a href="#Remove" class="headerlink" title="Remove"></a>Remove</h2><p>删除要求如果需要中间节点没有 child 节点，这个节点也需要被 remove 掉。这就说明在遍历的时候我们要记录父节点的指针，但是指针一旦调到下一个节点，就回不去了，我们用的也不是双向版本的指针。所有，我们要记录我们的遍历的路径，我们用 vector 存，其实用 stack 也没问题。<br>最终，我们先遍历一遍 string，走到底部。然后开始反向遍历，检查节点有没有子节点，没有就将节点删除。<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/1685814387701-325c9397-b39d-4577-8dc8-1abf27a9dd2c.png"
+                      alt="image.png"
+                ></p>
+<h2 id="GetValue"><a href="#GetValue" class="headerlink" title="GetValue"></a>GetValue</h2><p>从 <code>root_</code> 开始遍历,项目要求检查存储在 Terminal Node 的 value 类型。这里借助 <code>dynamic_cast</code>  来判断。<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/1685814364319-80f212cb-0856-424b-b227-1a8582a6fb66.png"
+                      alt="image.png"
+                ></p>
+<h1 id="Gradescope"><a href="#Gradescope" class="headerlink" title="Gradescope"></a>Gradescope</h1><p><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/1685818990987-6e025706-9621-4ca9-b691-6b4a81f141aa.png"
+                      alt="image.png"
                 ></p>
 ]]></content>
       <categories>
-        <category>hexo</category>
+        <category>cmu15445</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
+        <tag>cmu15445</tag>
+        <tag>c++ Primer</tag>
+        <tag>Trie</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PMEM 扩展系统内存用法介绍</title>
+    <url>/extend-system-ram-using-pmem/</url>
+    <content><![CDATA[<p>在介绍 pmem 的几种用法之前，我们先来介绍 pmem 的几种模式，因为后面介绍的用法与 pmem 的这几种模式是分不开的。</p>
+<h1 id="PMEM-的三种模式"><a href="#PMEM-的三种模式" class="headerlink" title="PMEM 的三种模式"></a>PMEM 的三种模式</h1><h2 id="1、Memory-Mode"><a href="#1、Memory-Mode" class="headerlink" title="1、Memory Mode"></a>1、Memory Mode</h2><p>pmem 配置为内存模式时，pmem 作为系统内存（system ram），原有的系统内存作为 cache。pmem 本身是比 DRAM 慢的，这种情况下，应用的访存延迟也会上升。内存模式屏蔽了本身的系统内存，针对虚拟化场景下一台物理机插了好几个内存的情况 几百G 的内存相当于被浪费了。</p>
+<h2 id="2、App-Direct-Mode"><a href="#2、App-Direct-Mode" class="headerlink" title="2、App Direct Mode"></a>2、App Direct Mode</h2><p>pmem 配置为 AD 模式时，这种模式，pmem 作为一个额外的内存资源暴露给 OS。通常情况下，我们也是采用 AD 模式，然后将 pmem 配置为 system-ram ，这样针对 redis 这种大内存的场景提供了大内存的适中的解决方案，因为 pmem 比 DRAM 便宜不少，完全采用 DRAM 比较贵。</p>
+<h2 id="3、Mixed-Mode"><a href="#3、Mixed-Mode" class="headerlink" title="3、Mixed Mode"></a>3、Mixed Mode</h2><p>用的少，混合模式的意思是，一部分配置为内存模式，剩下的容量自动为 AD 模式（配置内存模式时容量不配置为 100% 即代表混合模式）<br>pmem 提供了低成本大容量的内存解决方案。在 pmem 的三种模式的选择中，一般选择将 pmem 配置为 AD 模式来扩展系统内存，为 redis 等数据库场景提供更廉价的内存方案（相对来说，性能比完全采用 DRAM 会低一些）。</p>
+<h1 id="PMEM-的用法"><a href="#PMEM-的用法" class="headerlink" title="PMEM 的用法"></a>PMEM 的用法</h1><h2 id="a-用作磁盘"><a href="#a-用作磁盘" class="headerlink" title="a) 用作磁盘"></a>a) 用作磁盘</h2><p>将原有的 NVME SSD盘换成 pmem，可以获得更高的IOPS和带宽、更低的延时，解决性能瓶颈问题。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ndctl create-namespace --region region0 --mode fsdax</span><br><span class="line"></span><br><span class="line">mkfs -t ext4 /dev/pmem0 &amp;&amp; \</span><br><span class="line">mkdir /mnt/sdb &amp;&amp; \</span><br><span class="line">mount -o dax,noatime /dev/pmem0 /mnt/sdb</span><br></pre></td></tr></table></figure>
+<p>执行 <code>df -h</code> 查看刚刚挂载的磁盘。</p>
+<h2 id="b-用作-ram（DRAM-作为-cache）"><a href="#b-用作-ram（DRAM-作为-cache）" class="headerlink" title="b) 用作 ram（DRAM 作为 cache）"></a>b) 用作 ram（DRAM 作为 cache）</h2><p>将 pmem 当做一个系统内存来使用，原有的系统内存会看做一层 cache。这种用法下， pmem 是易失的，和 DRAM 的易失特性一样。这种用法，唯一的感觉是比较浪费，系统原有的内存被当做 cache 了，没有得到好的运用。</p>
+<h2 id="c-用作-numa-node"><a href="#c-用作-numa-node" class="headerlink" title="c) 用作 numa node"></a>c) 用作 numa node</h2><p>pmem 的另一个种用法是当做一个 numa node。当机器上被插上几根 pmem 内存时，pmem 内存会被识别为 numa 节点（配置方式如下），相较于 用作 ram 的方式，优点是显而易见的，扩展了系统可用内存。原有的系统内存也不会对上层屏蔽掉，依然可以被上层应用使用。</p>
+<p>现在的数据中心级别的服务器操作系统通常都会配置大页来获得更好的性能。通常的大页配置为 2M 大页和 1G 大页。这里我们也介绍在 pmem 所在的 numa node 开启大页。</p>
+<h3 id="开启-2M-大页"><a href="#开启-2M-大页" class="headerlink" title="开启 2M 大页"></a>开启 2M 大页</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">daxctl migrate-device-model</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建 namespace</span></span><br><span class="line">ndctl create-namespace --region=region0 --mode=devdax</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将 dax 设陪配置为 system-ram 模式</span></span><br><span class="line">daxctl reconfigure-device dax0.0 --mode=system-ram</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">分配 1024 个 2M 大页</span></span><br><span class="line">echo 1024 &gt; /sys/devices/system/node/node2/hugepages/hugepages-2048kB/nr_hugepages</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看 2M 页分配结果</span></span><br><span class="line">cat /sys/devices/system/node/node2/hugepages/hugepages-2048kB/nr_hugepages</span><br><span class="line">1024</span><br></pre></td></tr></table></figure>
+<p><code>cat nr_hugepages</code> 返回值可以看到，成功开启了 1024 个 hugepage。<br>注：dax 设备默认的对齐就是 2M，所以 <code>ndctl create-namespace</code>  可以省略掉对齐参数。</p>
+<h3 id="开启-1G-大页"><a href="#开启-1G-大页" class="headerlink" title="开启 1G 大页"></a>开启 1G 大页</h3><p>我们按照下面的方式开启 1G 大页，</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">daxctl migrate-device-model</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">按照 1G 对齐</span></span><br><span class="line">ndctl create-namespace --region=region0 --align 1g --mode=devdax </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将 dax 设陪配置为 system-ram 模式</span></span><br><span class="line">daxctl reconfigure-device dax0.0 --mode=system-ram </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">分配 248 个 1G 内存页</span></span><br><span class="line">echo 248 &gt; /sys/devices/system/node/node2/hugepages/hugepages-1048576kB/nr_hugepages</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看 1G 页分配结果</span></span><br><span class="line">cat /sys/devices/system/node/node2/hugepages/hugepages-1048576kB/nr_hugepages</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
+<p>1G 页分配失败了，原因往下看，一句话概括是 kernel 拒绝将 1G 页面放到 ZONE_MOVABLE 里进行管理。</p>
+<h3 id="为什么同样的方式不能开启-1G-大页？"><a href="#为什么同样的方式不能开启-1G-大页？" class="headerlink" title="为什么同样的方式不能开启 1G 大页？"></a>为什么同样的方式不能开启 1G 大页？</h3><p>这里先介绍一个背景，linux 里大页通常由两种，一种是 2M 大页，另一种是 1G 大页。1G 大页在理论上是可以迁移的，但是实际上是不可以迁移的。<br>不可迁移的原因是，当系统运行了一段时间后，系统内存已经碎了，很难找到一个空闲的 1G 大页将内存页里的数据搬运过去。因此，内核认为 1G 大页是不可以迁移的，不把 1G 大页放在 ZONE_MOVABLE 里进行管理。这也是造成照葫芦画瓢失败的原因。</p>
+<h3 id="如何在-PMEM-上分配-1G-大页？"><a href="#如何在-PMEM-上分配-1G-大页？" class="headerlink" title="如何在 PMEM 上分配 1G 大页？"></a>如何在 PMEM 上分配 1G 大页？</h3><p>当前操作系统（RHEL Family）环境下，很多因素会导致 pmem 会被自动 online 到 ZONE_MOVABLE。这也是我们为什么按照 2M 页方式开启 1G 页的方式失败的原因。</p>
+<p>可能得原因有，daxtctl 工具本身，system udev 规则 或者 auto_online_blocks 。这三个因素，每一个都有可能导致 pmem online 到 ZONE_MOVABLE 上，进而导致分配失败</p>
+<h4 id="1、禁用-auto-online-blocks"><a href="#1、禁用-auto-online-blocks" class="headerlink" title="1、禁用 auto_online_blocks"></a>1、禁用 auto_online_blocks</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cat /sys/devices/system/memory/auto_online_blocks</span><br><span class="line">offline</span><br></pre></td></tr></table></figure>
+<h4 id="2、修改系统-udev-规则"><a href="#2、修改系统-udev-规则" class="headerlink" title="2、修改系统 udev 规则"></a>2、修改系统 udev 规则</h4><p>注释掉 Memory hotadd request 部分</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">vim /usr/lib/udev/rules.d/40-redhat.rules</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Memory hotadd request</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">SUBSYSTEM!=<span class="string">&quot;memory&quot;</span>, GOTO=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ACTION!=<span class="string">&quot;add&quot;</span>, GOTO=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">CONST&#123;<span class="built_in">arch</span>&#125;==<span class="string">&quot;s390*&quot;</span>, GOTO=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">CONST&#123;<span class="built_in">arch</span>&#125;==<span class="string">&quot;ppc64*&quot;</span>, GOTO=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ENV&#123;.state&#125;=<span class="string">&quot;online&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">CONST&#123;virt&#125;==<span class="string">&quot;none&quot;</span>, ENV&#123;.state&#125;=<span class="string">&quot;online_movable&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ATTR&#123;state&#125;==<span class="string">&quot;offline&quot;</span>, ATTR&#123;state&#125;=<span class="string">&quot;<span class="variable">$env</span>&#123;.state&#125;&quot;</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">LABEL=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="3、daxctl-配置-ZONE-MOVABLE"><a href="#3、daxctl-配置-ZONE-MOVABLE" class="headerlink" title="3、daxctl 配置 !ZONE_MOVABLE"></a>3、daxctl 配置 !ZONE_MOVABLE</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">daxctl reconfigure-device dax0.0 --mode=system-ram --no-movable</span><br></pre></td></tr></table></figure>
+
+<p>经过上诉几个步骤，现在可以正常开启 1G 大页了。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>1、man daxctl reconfigure-device movable<br>2、<a class="link"   href="https://docs.kernel.org/admin-guide/mm/memory-hotplug.html#zone-movable:~:text=Gigantic%20pages%20are%20unmovable" >Memory Hot(Un)Plug Docs in Linux Kernel<i class="fas fa-external-link-alt"></i></a><br>3、<a class="link"   href="https://mp.weixin.qq.com/s/RLU1f-7ckETrQhl7mZigyQ" >Linux Kernel中AEP的现状和发展<i class="fas fa-external-link-alt"></i></a><br>4、<a class="link"   href="https://stevescargall.com/2019/07/09/how-to-extend-volatile-system-memory-ram-using-persistent-memory-on-linux/" >How To Extend Volatile System Memory (RAM) using Persistent Memory on Linux – Steve Scargall<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>pmem</category>
+      </categories>
+      <tags>
+        <tag>pmem</tag>
+        <tag>system-ram</tag>
+        <tag>gigantic page</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Reboot 命令实际是 systemctl ？</title>
+    <url>/reboot_is_link_to_systemctl/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在一次查问题的过程中，偶然发现 reboot 命令是<strong>直接链接</strong>到 systemctl 的（划重点：直接链接到），看下面的演示，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># which reboot</span></span><br><span class="line">/sbin/reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># file /sbin/reboot</span></span><br><span class="line">/sbin/reboot: symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
+
+<p>第一直觉就是这是不是不合理，直接把 reboot 软链到 systemctl ，不就相当于直接执行 systemctl 命令，这怎么会起到 reboot 的作用的呢？</p>
+<p>继续看，</p>
+<p>发现 <code>/sbin</code> 目录下很多命令都是直接软链到 <code>systemctl</code>，没有参数来区分，而且这些命令是 100% 工作的，当数量多起来的时候，事情逐渐合理起来了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># file /sbin/* | grep symbolic | grep systemctl</span></span><br><span class="line">/sbin/halt:                  symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/poweroff:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/reboot:                symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/runlevel:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/shutdown:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/telinit:               symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
+
+<p>那 systemctl 是如何区分出这些命令的？</p>
+<p>熟悉 C 编程的同学大概率可以猜到了，systemctl 可能是通过进程名来区分的，也就是 <code>argv[0]</code> 这个参数，C 语言里 <code>argv[0]</code> 保存的是程序的名称（其他语言也有类似的参数）。</p>
+<h2 id="那拿-systemctl-测试一下？"><a href="#那拿-systemctl-测试一下？" class="headerlink" title="那拿 systemctl 测试一下？"></a>那拿 systemctl 测试一下？</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@cs8 ~]<span class="comment"># ln -sf /usr/bin/systemctl testcmd</span></span><br><span class="line">[root@cs8 ~]<span class="comment"># ./testcmd</span></span><br><span class="line">UNIT                                                                                LOAD   ACTIVE SUB       DESCRIPTION</span><br><span class="line">proc-sys-fs-binfmt_misc.automount                                                   loaded active waiting   Arbitrary Executable File Formats File System Automount Point</span><br><span class="line">sys-devices-pci0000:00-0000:00:05.0-virtio0-net-eth0.device                         loaded active plugged   Virtio network device</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda-vda1.device                   loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda/vda1</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda.device                        loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 systemctl 并不识别 testcmd 命令，而是打印了所有 uints，等价 <code>systemctl</code> 直接执行。</p>
+<h2 id="看代码"><a href="#看代码" class="headerlink" title="看代码"></a>看代码</h2><p>和我们预想的一样，systemctl 内部通过 argv 来判断由谁调用的</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// systemd/src/systemctl/systemctl.c</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">systemctl_dispatch_parse_argv</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">        assert(argc &gt;= <span class="number">0</span>);</span><br><span class="line">        assert(argv);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;halt&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_HALT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;poweroff&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;reboot&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (kexec_loaded())</span><br><span class="line">                        arg_action = ACTION_KEXEC;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                        arg_action = ACTION_REBOOT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;shutdown&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> shutdown_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;init&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (sd_booted() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        arg_action = _ACTION_INVALID;</span><br><span class="line">                        <span class="keyword">return</span> telinit_parse_argv(argc, argv);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        arg_action = ACTION_TELINIT;</span><br><span class="line">                        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;runlevel&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_RUNLEVEL;</span><br><span class="line">                <span class="keyword">return</span> runlevel_parse_argv(argc, argv);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        arg_action = ACTION_SYSTEMCTL;</span><br><span class="line">        <span class="keyword">return</span> systemctl_parse_argv(argc, argv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="自己实现一个"><a href="#自己实现一个" class="headerlink" title="自己实现一个"></a>自己实现一个</h2><p>实现也很简单，几行代码就行。只需要实现通过 argv[0] 识别调用方是谁，然后根据不同的调用方执行不同的逻辑即可。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;string.h&gt;</span></span><br><span class="line"></span><br><span class="line">int main(int argc, char *argv[]) &#123;</span><br><span class="line">    // 提取程序名（最后一个斜杠后的内容）</span><br><span class="line">    char *programName = strrchr(argv[0], <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">    <span class="keyword">if</span> (programName != NULL) &#123;</span><br><span class="line">        programName++; // 移动到斜杠后的第一个字符</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        programName = argv[0]; // 如果没有斜杠，直接使用整个参数</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 根据程序名执行不同的逻辑</span><br><span class="line">    <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programA&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 A 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programB&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 B 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;未知程序，执行默认逻辑\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">return</span> 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>完结撒花</p>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>reboot</tag>
+        <tag>systemd</tag>
+        <tag>sbin</tag>
+        <tag>link</tag>
       </tags>
   </entry>
   <entry>
@@ -395,66 +934,48 @@
       </tags>
   </entry>
   <entry>
-    <title>查询 Intel 处理器安全漏洞</title>
-    <url>/intel-cpu-cve/</url>
-    <content><![CDATA[<h2 id="Intel-处理器安全漏洞表"><a href="#Intel-处理器安全漏洞表" class="headerlink" title="Intel 处理器安全漏洞表"></a>Intel 处理器安全漏洞表</h2><p><a class="link"   href="https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html" >https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html<i class="fas fa-external-link-alt"></i></a></p>
-<p><img  
+    <title>使用 ebpf USDT 追踪用户态程序</title>
+    <url>/tracing-userspace-process-ebpf-usdt/</url>
+    <content><![CDATA[<p>USDT 是一种探针技术，让用户态程序也支持使用 perf&#x2F;ebpf 性能分析工具进行 tracing&#x2F;profiling。做性能分析通常听过 perf&#x2F;ebpf 这些工具，这些工具通常用在内核上，用于分析内核的一些性能问题，如果是用户态程序也遇到性能问题了，我们希望用户态程序也能使用 perf&#x2F;ebpf 工具进行 tracing&#x2F;profiling。那么就需要 USDT 技术了。</p>
+<p>简单来说，USDT 就是探针技术，我们在源码里插入一个固定的探针。当我们 tracing 这个探针的时候，就获取我们埋点的数据了。</p>
+<h2 id="USDT-如何插入探针？"><a href="#USDT-如何插入探针？" class="headerlink" title="USDT  如何插入探针？"></a>USDT  如何插入探针？</h2><p>插入探针，有时候也叫做埋点。只需要包含 &lt;sys&#x2F;sdt.h&gt; 头文件，然后利用 DTRACE_PROBE 系列函数埋点即可。</p>
+<p>DTRACE_PROBE 系列函数定义在  <code>/usr/include/sys/sdt.h</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* DTrace compatible macro names.  */</span></span><br><span class="line">DTRACE_PROBE(provider,probe)</span><br><span class="line">DTRACE_PROBE1(provider,probe,parm1)</span><br><span class="line">DTRACE_PROBE2(provider,probe,parm1,parm2)</span><br><span class="line">DTRACE_PROBE3(provider,probe,parm1,parm2,parm3)</span><br><span class="line">[...]</span><br></pre></td></tr></table></figure>
+<p>第一次看到DTRACE_PROBE1, 2, 3, 4 … 可能会有些懵，这都是啥呀？！</p>
+<p>实际上很简单，而且用法也很简单，我用 DPDK l2fwd 举个例子，<br><a class="link"   href="https://git.dpdk.org/dpdk/tree/examples/l2fwd" >https://git.dpdk.org/dpdk/tree/examples/l2fwd<i class="fas fa-external-link-alt"></i></a></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line">        </span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line">        </span><br><span class="line">    	<span class="built_in">printf</span>(<span class="string">&quot;portid: %d, queueid: %d, rcvd: %d\n&quot;</span>, portid, <span class="number">0</span>, nb_rx);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>上面的代码是一个利用 DPDK l2 fwd 里的示例代码， rte_eth_rx_burst 函数从网卡收包，我们想知道本次收包收了多少个，于是我们打了一条 log。</p>
+<p>这样实现很不优雅，<strong>首先是在 datapath 打 log 是错误的决定</strong>。其次，我们只希望在 tracing 的时候打印结果，不 tracing 的时候不打印结果。使用 打 log 的方式是无法实现这种效果的，我们需要一个开关，能动态打开和关闭 tracing 的开关，当我们 attach 到这个探针时候，我们可以观测到数据，当我们 detach 的时候，就去掉这个探针，不增加额外的观测消耗。</p>
+<p>USDT 可以实现动态开关的功能。我们只需要添加 &lt;sys&#x2F;sdt.h&gt; 头文件，将 log 语句替换为 DTRACE_PROBE3 语句即可。DTRACE_PROBE5 的数字 3 代表 3 个观测参数，前两个是标识参数，第一个通常用 appname 填充,第二个通常用函数名称填充。当我们使用 perf、ebpf 等观测工具时，通过这两个参数定位我们预先埋下的观测点。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/sdt.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line"></span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line"></span><br><span class="line">		DTRACE_PROBE3(l2fwd, l2fwd_main_loop, portid, <span class="number">0</span>, rcvd);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="查看可用的探针"><a href="#查看可用的探针" class="headerlink" title="查看可用的探针"></a>查看可用的探针</h2><p>查看可用探针</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -l <span class="string">&quot;usdt:/usr/bin/l2fwd:*&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>查看正在运行的进程的可用探针，会同时展示其链接的动态库的可用探针</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -lp $(pidof l2fwd) <span class="string">&quot;usdt:*&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="USDT-使用"><a href="#USDT-使用" class="headerlink" title="USDT 使用"></a>USDT 使用</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bpftrace -e &#x27;usdt:/usr/bin/l2fwd:l2fwd_main_loop &#123; printf(&quot;%d,%d,%d\n&quot;,arg0,arg1,arg2); &#125;&#x27;</span><br></pre></td></tr></table></figure>
+<p>bpftrace 内置许多参数，比如 comm, pid, cpu, elapsed，利用这些参数可以实现更高级的 tracing。<br>还可以通过 bcc&#x2F;libbpf 将一段时间的数据收集起来，进行统计，得出更宏观的指标，这样有一定的代码量。bpftrace 的优势就是一行，很简单。</p>
+<h2 id="USDT-原理"><a href="#USDT-原理" class="headerlink" title="USDT 原理"></a>USDT 原理</h2><p>包含 USDT 的代码经过编译后生成的二进制文件将有一个名为 .stapsdt.base 的 ELF 段。这个 .stapsdt.base 有助于 tracing 工具在二进制文件加载到内存后计算探针的内存地址。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">readelf -S l2fwd | grep sdt</span></span><br><span class="line">  [17] .stapsdt.base     PROGBITS         00000000004053d0  000053d0</span><br><span class="line">  [28] .note.stapsdt     NOTE             0000000000000000  000061fc</span><br></pre></td></tr></table></figure>
+
+<p>还有一个 ELF note，note 记录了探针的相关信息（名称、地址、信号量、参数）。用户态进程可以读取这个段获得探针的信息。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Displaying notes found in: .note.stapsdt</span><br><span class="line">  Owner                Data size 	Description</span><br><span class="line">  stapsdt              0x00000042	NT_STAPSDT (SystemTap probe descriptors)</span><br><span class="line">    Provider: l2fwd</span><br><span class="line">    Name: l2fwd_main_loop</span><br><span class="line">    Location: 0x0000000000402596, Base: 0x00000000004053d0, Semaphore: 0x0000000000000000</span><br><span class="line">    Arguments: 4@%ebp -4@$0 4@%ecx</span><br></pre></td></tr></table></figure>
+<h2 id="USDT-动态开关"><a href="#USDT-动态开关" class="headerlink" title="USDT 动态开关"></a>USDT 动态开关</h2><p>反汇编二进制，发现 DTRACE_PROBE 被编译为一条 nop 指令，当不进行 probe 时候，就是执行一条 nop 指令，当进行 probe 的时候替换为 int3 进行跳转到 hook 函数。<br><img  
                      lazyload
                      alt="image"
-                     data-src="/../img/1701078889956-2908e693-214c-4762-9897-53c5924ec88c.png"
+                     data-src="/../img/1706001641941-1e147d49-ec2e-4ecb-8cdc-6dbec57fbf17.png"
                       alt="image.png"
                 ></p>
-<h2 id="处理器安全漏洞只需要关注这两个方面"><a href="#处理器安全漏洞只需要关注这两个方面" class="headerlink" title="处理器安全漏洞只需要关注这两个方面"></a>处理器安全漏洞只需要关注这两个方面</h2><p>Intel 处理器的漏洞表，包含了所有漏洞，每个漏洞一列（图中右上角），漏洞描述包含 CVE 名称，编号以及 Intel 的编号。新披露的漏洞靠左，老披露的靠右。</p>
-<p>1、我用的是哪一款 CPU？<br>通过 <code>Family</code>、<code>Model</code> 、<code>Stepping</code> 三项就可以定位到列表中的特定型号所在行（<strong>图中左上角</strong>），查看 CPU 型号通过 lscpu 命令。<br>2、我是否受到此次 CVE 的影响？<br>观察<strong>图中右下角</strong>的字段，</p>
-<ul>
-<li>Not Affected: 代表不受影响</li>
-<li>MCU：代表需要更新微码</li>
-<li>Software：代表需要升级软件</li>
-</ul>
-<h2 id="如何查看我的-CPU-的型号？"><a href="#如何查看我的-CPU-的型号？" class="headerlink" title="如何查看我的 CPU 的型号？"></a>如何查看我的 CPU 的型号？</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">lscpu | grep -E <span class="string">&quot;CPU family:|Model:|Stepping:&quot;</span></span></span><br><span class="line">CPU family:          6</span><br><span class="line">Model:               85</span><br><span class="line">Stepping:            4</span><br></pre></td></tr></table></figure>
-<p>其中 Model 输出结果都是 10 进制，Intel 处理器漏洞表面里使用的是 16 进制（后缀是 H，代表是 16 进制），85 的 16 进制表示 55H，所以这款 CPU 的 Family_Model 是 06_55H, Steeping 是 4。</p>
 ]]></content>
       <categories>
-        <category>Intel</category>
+        <category>tracing</category>
       </categories>
       <tags>
-        <tag>CVE</tag>
-        <tag>processor</tag>
-        <tag>lscpu</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Reboot 命令实际是 systemctl ？</title>
-    <url>/reboot_is_link_to_systemctl/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在一次查问题的过程中，偶然发现 reboot 命令是<strong>直接链接</strong>到 systemctl 的（划重点：直接链接到），看下面的演示，</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># which reboot</span></span><br><span class="line">/sbin/reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># file /sbin/reboot</span></span><br><span class="line">/sbin/reboot: symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
-
-<p>第一直觉就是这是不是不合理，直接把 reboot 软链到 systemctl ，不就相当于直接执行 systemctl 命令，这怎么会起到 reboot 的作用的呢？</p>
-<p>继续看，</p>
-<p>发现 <code>/sbin</code> 目录下很多命令都是直接软链到 <code>systemctl</code>，没有参数来区分，而且这些命令是 100% 工作的，当数量多起来的时候，事情逐渐合理起来了。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># file /sbin/* | grep symbolic | grep systemctl</span></span><br><span class="line">/sbin/halt:                  symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/poweroff:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/reboot:                symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/runlevel:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/shutdown:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/telinit:               symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
-
-<p>那 systemctl 是如何区分出这些命令的？</p>
-<p>熟悉 C 编程的同学大概率可以猜到了，systemctl 可能是通过进程名来区分的，也就是 <code>argv[0]</code> 这个参数，C 语言里 <code>argv[0]</code> 保存的是程序的名称（其他语言也有类似的参数）。</p>
-<h2 id="那拿-systemctl-测试一下？"><a href="#那拿-systemctl-测试一下？" class="headerlink" title="那拿 systemctl 测试一下？"></a>那拿 systemctl 测试一下？</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@cs8 ~]<span class="comment"># ln -sf /usr/bin/systemctl testcmd</span></span><br><span class="line">[root@cs8 ~]<span class="comment"># ./testcmd</span></span><br><span class="line">UNIT                                                                                LOAD   ACTIVE SUB       DESCRIPTION</span><br><span class="line">proc-sys-fs-binfmt_misc.automount                                                   loaded active waiting   Arbitrary Executable File Formats File System Automount Point</span><br><span class="line">sys-devices-pci0000:00-0000:00:05.0-virtio0-net-eth0.device                         loaded active plugged   Virtio network device</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda-vda1.device                   loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda/vda1</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda.device                        loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda</span><br></pre></td></tr></table></figure>
-
-<p>可以看到 systemctl 并不识别 testcmd 命令，而是打印了所有 uints，等价 <code>systemctl</code> 直接执行。</p>
-<h2 id="看代码"><a href="#看代码" class="headerlink" title="看代码"></a>看代码</h2><p>和我们预想的一样，systemctl 内部通过 argv 来判断由谁调用的</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// systemd/src/systemctl/systemctl.c</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">systemctl_dispatch_parse_argv</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">        assert(argc &gt;= <span class="number">0</span>);</span><br><span class="line">        assert(argv);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;halt&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_HALT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;poweroff&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;reboot&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (kexec_loaded())</span><br><span class="line">                        arg_action = ACTION_KEXEC;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                        arg_action = ACTION_REBOOT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;shutdown&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> shutdown_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;init&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (sd_booted() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        arg_action = _ACTION_INVALID;</span><br><span class="line">                        <span class="keyword">return</span> telinit_parse_argv(argc, argv);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        arg_action = ACTION_TELINIT;</span><br><span class="line">                        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;runlevel&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_RUNLEVEL;</span><br><span class="line">                <span class="keyword">return</span> runlevel_parse_argv(argc, argv);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        arg_action = ACTION_SYSTEMCTL;</span><br><span class="line">        <span class="keyword">return</span> systemctl_parse_argv(argc, argv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="自己实现一个"><a href="#自己实现一个" class="headerlink" title="自己实现一个"></a>自己实现一个</h2><p>实现也很简单，几行代码就行。只需要实现通过 argv[0] 识别调用方是谁，然后根据不同的调用方执行不同的逻辑即可。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;string.h&gt;</span></span><br><span class="line"></span><br><span class="line">int main(int argc, char *argv[]) &#123;</span><br><span class="line">    // 提取程序名（最后一个斜杠后的内容）</span><br><span class="line">    char *programName = strrchr(argv[0], <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">    <span class="keyword">if</span> (programName != NULL) &#123;</span><br><span class="line">        programName++; // 移动到斜杠后的第一个字符</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        programName = argv[0]; // 如果没有斜杠，直接使用整个参数</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 根据程序名执行不同的逻辑</span><br><span class="line">    <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programA&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 A 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programB&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 B 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;未知程序，执行默认逻辑\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">return</span> 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>完结撒花</p>
-]]></content>
-      <categories>
-        <category>linux</category>
-      </categories>
-      <tags>
-        <tag>reboot</tag>
-        <tag>systemd</tag>
-        <tag>sbin</tag>
-        <tag>link</tag>
+        <tag>ebpf</tag>
+        <tag>usdt</tag>
+        <tag>sdt</tag>
+        <tag>tracing</tag>
+        <tag>userspace</tag>
       </tags>
   </entry>
   <entry>
@@ -560,51 +1081,6 @@
         <tag>OBS</tag>
         <tag>rpmbuild</tag>
         <tag>rpmsign</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用 ebpf USDT 追踪用户态程序</title>
-    <url>/tracing-userspace-process-ebpf-usdt/</url>
-    <content><![CDATA[<p>USDT 是一种探针技术，让用户态程序也支持使用 perf&#x2F;ebpf 性能分析工具进行 tracing&#x2F;profiling。做性能分析通常听过 perf&#x2F;ebpf 这些工具，这些工具通常用在内核上，用于分析内核的一些性能问题，如果是用户态程序也遇到性能问题了，我们希望用户态程序也能使用 perf&#x2F;ebpf 工具进行 tracing&#x2F;profiling。那么就需要 USDT 技术了。</p>
-<p>简单来说，USDT 就是探针技术，我们在源码里插入一个固定的探针。当我们 tracing 这个探针的时候，就获取我们埋点的数据了。</p>
-<h2 id="USDT-如何插入探针？"><a href="#USDT-如何插入探针？" class="headerlink" title="USDT  如何插入探针？"></a>USDT  如何插入探针？</h2><p>插入探针，有时候也叫做埋点。只需要包含 &lt;sys&#x2F;sdt.h&gt; 头文件，然后利用 DTRACE_PROBE 系列函数埋点即可。</p>
-<p>DTRACE_PROBE 系列函数定义在  <code>/usr/include/sys/sdt.h</code></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* DTrace compatible macro names.  */</span></span><br><span class="line">DTRACE_PROBE(provider,probe)</span><br><span class="line">DTRACE_PROBE1(provider,probe,parm1)</span><br><span class="line">DTRACE_PROBE2(provider,probe,parm1,parm2)</span><br><span class="line">DTRACE_PROBE3(provider,probe,parm1,parm2,parm3)</span><br><span class="line">[...]</span><br></pre></td></tr></table></figure>
-<p>第一次看到DTRACE_PROBE1, 2, 3, 4 … 可能会有些懵，这都是啥呀？！</p>
-<p>实际上很简单，而且用法也很简单，我用 DPDK l2fwd 举个例子，<br><a class="link"   href="https://git.dpdk.org/dpdk/tree/examples/l2fwd" >https://git.dpdk.org/dpdk/tree/examples/l2fwd<i class="fas fa-external-link-alt"></i></a></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line">        </span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line">        </span><br><span class="line">    	<span class="built_in">printf</span>(<span class="string">&quot;portid: %d, queueid: %d, rcvd: %d\n&quot;</span>, portid, <span class="number">0</span>, nb_rx);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>上面的代码是一个利用 DPDK l2 fwd 里的示例代码， rte_eth_rx_burst 函数从网卡收包，我们想知道本次收包收了多少个，于是我们打了一条 log。</p>
-<p>这样实现很不优雅，<strong>首先是在 datapath 打 log 是错误的决定</strong>。其次，我们只希望在 tracing 的时候打印结果，不 tracing 的时候不打印结果。使用 打 log 的方式是无法实现这种效果的，我们需要一个开关，能动态打开和关闭 tracing 的开关，当我们 attach 到这个探针时候，我们可以观测到数据，当我们 detach 的时候，就去掉这个探针，不增加额外的观测消耗。</p>
-<p>USDT 可以实现动态开关的功能。我们只需要添加 &lt;sys&#x2F;sdt.h&gt; 头文件，将 log 语句替换为 DTRACE_PROBE3 语句即可。DTRACE_PROBE5 的数字 3 代表 3 个观测参数，前两个是标识参数，第一个通常用 appname 填充,第二个通常用函数名称填充。当我们使用 perf、ebpf 等观测工具时，通过这两个参数定位我们预先埋下的观测点。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/sdt.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line"></span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line"></span><br><span class="line">		DTRACE_PROBE3(l2fwd, l2fwd_main_loop, portid, <span class="number">0</span>, rcvd);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="查看可用的探针"><a href="#查看可用的探针" class="headerlink" title="查看可用的探针"></a>查看可用的探针</h2><p>查看可用探针</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -l <span class="string">&quot;usdt:/usr/bin/l2fwd:*&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>查看正在运行的进程的可用探针，会同时展示其链接的动态库的可用探针</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -lp $(pidof l2fwd) <span class="string">&quot;usdt:*&quot;</span></span><br></pre></td></tr></table></figure>
-<h2 id="USDT-使用"><a href="#USDT-使用" class="headerlink" title="USDT 使用"></a>USDT 使用</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bpftrace -e &#x27;usdt:/usr/bin/l2fwd:l2fwd_main_loop &#123; printf(&quot;%d,%d,%d\n&quot;,arg0,arg1,arg2); &#125;&#x27;</span><br></pre></td></tr></table></figure>
-<p>bpftrace 内置许多参数，比如 comm, pid, cpu, elapsed，利用这些参数可以实现更高级的 tracing。<br>还可以通过 bcc&#x2F;libbpf 将一段时间的数据收集起来，进行统计，得出更宏观的指标，这样有一定的代码量。bpftrace 的优势就是一行，很简单。</p>
-<h2 id="USDT-原理"><a href="#USDT-原理" class="headerlink" title="USDT 原理"></a>USDT 原理</h2><p>包含 USDT 的代码经过编译后生成的二进制文件将有一个名为 .stapsdt.base 的 ELF 段。这个 .stapsdt.base 有助于 tracing 工具在二进制文件加载到内存后计算探针的内存地址。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">readelf -S l2fwd | grep sdt</span></span><br><span class="line">  [17] .stapsdt.base     PROGBITS         00000000004053d0  000053d0</span><br><span class="line">  [28] .note.stapsdt     NOTE             0000000000000000  000061fc</span><br></pre></td></tr></table></figure>
-
-<p>还有一个 ELF note，note 记录了探针的相关信息（名称、地址、信号量、参数）。用户态进程可以读取这个段获得探针的信息。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Displaying notes found in: .note.stapsdt</span><br><span class="line">  Owner                Data size 	Description</span><br><span class="line">  stapsdt              0x00000042	NT_STAPSDT (SystemTap probe descriptors)</span><br><span class="line">    Provider: l2fwd</span><br><span class="line">    Name: l2fwd_main_loop</span><br><span class="line">    Location: 0x0000000000402596, Base: 0x00000000004053d0, Semaphore: 0x0000000000000000</span><br><span class="line">    Arguments: 4@%ebp -4@$0 4@%ecx</span><br></pre></td></tr></table></figure>
-<h2 id="USDT-动态开关"><a href="#USDT-动态开关" class="headerlink" title="USDT 动态开关"></a>USDT 动态开关</h2><p>反汇编二进制，发现 DTRACE_PROBE 被编译为一条 nop 指令，当不进行 probe 时候，就是执行一条 nop 指令，当进行 probe 的时候替换为 int3 进行跳转到 hook 函数。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1706001641941-1e147d49-ec2e-4ecb-8cdc-6dbec57fbf17.png"
-                      alt="image.png"
-                ></p>
-]]></content>
-      <categories>
-        <category>tracing</category>
-      </categories>
-      <tags>
-        <tag>ebpf</tag>
-        <tag>usdt</tag>
-        <tag>sdt</tag>
-        <tag>tracing</tag>
-        <tag>userspace</tag>
       </tags>
   </entry>
 </search>
