@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="Lapin Gris">
+    
+    <title>
+        
+            Lab1 Xv6 and Unix utilities |
+        
+        Lapin Gris
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/regular.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/solid.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/brands.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.xml"}
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066cc","logo":"/images/logo.svg","favicon":"/images/logo.svg","avatar":"/images/avatar_folklore.png","font_size":null,"font_family":null,"hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"header_transparent":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving.","font_color":null,"hitokoto":false},"scroll":{"progress_bar":true,"percent":true}},"local_search":{"enable":true,"preload":true},"code_copy":{},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"side_tools":{},"pjax":{"enable":true},"lazyload":{"enable":true},"comment":{"enable":true,"use":"valine","valine":{"appid":"qRv6si8r4jUsBpjFlotXQBmP-gzGzoHsz","appkey":"upvGfvF70Sd2tCMoFM1ehslV","server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.8"},"waline":{"server_url":null,"reaction":false,"version":2}},"post":{"author_label":{"enable":true,"auto":true,"custom_label_list":["Trainee","Engineer","Architect"]},"word_count":{"enable":true,"wordcount":true,"min2read":true},"img_align":"left","copyright_info":false},"version":"3.6.1"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original article title","author":"Original article author","link":"Original article link"}
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="logo-title" href="/">
+               Lapin Gris
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                CATEGORIES
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">TAGS</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="post-page-container">
+        <div class="article-content-container">
+
+            <div class="article-title">
+                <span class="title-hover-animation">Lab1 Xv6 and Unix utilities</span>
+            </div>
+
+            
+                <div class="article-header">
+                    <div class="avatar">
+                        <img src="/images/avatar_folklore.png">
+                    </div>
+                    <div class="info">
+                        <div class="author">
+                            <span class="name">Lapin Gris</span>
+                            
+                                <span class="author-label">Lv2</span>
+                            
+                        </div>
+                        <div class="meta-info">
+                            
+<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        
+            <i class="fa-regular fa-calendar-plus"></i>&nbsp;
+        
+        <span class="pc">2024-03-24 00:03:00</span>
+        <span class="mobile">2024-03-24 00:03</span>
+    </span>
+    
+        <span class="article-update-date article-meta-item">
+        <i class="fas fa-file-pen"></i>&nbsp;
+        <span class="pc">2024-03-24 00:10:51</span>
+    </span>
+    
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/xv6/">xv6</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>1.9k Words</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>9 Mins</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                        </div>
+                    </div>
+                </div>
+            
+
+            <div class="article-content keep-markdown-body">
+                
+
+                <p>Lab1 为 xv6 实现用户态程序</p>
+<h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>看 xv6 网站上的教程，安装依赖软件包<br><a class="link"   target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.828/2023/tools.html" >https://pdos.csail.mit.edu/6.828/2023/tools.html<i class="fas fa-external-link-alt"></i></a><br>笔者选择的是 Debian 操作系统，执行一行命令即可完成环境配置，</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu </span><br></pre></td></tr></table></figure>
+
+<p>依赖安装完成后，编译运行 xv6，</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git clone git://g.csail.mit.edu/xv6-labs-2023</span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">make qemu</span><br></pre></td></tr></table></figure>
+<p><strong>特别备注：防止发生和如何退出 vim 一样的问题，笔者特别提醒。 执行 <code>make qemu</code>  会进入 xv6 系统里，想退出 qemu， 先按 ctrl + a, 紧接着按 x 即可退出 qemu。</strong></p>
+<h2 id="sleep"><a href="#sleep" class="headerlink" title="sleep"></a>sleep</h2><p>写第一个程序，主要的体会就是懵。不知道从哪下手，在看了内核态的对应实现，看了用户态 kill.c 的实现后，理清思路后，才发现 sleep 其实很简单。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span> &#123;</span><br><span class="line">    <span class="type">int</span> ticks;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;usage: sleep ticks...\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ticks = atoi(argv[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    sleep(ticks);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="pingpong"><a href="#pingpong" class="headerlink" title="pingpong"></a>pingpong</h2><p>利用管道实现 pingpong，<code>fork() </code>的父子进程都拥有同样的 fd，父子进程可以通过向一端写，另一端阻塞读来实现 ping-pong, 管道的规范是 pipe 的 0 是读，1 是写，记住这个很好实现了。<br>另外，pingpong 只需要创建一个管道即可，无需为父子进程各自创建一条管道，然后 close 掉不用的通道。共用一条管道即可，这是因为 pingpong 程序不存在竞争的情况。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAX_BUF_SIZE 32</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> ** argv)</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> pipe_fds[<span class="number">2</span>];</span><br><span class="line">    <span class="type">int</span> nr_read = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> nr_write = <span class="number">0</span>;</span><br><span class="line">    <span class="type">char</span> buf[MAX_BUF_SIZE];</span><br><span class="line"></span><br><span class="line">    pipe(pipe_fds);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (fork() == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// child</span></span><br><span class="line"></span><br><span class="line">        nr_read = read(pipe_fds[<span class="number">0</span>], buf, MAX_BUF_SIZE);</span><br><span class="line">        <span class="keyword">if</span> (nr_read &gt; <span class="number">0</span>)</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d: received ping\n&quot;</span>, getpid());</span><br><span class="line"></span><br><span class="line">        nr_write = write(pipe_fds[<span class="number">1</span>], <span class="string">&quot;ping-pong&quot;</span>, MAX_BUF_SIZE);</span><br><span class="line">        <span class="keyword">if</span> (nr_write &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// parent</span></span><br><span class="line"></span><br><span class="line">        nr_write = write(pipe_fds[<span class="number">1</span>], <span class="string">&quot;ping-pong&quot;</span>, MAX_BUF_SIZE);</span><br><span class="line">        <span class="keyword">if</span> (nr_write &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        nr_read = read(pipe_fds[<span class="number">0</span>], buf, MAX_BUF_SIZE);</span><br><span class="line">        <span class="keyword">if</span> (nr_read &gt; <span class="number">0</span>)</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d: received pong\n&quot;</span>, getpid());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="primes"><a href="#primes" class="headerlink" title="primes"></a>primes</h2><p>利用 pipe + fork() 实现质数筛。核心思想如下图所示，首先一堆数 2-35，利用 2 将 2-35 树筛一遍，其中能被 2 整除的自然不是质数了，将不能被 2 整除的数保存下来，通过管道传递给子进程，子进程的得到的一系列数，利用第一个数 3 将不能被 3 整除的数保存下来，传递给子进程，接下来是 5,7 依次递归下去，每个进程打印出一个质数，最后结果就是所有质数。<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/1708324546344-eff1d2ab-81c4-4b74-b0d5-fd711f72b724.png"
+                      alt="image.png"
+                ></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAX_NUMBER 35</span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">filter</span><span class="params">(<span class="type">int</span> pipe_read)</span> &#123;</span><br><span class="line">    <span class="type">int</span> pipe_fds[<span class="number">2</span>];</span><br><span class="line">    <span class="type">int</span> primes[MAX_NUMBER];</span><br><span class="line">    <span class="type">int</span> nr_read;</span><br><span class="line">    <span class="type">int</span> cnt = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        nr_read = read(pipe_read, &amp; primes[cnt], <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">        <span class="keyword">if</span> (nr_read &lt;= <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">        cnt++;</span><br><span class="line">    &#125;</span><br><span class="line">    close(pipe_read);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (cnt == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> first = primes[<span class="number">0</span>];</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;prime %d\n&quot;</span>, first);</span><br><span class="line"></span><br><span class="line">    pipe(pipe_fds);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; cnt; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (primes[i] % first != <span class="number">0</span>) &#123;</span><br><span class="line">            write(pipe_fds[<span class="number">1</span>], &amp; primes[i], <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    close(pipe_fds[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (fork() == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// child</span></span><br><span class="line">        filter(pipe_fds[<span class="number">0</span>]);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// parent</span></span><br><span class="line">        wait(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> * argv[])</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> pipe_fds[<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">    pipe(pipe_fds);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">2</span>; i &lt; MAX_NUMBER; i++) &#123;</span><br><span class="line">        write(pipe_fds[<span class="number">1</span>], &amp; i, <span class="keyword">sizeof</span>(i));</span><br><span class="line">    &#125;</span><br><span class="line">    close(pipe_fds[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    filter(pipe_fds[<span class="number">0</span>]);</span><br><span class="line">    close(pipe_fds[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="find"><a href="#find" class="headerlink" title="find"></a>find</h2><p>为 xv6 实现一个简单的 find。核心是理解如何遍历目录下的所有文件（看代码中的注释），代码可以直接参考 xv6 的 ls.c 修改得来。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/stat.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/fs.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">char</span> *<span class="title function_">fmtname</span><span class="params">(<span class="type">char</span> *path)</span> <span class="comment">//格式化名字，把名字变成前面没有左斜杠/，仅仅保存文件名</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">static</span> <span class="type">char</span> buf[DIRSIZ + <span class="number">1</span>];</span><br><span class="line">    <span class="type">char</span> *p;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Find first character after last slash.</span></span><br><span class="line">    <span class="keyword">for</span> (p = path + <span class="built_in">strlen</span>(path); p &gt;= path &amp;&amp; *p != <span class="string">&#x27;/&#x27;</span>; p--)</span><br><span class="line">        ;</span><br><span class="line">    p++;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Return blank-padded name.</span></span><br><span class="line">    memmove(buf, p, <span class="built_in">strlen</span>(p) + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> buf;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">find</span><span class="params">(<span class="type">char</span> *dir, <span class="type">char</span> *name)</span> &#123;</span><br><span class="line">    <span class="type">char</span> path[<span class="number">512</span>];</span><br><span class="line">    <span class="type">char</span> *p;</span><br><span class="line">    <span class="type">int</span> fd;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">dirent</span> <span class="title">de</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">stat</span> <span class="title">st</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((fd = open(dir, <span class="number">0</span>)) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;find: cannot open %s\n&quot;</span>, dir);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (fstat(fd, &amp;st) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;find: cannot stat %s\n&quot;</span>, dir);</span><br><span class="line">        close(fd);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (st.type) &#123;</span><br><span class="line">        <span class="keyword">case</span> T_FILE:</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">strcmp</span>(fmtname(dir), name) == <span class="number">0</span>)</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, dir);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> T_DIR:</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">strlen</span>(dir) + <span class="number">1</span> + DIRSIZ + <span class="number">1</span> &gt; <span class="keyword">sizeof</span> path) &#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;find: path too long\n&quot;</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="built_in">strcpy</span>(path, dir);</span><br><span class="line">            p = path + <span class="built_in">strlen</span>(path);</span><br><span class="line">            *p++ = <span class="string">&#x27;/&#x27;</span>; <span class="comment">// path 追加 &#x27;/&#x27;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// Hint: 目录也是一个 file，循环读取一个 struct dirent 大小，就可以遍历目录下所有文件</span></span><br><span class="line">            <span class="keyword">while</span> (read(fd, &amp;de, <span class="keyword">sizeof</span>(de)) == <span class="keyword">sizeof</span>(de)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (de.inum == <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                memmove(p, de.name, DIRSIZ); <span class="comment">// memmove把 de.name 信息追加到 path</span></span><br><span class="line">                p[<span class="built_in">strlen</span>(de.name)] = <span class="number">0</span>;		 <span class="comment">// EOF</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">// ignore &#x27;.&#x27; and &#x27;..&#x27;</span></span><br><span class="line">                <span class="keyword">if</span> (<span class="built_in">strcmp</span>(de.name, <span class="string">&quot;.&quot;</span>) == <span class="number">0</span> || <span class="built_in">strcmp</span>(de.name, <span class="string">&quot;..&quot;</span>) == <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">                find(path, name);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    close(fd);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Usage: find [path] [name]&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    find(argv[<span class="number">1</span>], argv[<span class="number">2</span>]);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="xargs"><a href="#xargs" class="headerlink" title="xargs"></a>xargs</h2><p>为 xv6 实现一个 xargs。理解 xargs 的工作原理对于实现 xargs 是至关重要的。<br>示例，</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ echo hello too | xargs echo bye</span><br><span class="line">bye hello too</span><br></pre></td></tr></table></figure>
+<p>xargs 是从标准输入(stdin) 读取输入，并将输入作为自己的输入。所以上面的 echo 示例程序，首先 shell 执行 <code>echo hello too</code> 产生的 stdout  通过管道作为 xargs 的 stdin。然后 <code>hello too</code> 会被追加到 <code>bye</code> 后面，所以最终命令的结果是 <code>bye hello too</code>。<br>另外，xargs 遇到换行符 (‘\n’) 会结束本次处理，每一行 xargs 都会 fork + exec 产生一个新的进程进行处理。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/stat.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/param.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BUF_SIZE 512</span></span><br><span class="line"></span><br><span class="line"><span class="type">char</span> *args[MAXARG];</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc &gt; MAXARG) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;xargs: too many args\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// copy xargs&#x27;s args</span></span><br><span class="line">    <span class="type">int</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; argc; i++) &#123;</span><br><span class="line">        args[index] = argv[i];</span><br><span class="line">        index++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">char</span> buf[BUF_SIZE];</span><br><span class="line">    <span class="type">char</span> *p = buf;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// read each byte into buf, from stdin</span></span><br><span class="line">    <span class="keyword">while</span> (read(<span class="number">0</span>, p, <span class="number">1</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (*p == <span class="string">&#x27;\n&#x27;</span>) &#123;</span><br><span class="line">            *p = <span class="number">0</span>; <span class="comment">// set &#x27;\n&#x27; to 0</span></span><br><span class="line">            <span class="keyword">if</span> (fork() == <span class="number">0</span>) &#123;</span><br><span class="line">                args[index] = buf; <span class="comment">// append args read from stdin into args[]</span></span><br><span class="line">                exec(argv[<span class="number">1</span>], args);</span><br><span class="line"></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// parent</span></span><br><span class="line">                wait(<span class="number">0</span>);</span><br><span class="line">                <span class="comment">// Continue reading from stdin, resetting buf and reset the pointer</span></span><br><span class="line">                <span class="built_in">memset</span>(buf, <span class="number">0</span>, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">                p = buf;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            p++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">make grade</span><br></pre></td></tr></table></figure>
+<p><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/1708322801588-f8187388-62ec-4921-beda-8244ee803d6b.png"
+                      alt="image.png"
+                ></p>
+<p>至此， lab 的所有程序都结束了。下面的部分对于我们舒服的写代码有很大帮助，介绍了如何为 vscode 配置 clangd + clang-format 提供 xv6 的代码自动跳转以及格式化。</p>
+<h2 id="附录：让写代码更舒适"><a href="#附录：让写代码更舒适" class="headerlink" title="附录：让写代码更舒适"></a>附录：让写代码更舒适</h2><h3 id="clangd-代码跳转"><a href="#clangd-代码跳转" class="headerlink" title="clangd 代码跳转"></a>clangd 代码跳转</h3><p>当使用 vscode 编写 xv6 代码时候，即使安装 clangd，也是没有代码自动跳转的。因为 clangd 需要<br><code>compile_commands.json</code> 理解项目代码，才能实现正确的代码跳转。对于 xv6 项目，我们使用 bear 将整个项目完整编译一遍，bear 会为我们生成需要的 <code>compile_commands.json</code>。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt install bear</span><br><span class="line"></span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">bear -- make</span><br></pre></td></tr></table></figure>
+
+<p><a class="link"   target="_blank" rel="noopener" href="https://clangd.llvm.org/installation.html#compile_commandsjson" >https://clangd.llvm.org/installation.html#compile_commandsjson<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="禁用-clangd-自动插入头文件"><a href="#禁用-clangd-自动插入头文件" class="headerlink" title="禁用 clangd 自动插入头文件"></a>禁用 clangd 自动插入头文件</h3><p>有时候，vscode 的 clagnd 会自动为我们加入 glibc 的头文件，<br><strong>因为 xv6 不是 linux，也不使用 glibc，所以 clangd 自动加入的头文件也是错误的</strong>。 在 vscode 设置的 clangd 插件添加 <code>--header-insertion=never</code> 命令行选项，禁用自动插入头文件。重启 vscode 生效。<br>路径：<br><code>Settings -&gt; Extensions -&gt; clagnd -&gt; Clangd: Arguments -&gt; Add Item</code></p>
+<h3 id="clang-format-代码格式化"><a href="#clang-format-代码格式化" class="headerlink" title="clang-format 代码格式化"></a>clang-format 代码格式化</h3><p>clang-format 可以用于自动格式化 C&#x2F;C++ 代码，为我们 xv6 写一个 .clang-format 文件后，使用 vscode 的快捷键可以自动格式化代码。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">BasedOnStyle: LLVM</span><br><span class="line">UseTab: Always</span><br><span class="line">IndentWidth: 4</span><br><span class="line">TabWidth: 4</span><br><span class="line">ColumnLimit: 120</span><br><span class="line">SortIncludes: Never</span><br><span class="line">AlignConsecutiveMacros: true</span><br></pre></td></tr></table></figure>
+<p>clang-format 支持很多配置项，<br><a class="link"   target="_blank" rel="noopener" href="https://clang.llvm.org/docs/ClangFormatStyleOptions.html" >https://clang.llvm.org/docs/ClangFormatStyleOptions.html<i class="fas fa-external-link-alt"></i></a></p>
+
+            </div>
+
+            
+
+            
+
+            
+                <div class="article-nav">
+                    
+                    
+                        <div class="article-next">
+                            <a class="next"
+                               rel="next"
+                               href="/intel_amd_isa_difference/"
+                            >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Intel &amp; AMD 指令集之间的差异</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                                <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                            </a>
+                        </div>
+                    
+                </div>
+            
+
+            
+                <div class="comment-container">
+                    
+<div class="comments-container">
+    <div id="comments-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments"></i>&nbsp;Comments
+    </div>
+    
+        
+            
+
+    <div class="valine-container">
+        <script data-pjax src="//cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script>
+        <div id="vcomments"></div>
+        <script data-pjax>
+          function loadValine() {
+
+            const config = {
+              el: '#vcomments',
+              appId: 'qRv6si8r4jUsBpjFlotXQBmP-gzGzoHsz',
+              appKey: 'upvGfvF70Sd2tCMoFM1ehslV',
+              meta: ['nick', 'mail', 'link'],
+              avatar: 'wavatar',
+              enableQQ: true,
+              placeholder: '',
+              lang: 'en'.toLowerCase()
+            }
+
+            if ('') {
+              config.serverURLs = ''
+            }
+
+            new Valine(config)
+
+            function getAuthor(language) {
+              switch (language) {
+                case 'en':
+                  return 'Author'
+                case 'zh-CN':
+                  return '博主'
+                default:
+                  return 'Master'
+              }
+            }
+
+            // Add "Author" identify
+            const getValineDomTimer = setInterval(() => {
+              const vcards = document.querySelectorAll('#vcomments .vcards .vcard')
+              if (vcards.length > 0) {
+                let author = 'Lapin Gris'
+
+                if (author) {
+                  for (let vcard of vcards) {
+                    const vnick_dom = vcard.querySelector('.vhead .vnick')
+                    const vnick = vnick_dom.innerHTML
+                    if (vnick === author) {
+                      vnick_dom.innerHTML = `${vnick} <span class="author">${getAuthor(KEEP.hexo_config.language)}</span>`
+                    }
+                  }
+                }
+                clearInterval(getValineDomTimer)
+              } else {
+                clearInterval(getValineDomTimer)
+              }
+            }, 2000)
+          }
+
+          if ('true' === 'true') {
+            const loadValineTimeout = setTimeout(() => {
+              loadValine()
+              clearTimeout(loadValineTimeout)
+            }, 1000)
+          } else {
+            window.addEventListener('DOMContentLoaded', loadValine)
+          }
+        </script>
+    </div>
+
+
+
+        
+    
+</div>
+
+                </div>
+            
+        </div>
+
+        
+            <div class="toc-content-container">
+                <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83"><span class="nav-text">配置环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sleep"><span class="nav-text">sleep</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pingpong"><span class="nav-text">pingpong</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#primes"><span class="nav-text">primes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#find"><span class="nav-text">find</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xargs"><span class="nav-text">xargs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95"><span class="nav-text">测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95%EF%BC%9A%E8%AE%A9%E5%86%99%E4%BB%A3%E7%A0%81%E6%9B%B4%E8%88%92%E9%80%82"><span class="nav-text">附录：让写代码更舒适</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#clangd-%E4%BB%A3%E7%A0%81%E8%B7%B3%E8%BD%AC"><span class="nav-text">clangd 代码跳转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A6%81%E7%94%A8-clangd-%E8%87%AA%E5%8A%A8%E6%8F%92%E5%85%A5%E5%A4%B4%E6%96%87%E4%BB%B6"><span class="nav-text">禁用 clangd 自动插入头文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#clang-format-%E4%BB%A3%E7%A0%81%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-text">clang-format 代码格式化</span></a></li></ol></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            
+<footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+                <span>2022</span> -
+            
+            2024
+            
+                &nbsp;<i class="fas fa-heart icon-animate"></i>
+                &nbsp;<a href="/">Lapin Gris</a>
+            
+        </div>
+        
+            <script async data-pjax
+                    src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.6.1</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/dark-light-toggle.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/code-block.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/lazyload.js"></script>
+
+
+<div class="post-scripts pjax">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/post-helper.js"></script>
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/anime.min.js"></script>
+        
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/toc.js"></script>
+        
+    
+</div>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+            // scrollTo: true,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart();
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd();
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+            KEEP.refresh();
+        });
+    });
+</script>
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
