@@ -243,67 +243,6 @@
       </tags>
   </entry>
   <entry>
-    <title>如何为 RPM 包签名</title>
-    <url>/how-to-sign-rpm-package/</url>
-    <content><![CDATA[<h2 id="Generate-GPG-keyring"><a href="#Generate-GPG-keyring" class="headerlink" title="Generate GPG keyring"></a>Generate GPG keyring</h2><p>使用下面的命令生成 GPG keyring。输入 Name 和 Email 。输入 o 确认后，passphrase 可以不输入（保留为空即可），passphrase 保留为空代表不需要密码保护（公钥和私钥需要确认两次）。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --gen-key</span><br></pre></td></tr></table></figure>
-
-<p>查看生成的 GPG key</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg -K</span><br></pre></td></tr></table></figure>
-
-<h2 id="rpmsign"><a href="#rpmsign" class="headerlink" title="rpmsign"></a>rpmsign</h2><p>导出公钥，生成一个公钥文件，此公钥文件通常根据用途不同放到 repo 源中，或者直接导入系统用于安装 RPM 时进行 GPG 验证。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --armor --<span class="built_in">export</span> &gt; RPM-GPG-KEY-EXAMPLE</span><br></pre></td></tr></table></figure>
-
-<p>将所有的 RPM 包进行签名</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rpmsign --define <span class="string">&quot;_gpg_name security@example.com&quot;</span> --addsign *.rpm</span><br></pre></td></tr></table></figure>
-
-<h2 id="migrate-GPG-keyring"><a href="#migrate-GPG-keyring" class="headerlink" title="migrate GPG keyring"></a>migrate GPG keyring</h2><p>1、export GPG keyring</p>
-<p>-a, –armor, 以 ascii 方式导出</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># export public key</span></span><br><span class="line">gpg -a --<span class="built_in">export</span> &gt;mypubkeys.asc</span><br><span class="line"><span class="comment"># export private key</span></span><br><span class="line">gpg -a --export-secret-keys &gt;myprivatekeys.asc</span><br></pre></td></tr></table></figure>
-
-<p>2、export GPG trustdb (Optionally)</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># export gpg&#x27;s trustdb (Optionally)</span></span><br><span class="line">gpg --export-ownertrust &gt;mytrustdb.txt</span><br></pre></td></tr></table></figure>
-
-<p>3、import GPG keyring</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --import myprivatekeys.asc</span><br><span class="line">gpg --import mypubkeys.asc</span><br><span class="line"></span><br><span class="line"><span class="comment"># list public &amp; secret keys</span></span><br><span class="line">gpg -K</span><br><span class="line">gpg -k</span><br></pre></td></tr></table></figure>
-
-<p>4、import trustdb</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --import-ownertrust mytrustdb.txt</span><br></pre></td></tr></table></figure>
-
-<p>当我们导入 GPG keyrings 时，GPG 并不信任 keyrings，需要导入 trustdb 后，并更新下 trustdb</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --update-trustdb</span><br></pre></td></tr></table></figure>
-
-<p>5、force trust GPG keyring</p>
-<p>如果没有导入 trustdb，GPG 认为 keys 不可信。可以使用下面的命令信任所有的 GPG keyrings。</p>
-<p>注意，只信任自己创建的 keyring，不要信任互联网的其他 keyring。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --list-keys --fingerprint |grep pub -A 1|egrep -Ev <span class="string">&quot;pub|--&quot;</span>|<span class="built_in">tr</span> -d <span class="string">&#x27; &#x27;</span> \</span><br><span class="line"> | awk <span class="string">&#x27;BEGIN &#123; FS = &quot;\n&quot; &#125; ; &#123; print $1&quot;:6:&quot; &#125; &#x27;</span> | gpg --import-ownertrust</span><br></pre></td></tr></table></figure>
-
-<h2 id="搭配-OBS-使用"><a href="#搭配-OBS-使用" class="headerlink" title="搭配 OBS 使用"></a>搭配 OBS 使用</h2><p>OBS(Open Build Service) 是一个可以用于为各个发行版打包的编译系统。OBS 系统默认会使用自己生成的签名，但是如果能让 OBS 系统使用我们自己的签名不是很好，接下来就介绍如何让 OBS 使用我们的 GPG Keyring 为 RPM 包进行签名。</p>
-<p>平时我们使用 rpmbuild 命令在虚拟机或者 docker 中打包的时候签名的公钥都是存放在 <code>~/.gnupg</code> 目录下，这也是 gpg -k 等命令的默认搜索路径，但是 OBS 是一个单独的系统，他的配置都放在单独的 <code>/srv</code> 目录下。rpmsign 使用的公钥的存放目录是 <code>/srv/obs/gnupg</code>。</p>
-<p>因此，只需要在导入 GPG Keyring 时候，通过 <code>--homedir</code> 指定目录即可，</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gpg --import  my-publickey.asc</span><br><span class="line">gpg --import my-privatekey.asc</span><br><span class="line">gpg --import-ownertrust my-gpgtrustdb.txt</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h2><h3 id="为什么需要迁移-GPG-keyring"><a href="#为什么需要迁移-GPG-keyring" class="headerlink" title="为什么需要迁移 GPG keyring"></a>为什么需要迁移 GPG keyring</h3><p>进行 RPM 打包的时候，都会给 RPM 包签名。同一个发行商都会给 RPM 包签名，不同的 build system，比如 OBS（open build service），Koji 等都可以实现自动签名。我们可以导入 GPG keyring，而不是让构建系统自己生成一个。</p>
-<h3 id="为什么需要导入-trustdb？"><a href="#为什么需要导入-trustdb？" class="headerlink" title="为什么需要导入 trustdb？"></a>为什么需要导入 trustdb？</h3><p>如果不导入 trustdb，当导入迁移后的 GPG keyring 时，GPG keyring 状态变为 unknown。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># gpg -K</span></span><br><span class="line">/root/.gnupg/pubring.kbx</span><br><span class="line">------------------------</span><br><span class="line">sec   rsa3072 2022-11-02 [SC] [expires: 2024-11-01]</span><br><span class="line">      024B8C9501E35519D203B3B6DCD37021E3793FD6</span><br><span class="line">uid           [ultimate] security &lt;@example.com&gt;</span><br><span class="line">ssb   rsa3072 2022-11-02 [E] [expires: 2024-11-01]</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># gpg -K</span></span><br><span class="line">/root/.gnupg/pubring.kbx</span><br><span class="line">------------------------</span><br><span class="line">sec   rsa3072 2022-11-02 [SC] [expires: 2024-11-01]</span><br><span class="line">      024B8C9501E35519D203B3B6DCD37021E3793FD6</span><br><span class="line">uid           [unknown] security &lt;@example.com&gt;</span><br><span class="line">ssb   rsa3072 2022-11-02 [E] [expires: 2024-11-01]</span><br></pre></td></tr></table></figure>
-
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>1、<a class="link"   href="https://access.redhat.com/solutions/2115511" >https://access.redhat.com/solutions/2115511<i class="fas fa-external-link-alt"></i></a></p>
-<p>2、<a class="link"   href="https://docs.pagure.org/koji/signing/" >https://docs.pagure.org/koji/signing/<i class="fas fa-external-link-alt"></i></a></p>
-<p>3、<a class="link"   href="https://unix.stackexchange.com/questions/639514/unknown-validity-despite-having-signed-the-key-myself" >https://unix.stackexchange.com/questions/639514/unknown-validity-despite-having-signed-the-key-myself<i class="fas fa-external-link-alt"></i></a></p>
-<p>4、<a class="link"   href="https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually" >https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually<i class="fas fa-external-link-alt"></i></a></p>
-<p>5、<a class="link"   href="https://www.gnupg.org/documentation/manuals/gnupg/GPG-Configuration.html" >https://www.gnupg.org/documentation/manuals/gnupg/GPG-Configuration.html<i class="fas fa-external-link-alt"></i></a></p>
-]]></content>
-      <categories>
-        <category>rpm</category>
-      </categories>
-      <tags>
-        <tag>rpm</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>查询 Intel 处理器安全漏洞</title>
     <url>/intel-cpu-cve/</url>
     <content><![CDATA[<h2 id="Intel-处理器安全漏洞表"><a href="#Intel-处理器安全漏洞表" class="headerlink" title="Intel 处理器安全漏洞表"></a>Intel 处理器安全漏洞表</h2><p><a class="link"   href="https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html" >https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html<i class="fas fa-external-link-alt"></i></a></p>
@@ -382,6 +321,54 @@
       </categories>
   </entry>
   <entry>
+    <title>Hexo-Next主题配置</title>
+    <url>/hexo-next-theme-configuration-picture-configuration/</url>
+    <content><![CDATA[<h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
+<p><strong>修改引入图片路径即可解决，</strong></p>
+<p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
+<p><code>../img/gris.png</code> (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常预览&#x2F;显示图片，<strong>但是文件名不要有空格</strong>，有空格云端显示不出来。</p>
+<p><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/gris.png"
+                      alt="Gris"
+                ></p>
+<p><strong>结构展示</strong></p>
+<p>如果没有理解的话，看看这张结构图</p>
+<p><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/dict_tree.png"
+                     
+                ></p>
+<h1 id="二、插件"><a href="#二、插件" class="headerlink" title="二、插件"></a>二、插件</h1><p>安装插件的时候要多搜索，寻找最近的文章看，如果你也是使用Next 主题，尽量找Hexo Next 官方最近更新的文档看，因为随着<code>Hexo/Next</code>的版本更新，很多功能都被开发者集成进去了，只需要修改一下主题配置文件即可，<strong>简而言之，找最新的文章&#x2F;文档参考。</strong></p>
+<blockquote>
+<p>Hexo-Next 文档地址</p>
+<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<h2 id="安装的插件"><a href="#安装的插件" class="headerlink" title="安装的插件"></a>安装的插件</h2><p>安装的插件并不多，主要是够用即可</p>
+<p>hexo-symbols-count-time</p>
+<p>hexo-excerpt —— Because, auto_excerpt not working</p>
+<p>hexo-generator-searchdb——站内搜索</p>
+<p>大家都喜欢的插件，Next 文档都已经列出来了，去找就行了🤣</p>
+<blockquote>
+<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<p><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/Next_dos_advanced.png"
+                     
+                ></p>
+]]></content>
+      <categories>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>PARSEC 3.0 编译报错</title>
     <url>/parsec3.0-compile-error/</url>
     <content><![CDATA[<p>PARSEC 3.0(Parallel Applications Research for System Efficiency Collectio)是一个基准测试套件，用于评估多核处理器和系统的性能，也就是跑分软件。</p>
@@ -422,6 +409,251 @@
       <tags>
         <tag>parsec</tag>
         <tag>RHEL 9</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何为 RPM 包签名</title>
+    <url>/how-to-sign-rpm-package/</url>
+    <content><![CDATA[<h2 id="Generate-GPG-keyring"><a href="#Generate-GPG-keyring" class="headerlink" title="Generate GPG keyring"></a>Generate GPG keyring</h2><p>使用下面的命令生成 GPG keyring。输入 Name 和 Email 。输入 o 确认后，passphrase 可以不输入（保留为空即可），passphrase 保留为空代表不需要密码保护（公钥和私钥需要确认两次）。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --gen-key</span><br></pre></td></tr></table></figure>
+
+<p>查看生成的 GPG key</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg -K</span><br></pre></td></tr></table></figure>
+
+<h2 id="rpmsign"><a href="#rpmsign" class="headerlink" title="rpmsign"></a>rpmsign</h2><p>导出公钥，生成一个公钥文件，此公钥文件通常根据用途不同放到 repo 源中，或者直接导入系统用于安装 RPM 时进行 GPG 验证。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --armor --<span class="built_in">export</span> &gt; RPM-GPG-KEY-EXAMPLE</span><br></pre></td></tr></table></figure>
+
+<p>将所有的 RPM 包进行签名</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rpmsign --define <span class="string">&quot;_gpg_name security@example.com&quot;</span> --addsign *.rpm</span><br></pre></td></tr></table></figure>
+
+<h2 id="migrate-GPG-keyring"><a href="#migrate-GPG-keyring" class="headerlink" title="migrate GPG keyring"></a>migrate GPG keyring</h2><p>1、export GPG keyring</p>
+<p>-a, –armor, 以 ascii 方式导出</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># export public key</span></span><br><span class="line">gpg -a --<span class="built_in">export</span> &gt;mypubkeys.asc</span><br><span class="line"><span class="comment"># export private key</span></span><br><span class="line">gpg -a --export-secret-keys &gt;myprivatekeys.asc</span><br></pre></td></tr></table></figure>
+
+<p>2、export GPG trustdb (Optionally)</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># export gpg&#x27;s trustdb (Optionally)</span></span><br><span class="line">gpg --export-ownertrust &gt;mytrustdb.txt</span><br></pre></td></tr></table></figure>
+
+<p>3、import GPG keyring</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --import myprivatekeys.asc</span><br><span class="line">gpg --import mypubkeys.asc</span><br><span class="line"></span><br><span class="line"><span class="comment"># list public &amp; secret keys</span></span><br><span class="line">gpg -K</span><br><span class="line">gpg -k</span><br></pre></td></tr></table></figure>
+
+<p>4、import trustdb</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --import-ownertrust mytrustdb.txt</span><br></pre></td></tr></table></figure>
+
+<p>当我们导入 GPG keyrings 时，GPG 并不信任 keyrings，需要导入 trustdb 后，并更新下 trustdb</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --update-trustdb</span><br></pre></td></tr></table></figure>
+
+<p>5、force trust GPG keyring</p>
+<p>如果没有导入 trustdb，GPG 认为 keys 不可信。可以使用下面的命令信任所有的 GPG keyrings。</p>
+<p>注意，只信任自己创建的 keyring，不要信任互联网的其他 keyring。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --list-keys --fingerprint |grep pub -A 1|egrep -Ev <span class="string">&quot;pub|--&quot;</span>|<span class="built_in">tr</span> -d <span class="string">&#x27; &#x27;</span> \</span><br><span class="line"> | awk <span class="string">&#x27;BEGIN &#123; FS = &quot;\n&quot; &#125; ; &#123; print $1&quot;:6:&quot; &#125; &#x27;</span> | gpg --import-ownertrust</span><br></pre></td></tr></table></figure>
+
+<h2 id="搭配-OBS-使用"><a href="#搭配-OBS-使用" class="headerlink" title="搭配 OBS 使用"></a>搭配 OBS 使用</h2><p>OBS(Open Build Service) 是一个可以用于为各个发行版打包的编译系统。OBS 系统默认会使用自己生成的签名，但是如果能让 OBS 系统使用我们自己的签名不是很好，接下来就介绍如何让 OBS 使用我们的 GPG Keyring 为 RPM 包进行签名。</p>
+<p>平时我们使用 rpmbuild 命令在虚拟机或者 docker 中打包的时候签名的公钥都是存放在 <code>~/.gnupg</code> 目录下，这也是 gpg -k 等命令的默认搜索路径，但是 OBS 是一个单独的系统，他的配置都放在单独的 <code>/srv</code> 目录下。rpmsign 使用的公钥的存放目录是 <code>/srv/obs/gnupg</code>。</p>
+<p>因此，只需要在导入 GPG Keyring 时候，通过 <code>--homedir</code> 指定目录即可，</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gpg --import  my-publickey.asc</span><br><span class="line">gpg --import my-privatekey.asc</span><br><span class="line">gpg --import-ownertrust my-gpgtrustdb.txt</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h2><h3 id="为什么需要迁移-GPG-keyring"><a href="#为什么需要迁移-GPG-keyring" class="headerlink" title="为什么需要迁移 GPG keyring"></a>为什么需要迁移 GPG keyring</h3><p>进行 RPM 打包的时候，都会给 RPM 包签名。同一个发行商都会给 RPM 包签名，不同的 build system，比如 OBS（open build service），Koji 等都可以实现自动签名。我们可以导入 GPG keyring，而不是让构建系统自己生成一个。</p>
+<h3 id="为什么需要导入-trustdb？"><a href="#为什么需要导入-trustdb？" class="headerlink" title="为什么需要导入 trustdb？"></a>为什么需要导入 trustdb？</h3><p>如果不导入 trustdb，当导入迁移后的 GPG keyring 时，GPG keyring 状态变为 unknown。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># gpg -K</span></span><br><span class="line">/root/.gnupg/pubring.kbx</span><br><span class="line">------------------------</span><br><span class="line">sec   rsa3072 2022-11-02 [SC] [expires: 2024-11-01]</span><br><span class="line">      024B8C9501E35519D203B3B6DCD37021E3793FD6</span><br><span class="line">uid           [ultimate] security &lt;@example.com&gt;</span><br><span class="line">ssb   rsa3072 2022-11-02 [E] [expires: 2024-11-01]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># gpg -K</span></span><br><span class="line">/root/.gnupg/pubring.kbx</span><br><span class="line">------------------------</span><br><span class="line">sec   rsa3072 2022-11-02 [SC] [expires: 2024-11-01]</span><br><span class="line">      024B8C9501E35519D203B3B6DCD37021E3793FD6</span><br><span class="line">uid           [unknown] security &lt;@example.com&gt;</span><br><span class="line">ssb   rsa3072 2022-11-02 [E] [expires: 2024-11-01]</span><br></pre></td></tr></table></figure>
+
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>1、<a class="link"   href="https://access.redhat.com/solutions/2115511" >https://access.redhat.com/solutions/2115511<i class="fas fa-external-link-alt"></i></a></p>
+<p>2、<a class="link"   href="https://docs.pagure.org/koji/signing/" >https://docs.pagure.org/koji/signing/<i class="fas fa-external-link-alt"></i></a></p>
+<p>3、<a class="link"   href="https://unix.stackexchange.com/questions/639514/unknown-validity-despite-having-signed-the-key-myself" >https://unix.stackexchange.com/questions/639514/unknown-validity-despite-having-signed-the-key-myself<i class="fas fa-external-link-alt"></i></a></p>
+<p>4、<a class="link"   href="https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually" >https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually<i class="fas fa-external-link-alt"></i></a></p>
+<p>5、<a class="link"   href="https://www.gnupg.org/documentation/manuals/gnupg/GPG-Configuration.html" >https://www.gnupg.org/documentation/manuals/gnupg/GPG-Configuration.html<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>rpm</category>
+      </categories>
+      <tags>
+        <tag>rpm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Reboot 命令实际是 systemctl ？</title>
+    <url>/reboot_is_link_to_systemctl/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在一次查问题的过程中，偶然发现 reboot 命令是<strong>直接链接</strong>到 systemctl 的（划重点：直接链接到），看下面的演示，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># which reboot</span></span><br><span class="line">/sbin/reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># file /sbin/reboot</span></span><br><span class="line">/sbin/reboot: symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
+
+<p>第一直觉就是这是不是不合理，直接把 reboot 软链到 systemctl ，不就相当于直接执行 systemctl 命令，这怎么会起到 reboot 的作用的呢？</p>
+<p>继续看，</p>
+<p>发现 <code>/sbin</code> 目录下很多命令都是直接软链到 <code>systemctl</code>，没有参数来区分，而且这些命令是 100% 工作的，当数量多起来的时候，事情逐渐合理起来了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># file /sbin/* | grep symbolic | grep systemctl</span></span><br><span class="line">/sbin/halt:                  symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/poweroff:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/reboot:                symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/runlevel:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/shutdown:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/telinit:               symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
+
+<p>那 systemctl 是如何区分出这些命令的？</p>
+<p>熟悉 C 编程的同学大概率可以猜到了，systemctl 可能是通过进程名来区分的，也就是 <code>argv[0]</code> 这个参数，C 语言里 <code>argv[0]</code> 保存的是程序的名称（其他语言也有类似的参数）。</p>
+<h2 id="那拿-systemctl-测试一下？"><a href="#那拿-systemctl-测试一下？" class="headerlink" title="那拿 systemctl 测试一下？"></a>那拿 systemctl 测试一下？</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@cs8 ~]<span class="comment"># ln -sf /usr/bin/systemctl testcmd</span></span><br><span class="line">[root@cs8 ~]<span class="comment"># ./testcmd</span></span><br><span class="line">UNIT                                                                                LOAD   ACTIVE SUB       DESCRIPTION</span><br><span class="line">proc-sys-fs-binfmt_misc.automount                                                   loaded active waiting   Arbitrary Executable File Formats File System Automount Point</span><br><span class="line">sys-devices-pci0000:00-0000:00:05.0-virtio0-net-eth0.device                         loaded active plugged   Virtio network device</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda-vda1.device                   loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda/vda1</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda.device                        loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 systemctl 并不识别 testcmd 命令，而是打印了所有 uints，等价 <code>systemctl</code> 直接执行。</p>
+<h2 id="看代码"><a href="#看代码" class="headerlink" title="看代码"></a>看代码</h2><p>和我们预想的一样，systemctl 内部通过 argv 来判断由谁调用的</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// systemd/src/systemctl/systemctl.c</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">systemctl_dispatch_parse_argv</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">        assert(argc &gt;= <span class="number">0</span>);</span><br><span class="line">        assert(argv);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;halt&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_HALT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;poweroff&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;reboot&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (kexec_loaded())</span><br><span class="line">                        arg_action = ACTION_KEXEC;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                        arg_action = ACTION_REBOOT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;shutdown&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> shutdown_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;init&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (sd_booted() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        arg_action = _ACTION_INVALID;</span><br><span class="line">                        <span class="keyword">return</span> telinit_parse_argv(argc, argv);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        arg_action = ACTION_TELINIT;</span><br><span class="line">                        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;runlevel&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_RUNLEVEL;</span><br><span class="line">                <span class="keyword">return</span> runlevel_parse_argv(argc, argv);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        arg_action = ACTION_SYSTEMCTL;</span><br><span class="line">        <span class="keyword">return</span> systemctl_parse_argv(argc, argv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="自己实现一个"><a href="#自己实现一个" class="headerlink" title="自己实现一个"></a>自己实现一个</h2><p>实现也很简单，几行代码就行。只需要实现通过 argv[0] 识别调用方是谁，然后根据不同的调用方执行不同的逻辑即可。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;string.h&gt;</span></span><br><span class="line"></span><br><span class="line">int main(int argc, char *argv[]) &#123;</span><br><span class="line">    // 提取程序名（最后一个斜杠后的内容）</span><br><span class="line">    char *programName = strrchr(argv[0], <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">    <span class="keyword">if</span> (programName != NULL) &#123;</span><br><span class="line">        programName++; // 移动到斜杠后的第一个字符</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        programName = argv[0]; // 如果没有斜杠，直接使用整个参数</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 根据程序名执行不同的逻辑</span><br><span class="line">    <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programA&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 A 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programB&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 B 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;未知程序，执行默认逻辑\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">return</span> 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>完结撒花</p>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>reboot</tag>
+        <tag>systemd</tag>
+        <tag>sbin</tag>
+        <tag>link</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Run Your Own OBS 编译系统</title>
+    <url>/run-your-own-obs-open-build-service/</url>
+    <content><![CDATA[<p>OBS（Open Build Service）是一个由 SUSE 开源的操作系统发行版的构建系统，可以用来创建和分发软件包。OBS支持几乎所有的主流发行版的包，比如说 SUSE系，RedHat系，Debian系，Arch系等等。</p>
+<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p>安装 OBS 最简单的方式就是使用 <a class="link"   href="https://openbuildservice.org/download/" >openbuildservice<i class="fas fa-external-link-alt"></i></a> 网站提供的镜像（iso&#x2F;qcow2&#x2F;vmdk&#x2F;vdi），将镜像部署机器上就获得一个 OBS 实例。<br>通常情况下，使用 SUSE 制作好的虚拟机镜像是最省时间的，比如使用 qemu-kvm 下载 qcow2 镜像，使用 VMware 下载 vmdk 镜像，使用 virtualbox 下载 vdi 镜像。也可以使用 SUSE 提供的 iso 镜像重新安装一台 OBS 实例，缺点是需要等待 iso 安装完成才能得到一台 OBS 实例，使用虚拟机镜像，启动后就可以获得 OBS 实例，节省了 iso 的安装时间。</p>
+<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><p>在 Linux 平台部署 OBS 应该是大多数人的需求。当然也很简单，Linux 平台下大家经常使用 libvirt&#x2F;qemu 组合创建虚拟机，使用 <code>virt-install</code> 会比写 libvirt xml 或写 qemu 命令行简单一些</p>
+<p>可以使用 virt-install 命令行快速创建一个 OBS 实例,</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/usr/bin/bash</span></span><br><span class="line"></span><br><span class="line">VM_NAME=&quot;OBS&quot;</span><br><span class="line">DISK=&quot;obs-server.x86_64-qcow2.qcow2&quot;</span><br><span class="line"></span><br><span class="line">virt-install \</span><br><span class="line">--name &quot;$&#123;VM_NAME&#125;&quot; \</span><br><span class="line">--memory 32768 \</span><br><span class="line">--vcpus 16 \</span><br><span class="line">--import \</span><br><span class="line">--os-variant opensuse15.3 \</span><br><span class="line">--disk &quot;$&#123;DISK&#125;&quot; \</span><br><span class="line">--network network=default,model=virtio \</span><br><span class="line">--graphics none \</span><br><span class="line">--virt-type kvm</span><br></pre></td></tr></table></figure>
+<p>注：cpu 和 内存可以根据 host 机器的实际 cpu 和内存进行调整，示例是 16 核 32g 的配置，网络默认是 nat 网络。</p>
+<p>默认的登录名和密码分别是 <code>root</code> &#x2F; <code>opensuse</code></p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>当我们成功创建了一个 OBS 实例，打开浏览器访问OBS对应的 ip 地址就可以访问到 OBS 网页了。<br>OBS 镜像首次启动至少需要 10 分钟，使用 vnc 连接服务器就可以看到 OBS 实例的启动卡在这个地方，待会会介绍这里进行的实际是 OBS 读取 fqdn，默认超时时间是 10 mins</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">A start job is running for OBS API Setup (8min 34s / no limit )</span><br></pre></td></tr></table></figure>
+
+<p>journal 看日志可以看到，setup-appliance.sh 脚本在持续等待 fqdn，而且超时时间设置为 600 秒，也就是 10mins，感觉时间设置的过长了，如果本地网络比较好的话，改下脚本将超时时间设置为 十几秒就够了<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/obs-set-fqdn-journal-log.png"
+                      alt="image.png"
+                ></p>
+<p>&#x2F;usr&#x2F;lib&#x2F;obs&#x2F;server&#x2F;setup-appliance.sh</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">function get_hostname &#123;</span><br><span class="line"></span><br><span class="line">  if [[ $1 &amp;&amp; $BOOTSTRAP_TEST_MODE == 1 ]];then</span><br><span class="line">    FQHOSTNAME=$1</span><br><span class="line">  else</span><br><span class="line">    TIMEOUT=600</span><br><span class="line">    while [ -z &quot;$FQHOSTNAME&quot; -o &quot;$FQHOSTNAME&quot; = &quot;localhost&quot; ];do</span><br><span class="line">      FQHOSTNAME=`hostname -f 2&gt;/dev/null`</span><br><span class="line">      TIMEOUT=$(($TIMEOUT-1))</span><br><span class="line">      [ &quot;$TIMEOUT&quot; -le 0 ] &amp;&amp; break</span><br><span class="line">      echo &quot;Waiting for FQHOSTNAME ($TIMEOUT)&quot;</span><br><span class="line">      sleep 1</span><br><span class="line">    done</span><br><span class="line">  fi</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>超时时间设置为 600 s ，在目前的网络条件下可能是没有必要的，改为十几秒足够了<br>注：在目前版本的 OBS  Git 仓库上，超时时间已经被调整为 30 s 了（<a class="link"   href="https://github.com/openSUSE/open-build-service/blob/c5ad76b359fd8b2ad77a597fa7cd65ed47b93d76/dist/functions.setup-appliance.sh#L144" >functions.setup-appliance.sh<i class="fas fa-external-link-alt"></i></a>），感觉这才是比较合理的值</p>
+<h3 id="设置-ssh-服务开机自启"><a href="#设置-ssh-服务开机自启" class="headerlink" title="设置 ssh 服务开机自启"></a>设置 ssh 服务开机自启</h3><p>默认 OBS 2.10 镜像是没有开启 ssh 远程连接的，推荐开启，方便远程登录</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">systemctl enable --now sshd</span><br></pre></td></tr></table></figure>
+<p>云厂商虚拟机可以先通过控制台的 vnc 连接到服务器，执行以上命令。之后可以通过 ssh 连接 OBS 实例了，OBS 镜像默认的登录用户名和密码是 root&#x2F;opensuse 。</p>
+<p>现在针对各个云服务器的攻击非常多，保持默认密码很容易被攻击者入侵服务器，导致服务器成为肉鸡。。<br>为了安全起见，在以下几种方案里选择一个方式保护自己的云服务器<br>1、禁用密码登录、采用公钥登录，目前最安全的方案<br>2、禁用 root 远程登录，新增一个用户用于远程登录，修改默认 ssh 端口号，安全性适中<br>3、不禁用 root 远程登录，但是修改一个复杂一点的密码，修改默认 ssh 端口号，安全性弱</p>
+<h3 id="更换国内镜像源"><a href="#更换国内镜像源" class="headerlink" title="更换国内镜像源"></a>更换国内镜像源</h3><p>OBS 默认的镜像源速度不是很理想，换成国内源加快安装软件包的速度</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">禁用已有所有镜像源</span></span><br><span class="line">zypper mr -da</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用 USTC 的软件源</span></span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/distribution/leap/\$releasever/repo/oss USTC:OSS</span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/distribution/leap/\$releasever/repo/non-oss USTC:NON-OSS</span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/update/leap/\$releasever/oss USTC:UPDATE-OSS</span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/update/leap/\$releasever/non-oss USTC:UPDATE-NON-OSS</span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/update/leap/\$releasever/sle USTC:UPDATE-SLE</span><br></pre></td></tr></table></figure>
+<p>注：SUSE 系列 OS 存放 repo 文件的目录是<code>/etc/zypp/repos.d</code></p>
+<h2 id="数据分盘（强烈推荐）"><a href="#数据分盘（强烈推荐）" class="headerlink" title="数据分盘（强烈推荐）"></a>数据分盘（强烈推荐）</h2><p><strong>如果你是想搭建一个试一下或者自己使用，并不是用于企业的生产环境，可以跳过这一步。</strong><br>在生产环境中，数据的价值是很高的，假如重要数据发生了丢失，而且没有备份（重要数据还不备份。。。<del>活该</del>（大雾）），造成的损失就比较严重了。<br>OBS 作为一个打包系统，数据虽然不是特别的重要，但是还是建议将 OBS 的数据分盘存储。<br>在介绍数据分盘的逻辑前，先介绍一下 OBS 镜像本身，下载下来的 OBS 镜像安装好后是一个 openSUSE leap 15.3 系统，我们的 OBS 服务安装在 openSUSE 操作系统上的，更具体来说，是安装在<code>/srv</code> 目录下，所以数据分盘的逻辑就很显而易见了。将 OBS <code>/srv </code>目录单独放到一个数据盘上，剩下的作为系统盘。</p>
+<h3 id="分盘操作原理"><a href="#分盘操作原理" class="headerlink" title="分盘操作原理"></a>分盘操作原理</h3><p>我们可以很轻松的联想到，单独给我们 OBS 虚拟机通一块数据盘，将数据盘挂在到 &#x2F;srv 分区，将原有的数据拷贝到数据盘上就可以实现 OBS 服务与系统盘脱钩。</p>
+<h3 id="查看磁盘的情况"><a href="#查看磁盘的情况" class="headerlink" title="查看磁盘的情况"></a>查看磁盘的情况</h3><p>查看系统的磁盘情况，此处挂了一块 100G 的磁盘，被 Linux 系统标识为 &#x2F;dev&#x2F;vdb</p>
+<blockquote>
+<p>注：这里的 vda 是 &#x2F;dev&#x2F;vda，是系统盘，vda1 是在系统盘上分区，这里分区设置是将整个磁盘的空间全部分给 vda1，这里没必要讲磁盘分区。官方提供的 OBS 镜像里做了分区，那就保持这样就好了，系统盘和我们的数据分盘操作关系不大。</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">lsblk</span></span><br><span class="line">NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT</span><br><span class="line">sr0     11:0    1  368K  0 rom</span><br><span class="line">vda    253:0    0  100G  0 disk</span><br><span class="line">`-vda1 253:1    0  100G  0 part /</span><br><span class="line">vdb    253:16   0  100G  0 disk</span><br></pre></td></tr></table></figure>
+<h3 id="磁盘需要格式化为文件系统"><a href="#磁盘需要格式化为文件系统" class="headerlink" title="磁盘需要格式化为文件系统"></a>磁盘需要格式化为文件系统</h3><p>将单独的数据盘 vdb 全盘格式化为 ext4 文件系统，此处不需要将磁盘分区为 1,2,3。（可以，但没必要）</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkfs -t ext4 /dev/vdb</span><br></pre></td></tr></table></figure>
+
+<p>将格式化好的磁盘挂在到 &#x2F;mnt 目录，（挂载到 &#x2F;mnt 目录下是为了拷贝数据用的，算是个临时目录 ）接着将 &#x2F;srv 目录下的所有文件同步到 &#x2F;mnt 目录，也就是同步到单独的数据盘上</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mount /dev/vdb /mnt</span><br><span class="line">rsync -av --progress /srv/ /mnt</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置开机挂载"><a href="#设置开机挂载" class="headerlink" title="设置开机挂载"></a>设置开机挂载</h3><p>在 systemd 启动 OBS 服务之前，我们需要将我们的数据盘 mount 到 &#x2F;sev 目录下，隐藏原有的文件。这样当 systemd 拉起 OBS 服务是时候，读取的数据就是从<br>通过 <code>lsblk -f</code> 命令查询 &#x2F;dev&#x2F;vdb 磁盘的 uuid 号，将数据盘开机挂载到 &#x2F;srv 目录， Linux mount 会隐藏原有目录的内容，不用担心 &#x2F;srv 目录非空，OBS 运行过程中对 &#x2F;srv 目录下的文件读写会写到系统盘上的位置，这种情况是不会发生的，这个是文件系统的实现，mount 过后，对 &#x2F;srv 路径下所有文件读写都会被文件系统重定向到 mount 的数据盘上。<br>mount 之后，这样每次 OBS 服务启动时读取的数据都是从单独的数据盘上读的，这样实现数据分离。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cat</span> /etc/fatab</span></span><br><span class="line">UUID=bedc29dd-b6c7-408d-917e-05d13111e056 /     ext4 defaults 1 1</span><br><span class="line">UUID=ba63af21-95d4-4fcc-b77e-a4e8de89280c /srv  ext4 defaults 1 1</span><br></pre></td></tr></table></figure>
+<p>这里有一个问题，要不要在上一步的 rsync 过后，将原有的 &#x2F;srv 目录清空，其实是可以的，但是没有必要。</p>
+<p>此时我们已经完成了 OBS 的数据分盘。</p>
+<h2 id="为-OBS-添加-build-target"><a href="#为-OBS-添加-build-target" class="headerlink" title="为 OBS 添加 build target"></a>为 OBS 添加 build target</h2><p>默认情况下，新创建的 OBS 是没有 build target。添加了对应发行版的 build target 后，就可以为对应的发行版编译软件包了。<br>我们查看 <a class="link"   href="https://build.opensuse.org/project" >https://build.opensuse.org<i class="fas fa-external-link-alt"></i></a> 网站上，发现拥有许多 build target，比如说 CentOS 7, CentOS 8，CentOS Stream，SUSE SLE，openSUSE，AlmaLinux，RockyLinux，Debian 等等。</p>
+<p>推荐先创建一个 Meta 项目，在以这个 Meta 项目作为基石，创建 AlmaLinux:9 的编译环境。</p>
+<h3 id="1-为发行版编译项目创建一个-meta-项目"><a href="#1-为发行版编译项目创建一个-meta-项目" class="headerlink" title="1) 为发行版编译项目创建一个 meta 项目"></a>1) 为发行版编译项目创建一个 meta 项目</h3><p>创建 meta 项目是必要的，后面会介绍。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">osc meta -e prj Meta:AlmaLinux:9</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">&lt;project name=&quot;Meta:AlmaLinux:9&quot;&gt;</span><br><span class="line">  &lt;title&gt;Meta AlmaLinux 9&lt;/title&gt;</span><br><span class="line">  &lt;description/&gt;</span><br><span class="line">  &lt;person userid=&quot;Admin&quot; role=&quot;maintainer&quot;/&gt;</span><br><span class="line"></span><br><span class="line">  &lt;repository name=&quot;standard&quot;&gt;</span><br><span class="line">    &lt;arch&gt;x86_64&lt;/arch&gt;</span><br><span class="line">  &lt;/repository&gt;</span><br><span class="line"></span><br><span class="line">&lt;/project&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>编写好项目的 build target 之后，会自动创建如下目录<br><code>/srv/obs/build/AlmaLinux:9/standard/x86_64</code></p>
+<h3 id="2-添加编译依赖-rpm-包（BuildRequire-）"><a href="#2-添加编译依赖-rpm-包（BuildRequire-）" class="headerlink" title="2) 添加编译依赖 rpm 包（BuildRequire ）"></a>2) 添加编译依赖 rpm 包（BuildRequire ）</h3><p>对于 AlmaLinux 来说，以 repo粒度来说最小化的依赖包是 baseos 和 appstream 里面的包。但是通常情况下，这些包是不够用的，比如说编译 kernel, 还需要 crb 和 epel 里的包。<br>这里推荐将发行版的，baseos, appstream, crb, epel 仓库的对应 arch 的包都下载到 :full 路径下作为依赖。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir /srv/obs/build/Meta:AlmaLinux:9/standard/x86_64/:full</span><br><span class="line"></span><br><span class="line">cp &lt;needed-packages-to-build-packages&gt;/*.rpm /srv/obs/build/Meta:AlmaLinux:9/standard/x86_64/:full/</span><br><span class="line">chown -R obsrun.obsrun /srv/obs/build/Meta:AlmaLinux:9</span><br></pre></td></tr></table></figure>
+<h3 id="3-添加项目的配置文件"><a href="#3-添加项目的配置文件" class="headerlink" title="3) 添加项目的配置文件"></a>3) 添加项目的配置文件</h3><p>没添加 project config 之前，项目是处于 broken 状态的<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/obs-broken-status.png"
+                      alt="obs-broken-status"
+                ></p>
+<p>添加也很简单，将 openSUSE  网站的 project conf 复制过来即可<br><a class="link"   href="https://build.opensuse.org/projects/AlmaLinux:9/prjconf" >https://build.opensuse.org/projects/AlmaLinux:9/prjconf<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="4-扫描项目解决依赖"><a href="#4-扫描项目解决依赖" class="headerlink" title="4) 扫描项目解决依赖"></a>4) 扫描项目解决依赖</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">obs_admin --rescan-repository Meta:AlmaLinux:9 standard x86_64</span><br></pre></td></tr></table></figure>
+
+<p>执行完 rescan-repository 命令后，如果出现 :repodone 文件代表文件扫描完毕<br>如果配置不完整，查下目录下的文件里面的内容，可以看出报错出在哪里</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">ls</span> /srv/obs/build/AlmaLinux:9/standard/x86_64</span></span><br><span class="line">:bininfo  :depends  :full  :full.solv  :packstatus  :repodone  :repoinfo  :schedulerstate</span><br></pre></td></tr></table></figure>
+<p>5）以 meta 项目为基础创建发行版编译项目<br>添加完 build target 之后，就可以为这个发行版构建软件包了<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/obs-public-status.png"
+                      alt="obs-public-status"
+                ></p>
+<h3 id="5）如法炮制，创建一个用于发行版编译的项目"><a href="#5）如法炮制，创建一个用于发行版编译的项目" class="headerlink" title="5）如法炮制，创建一个用于发行版编译的项目"></a>5）如法炮制，创建一个用于发行版编译的项目</h3><p>前面 4 个步骤中，我们已经创建了 一个 Meta 项目，但是这个项目并不能作为发行版编译的项目，需要以 meta 项目为模板创建用于发行版编译的项目<br>因为在 OBS 里所有的项目都是一样的，这里和创建 meta 项目一样创建一个用于发行版编译的项目。<br>这里的区别是，repository 标签的写法，我们复用了之前创建的 meta 项目。创建完成，扫描仓库解决依赖后就可以正式用作编译的仓库了。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">osc meta -e prj AlmaLinux:9</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">&lt;project name=&quot;AlmaLinux:9&quot;&gt;</span><br><span class="line">  &lt;title&gt;AlmaLinux 9&lt;/title&gt;</span><br><span class="line">  &lt;description&gt;AlmaLinux 9 distribution project.</span><br><span class="line"></span><br><span class="line">  &lt;/description&gt;</span><br><span class="line">  &lt;person userid=&quot;Admin&quot; role=&quot;maintainer&quot;/&gt;</span><br><span class="line">  &lt;repository name=&quot;standard&quot;&gt;</span><br><span class="line">    &lt;path project=&quot;Meta:AlmaLinux:9&quot; repository=&quot;standard&quot;/&gt;</span><br><span class="line">    &lt;arch&gt;x86_64&lt;/arch&gt;</span><br><span class="line">  &lt;/repository&gt;</span><br><span class="line">&lt;/project&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">obs_admin --rescan-repository AlmaLinux:9 standard x86_64</span><br></pre></td></tr></table></figure>
+
+<p>现在可以为 AlmaLinux 编译软件包了，如下图<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/img/obs-build-success-status.png"
+                      alt="obs-build-success-status"
+                ></p>
+<h2 id="已知问题"><a href="#已知问题" class="headerlink" title="已知问题"></a>已知问题</h2><h3 id="OBS-使用-qemu-kvm-作为构建环境会构建失败"><a href="#OBS-使用-qemu-kvm-作为构建环境会构建失败" class="headerlink" title="OBS 使用 qemu-kvm 作为构建环境会构建失败"></a>OBS 使用 qemu-kvm 作为构建环境会构建失败</h3><p>OBS 默认采用 qemu-kvm 创建的虚拟机作为编译环境，采用 qemu-kvm 作为构建方式很多情况下会报错，导致构建失败。这个问题没有仔细研究过，有一个 workaround 可以比较简单的解决这个问题，那就是将 qemu-kvm 命令重命名，然后重启 obsworker.service 。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mv /usr/bin/qemu-kvm /usr/bin/qemu-kvm.bak</span><br><span class="line">systemctl restart obsworker.service</span><br></pre></td></tr></table></figure>
+
+<h3 id="waiting-for-8-compliant-workers-8-of-them-bad"><a href="#waiting-for-8-compliant-workers-8-of-them-bad" class="headerlink" title="waiting for 8 compliant workers (8 of them bad)"></a>waiting for 8 compliant workers (8 of them bad)</h3><p>执行以下命令可以解决这个问题</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">obs_admin --drop-badhosts</span><br></pre></td></tr></table></figure>
+
+<h3 id="warning-Signature-not-supported-Hash-algorithm-SHA1-not-available"><a href="#warning-Signature-not-supported-Hash-algorithm-SHA1-not-available" class="headerlink" title="warning: Signature not supported. Hash algorithm SHA1 not available"></a>warning: Signature not supported. Hash algorithm SHA1 not available</h3><p>因为 OBS 默认采用 SHA1 算法为 RPM 包签名，在一些系统上比如 RHEL 9 上 sha1 算法被弃用。因为 OBS 为了保证兼容性，默认的签名算法依然是 sha1。<br>通过编辑 sign.conf 文件可以将签名算法改为 sha256。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /etc/sign.conf</span></span><br><span class="line">user: obsrun@localhost</span><br><span class="line">server: 127.0.0.1</span><br><span class="line">allowuser: obsrun</span><br><span class="line">allow: 127.0.0.1</span><br><span class="line">hash: sha256</span><br><span class="line">phrases: /srv/obs/gnupg/phrases</span><br></pre></td></tr></table></figure>
+
+<h3 id="obs-页面点击下载会被重定向回首页"><a href="#obs-页面点击下载会被重定向回首页" class="headerlink" title="obs 页面点击下载会被重定向回首页"></a>obs 页面点击下载会被重定向回首页</h3><p>修改 external_frontend 可以解决这个问题。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /srv/www/obs/api/config/options.yml</span></span><br><span class="line"></span><br><span class="line">external_frontend_host: &lt;ip or hostname&gt;</span><br><span class="line">external_frontend_port: 443</span><br><span class="line">external_frontend_protocol: https</span><br></pre></td></tr></table></figure>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>1、Archive:Build Service adding build targets<br><a class="link"   href="https://en.opensuse.org/Archive:Build_Service_adding_build_targets" >https://en.opensuse.org/Archive:Build_Service_adding_build_targets<i class="fas fa-external-link-alt"></i></a><br>2、Local OBS doesn’t build anymore (waiting for 4 compliant workers (4 of them bad))<br><a class="link"   href="https://lists.opensuse.org/archives/list/buildservice@lists.opensuse.org/thread/EGWPVEZXSBAB3TTFKPERUNBU5SWECYNB/" >https://lists.opensuse.org/archives/list/buildservice@lists.opensuse.org/thread/EGWPVEZXSBAB3TTFKPERUNBU5SWECYNB/<i class="fas fa-external-link-alt"></i></a><br>3、Enhancing RHEL Security: Understanding SHA-1 deprecation on RHEL 9<br><a class="link"   href="https://www.redhat.com/en/blog/rhel-security-sha-1-package-signatures-distrusted-rhel-9" >https://www.redhat.com/en/blog/rhel-security-sha-1-package-signatures-distrusted-rhel-9<i class="fas fa-external-link-alt"></i></a><br>4、man sign.conf<br>5、初始化Linux数据盘<br> <a class="link"   href="https://support.huaweicloud.com/qs-ecs/zh-cn_topic_0085634797.html" >https://support.huaweicloud.com/qs-ecs/zh-cn_topic_0085634797.html<i class="fas fa-external-link-alt"></i></a><br>6、openSUSE 源使用帮助<br><a class="link"   href="https://mirrors.ustc.edu.cn/help/opensuse.html" >https://mirrors.ustc.edu.cn/help/opensuse.html<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>OBS</category>
+      </categories>
+      <tags>
+        <tag>OBS</tag>
+        <tag>rpmbuild</tag>
+        <tag>rpmsign</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用 ebpf USDT 追踪用户态程序</title>
+    <url>/tracing-userspace-process-ebpf-usdt/</url>
+    <content><![CDATA[<p>USDT 是一种探针技术，让用户态程序也支持使用 perf&#x2F;ebpf 性能分析工具进行 tracing&#x2F;profiling。做性能分析通常听过 perf&#x2F;ebpf 这些工具，这些工具通常用在内核上，用于分析内核的一些性能问题，如果是用户态程序也遇到性能问题了，我们希望用户态程序也能使用 perf&#x2F;ebpf 工具进行 tracing&#x2F;profiling。那么就需要 USDT 技术了。</p>
+<p>简单来说，USDT 就是探针技术，我们在源码里插入一个固定的探针。当我们 tracing 这个探针的时候，就获取我们埋点的数据了。</p>
+<h2 id="USDT-如何插入探针？"><a href="#USDT-如何插入探针？" class="headerlink" title="USDT  如何插入探针？"></a>USDT  如何插入探针？</h2><p>插入探针，有时候也叫做埋点。只需要包含 &lt;sys&#x2F;sdt.h&gt; 头文件，然后利用 DTRACE_PROBE 系列函数埋点即可。</p>
+<p>DTRACE_PROBE 系列函数定义在  <code>/usr/include/sys/sdt.h</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* DTrace compatible macro names.  */</span></span><br><span class="line">DTRACE_PROBE(provider,probe)</span><br><span class="line">DTRACE_PROBE1(provider,probe,parm1)</span><br><span class="line">DTRACE_PROBE2(provider,probe,parm1,parm2)</span><br><span class="line">DTRACE_PROBE3(provider,probe,parm1,parm2,parm3)</span><br><span class="line">[...]</span><br></pre></td></tr></table></figure>
+<p>第一次看到DTRACE_PROBE1, 2, 3, 4 … 可能会有些懵，这都是啥呀？！</p>
+<p>实际上很简单，而且用法也很简单，我用 DPDK l2fwd 举个例子，<br><a class="link"   href="https://git.dpdk.org/dpdk/tree/examples/l2fwd" >https://git.dpdk.org/dpdk/tree/examples/l2fwd<i class="fas fa-external-link-alt"></i></a></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line">        </span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line">        </span><br><span class="line">    	<span class="built_in">printf</span>(<span class="string">&quot;portid: %d, queueid: %d, rcvd: %d\n&quot;</span>, portid, <span class="number">0</span>, nb_rx);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>上面的代码是一个利用 DPDK l2 fwd 里的示例代码， rte_eth_rx_burst 函数从网卡收包，我们想知道本次收包收了多少个，于是我们打了一条 log。</p>
+<p>这样实现很不优雅，<strong>首先是在 datapath 打 log 是错误的决定</strong>。其次，我们只希望在 tracing 的时候打印结果，不 tracing 的时候不打印结果。使用 打 log 的方式是无法实现这种效果的，我们需要一个开关，能动态打开和关闭 tracing 的开关，当我们 attach 到这个探针时候，我们可以观测到数据，当我们 detach 的时候，就去掉这个探针，不增加额外的观测消耗。</p>
+<p>USDT 可以实现动态开关的功能。我们只需要添加 &lt;sys&#x2F;sdt.h&gt; 头文件，将 log 语句替换为 DTRACE_PROBE3 语句即可。DTRACE_PROBE5 的数字 3 代表 3 个观测参数，前两个是标识参数，第一个通常用 appname 填充,第二个通常用函数名称填充。当我们使用 perf、ebpf 等观测工具时，通过这两个参数定位我们预先埋下的观测点。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/sdt.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line"></span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line"></span><br><span class="line">		DTRACE_PROBE3(l2fwd, l2fwd_main_loop, portid, <span class="number">0</span>, rcvd);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="查看可用的探针"><a href="#查看可用的探针" class="headerlink" title="查看可用的探针"></a>查看可用的探针</h2><p>查看可用探针</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -l <span class="string">&quot;usdt:/usr/bin/l2fwd:*&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>查看正在运行的进程的可用探针，会同时展示其链接的动态库的可用探针</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -lp $(pidof l2fwd) <span class="string">&quot;usdt:*&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="USDT-使用"><a href="#USDT-使用" class="headerlink" title="USDT 使用"></a>USDT 使用</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bpftrace -e &#x27;usdt:/usr/bin/l2fwd:l2fwd_main_loop &#123; printf(&quot;%d,%d,%d\n&quot;,arg0,arg1,arg2); &#125;&#x27;</span><br></pre></td></tr></table></figure>
+<p>bpftrace 内置许多参数，比如 comm, pid, cpu, elapsed，利用这些参数可以实现更高级的 tracing。<br>还可以通过 bcc&#x2F;libbpf 将一段时间的数据收集起来，进行统计，得出更宏观的指标，这样有一定的代码量。bpftrace 的优势就是一行，很简单。</p>
+<h2 id="USDT-原理"><a href="#USDT-原理" class="headerlink" title="USDT 原理"></a>USDT 原理</h2><p>包含 USDT 的代码经过编译后生成的二进制文件将有一个名为 .stapsdt.base 的 ELF 段。这个 .stapsdt.base 有助于 tracing 工具在二进制文件加载到内存后计算探针的内存地址。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">readelf -S l2fwd | grep sdt</span></span><br><span class="line">  [17] .stapsdt.base     PROGBITS         00000000004053d0  000053d0</span><br><span class="line">  [28] .note.stapsdt     NOTE             0000000000000000  000061fc</span><br></pre></td></tr></table></figure>
+
+<p>还有一个 ELF note，note 记录了探针的相关信息（名称、地址、信号量、参数）。用户态进程可以读取这个段获得探针的信息。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Displaying notes found in: .note.stapsdt</span><br><span class="line">  Owner                Data size 	Description</span><br><span class="line">  stapsdt              0x00000042	NT_STAPSDT (SystemTap probe descriptors)</span><br><span class="line">    Provider: l2fwd</span><br><span class="line">    Name: l2fwd_main_loop</span><br><span class="line">    Location: 0x0000000000402596, Base: 0x00000000004053d0, Semaphore: 0x0000000000000000</span><br><span class="line">    Arguments: 4@%ebp -4@$0 4@%ecx</span><br></pre></td></tr></table></figure>
+<h2 id="USDT-动态开关"><a href="#USDT-动态开关" class="headerlink" title="USDT 动态开关"></a>USDT 动态开关</h2><p>反汇编二进制，发现 DTRACE_PROBE 被编译为一条 nop 指令，当不进行 probe 时候，就是执行一条 nop 指令，当进行 probe 的时候替换为 int3 进行跳转到 hook 函数。<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="/../img/1706001641941-1e147d49-ec2e-4ecb-8cdc-6dbec57fbf17.png"
+                      alt="image.png"
+                ></p>
+]]></content>
+      <categories>
+        <category>tracing</category>
+      </categories>
+      <tags>
+        <tag>ebpf</tag>
+        <tag>usdt</tag>
+        <tag>sdt</tag>
+        <tag>tracing</tag>
+        <tag>userspace</tag>
       </tags>
   </entry>
   <entry>
@@ -898,238 +1130,6 @@
         <tag>isa</tag>
         <tag>compile</tag>
         <tag>arch</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hexo-Next主题配置</title>
-    <url>/hexo-next-theme-configuration-picture-configuration/</url>
-    <content><![CDATA[<h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
-<p><strong>修改引入图片路径即可解决，</strong></p>
-<p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
-<p><code>../img/gris.png</code> (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常预览&#x2F;显示图片，<strong>但是文件名不要有空格</strong>，有空格云端显示不出来。</p>
-<p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/gris.png"
-                      alt="Gris"
-                ></p>
-<p><strong>结构展示</strong></p>
-<p>如果没有理解的话，看看这张结构图</p>
-<p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/dict_tree.png"
-                     
-                ></p>
-<h1 id="二、插件"><a href="#二、插件" class="headerlink" title="二、插件"></a>二、插件</h1><p>安装插件的时候要多搜索，寻找最近的文章看，如果你也是使用Next 主题，尽量找Hexo Next 官方最近更新的文档看，因为随着<code>Hexo/Next</code>的版本更新，很多功能都被开发者集成进去了，只需要修改一下主题配置文件即可，<strong>简而言之，找最新的文章&#x2F;文档参考。</strong></p>
-<blockquote>
-<p>Hexo-Next 文档地址</p>
-<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
-</blockquote>
-<h2 id="安装的插件"><a href="#安装的插件" class="headerlink" title="安装的插件"></a>安装的插件</h2><p>安装的插件并不多，主要是够用即可</p>
-<p>hexo-symbols-count-time</p>
-<p>hexo-excerpt —— Because, auto_excerpt not working</p>
-<p>hexo-generator-searchdb——站内搜索</p>
-<p>大家都喜欢的插件，Next 文档都已经列出来了，去找就行了🤣</p>
-<blockquote>
-<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
-</blockquote>
-<p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/Next_dos_advanced.png"
-                     
-                ></p>
-]]></content>
-      <categories>
-        <category>hexo</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Reboot 命令实际是 systemctl ？</title>
-    <url>/reboot_is_link_to_systemctl/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在一次查问题的过程中，偶然发现 reboot 命令是<strong>直接链接</strong>到 systemctl 的（划重点：直接链接到），看下面的演示，</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># which reboot</span></span><br><span class="line">/sbin/reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># file /sbin/reboot</span></span><br><span class="line">/sbin/reboot: symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
-
-<p>第一直觉就是这是不是不合理，直接把 reboot 软链到 systemctl ，不就相当于直接执行 systemctl 命令，这怎么会起到 reboot 的作用的呢？</p>
-<p>继续看，</p>
-<p>发现 <code>/sbin</code> 目录下很多命令都是直接软链到 <code>systemctl</code>，没有参数来区分，而且这些命令是 100% 工作的，当数量多起来的时候，事情逐渐合理起来了。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># file /sbin/* | grep symbolic | grep systemctl</span></span><br><span class="line">/sbin/halt:                  symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/poweroff:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/reboot:                symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/runlevel:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/shutdown:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/telinit:               symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
-
-<p>那 systemctl 是如何区分出这些命令的？</p>
-<p>熟悉 C 编程的同学大概率可以猜到了，systemctl 可能是通过进程名来区分的，也就是 <code>argv[0]</code> 这个参数，C 语言里 <code>argv[0]</code> 保存的是程序的名称（其他语言也有类似的参数）。</p>
-<h2 id="那拿-systemctl-测试一下？"><a href="#那拿-systemctl-测试一下？" class="headerlink" title="那拿 systemctl 测试一下？"></a>那拿 systemctl 测试一下？</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@cs8 ~]<span class="comment"># ln -sf /usr/bin/systemctl testcmd</span></span><br><span class="line">[root@cs8 ~]<span class="comment"># ./testcmd</span></span><br><span class="line">UNIT                                                                                LOAD   ACTIVE SUB       DESCRIPTION</span><br><span class="line">proc-sys-fs-binfmt_misc.automount                                                   loaded active waiting   Arbitrary Executable File Formats File System Automount Point</span><br><span class="line">sys-devices-pci0000:00-0000:00:05.0-virtio0-net-eth0.device                         loaded active plugged   Virtio network device</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda-vda1.device                   loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda/vda1</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda.device                        loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda</span><br></pre></td></tr></table></figure>
-
-<p>可以看到 systemctl 并不识别 testcmd 命令，而是打印了所有 uints，等价 <code>systemctl</code> 直接执行。</p>
-<h2 id="看代码"><a href="#看代码" class="headerlink" title="看代码"></a>看代码</h2><p>和我们预想的一样，systemctl 内部通过 argv 来判断由谁调用的</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// systemd/src/systemctl/systemctl.c</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">systemctl_dispatch_parse_argv</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">        assert(argc &gt;= <span class="number">0</span>);</span><br><span class="line">        assert(argv);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;halt&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_HALT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;poweroff&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;reboot&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (kexec_loaded())</span><br><span class="line">                        arg_action = ACTION_KEXEC;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                        arg_action = ACTION_REBOOT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;shutdown&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> shutdown_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;init&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (sd_booted() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        arg_action = _ACTION_INVALID;</span><br><span class="line">                        <span class="keyword">return</span> telinit_parse_argv(argc, argv);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        arg_action = ACTION_TELINIT;</span><br><span class="line">                        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;runlevel&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_RUNLEVEL;</span><br><span class="line">                <span class="keyword">return</span> runlevel_parse_argv(argc, argv);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        arg_action = ACTION_SYSTEMCTL;</span><br><span class="line">        <span class="keyword">return</span> systemctl_parse_argv(argc, argv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="自己实现一个"><a href="#自己实现一个" class="headerlink" title="自己实现一个"></a>自己实现一个</h2><p>实现也很简单，几行代码就行。只需要实现通过 argv[0] 识别调用方是谁，然后根据不同的调用方执行不同的逻辑即可。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;string.h&gt;</span></span><br><span class="line"></span><br><span class="line">int main(int argc, char *argv[]) &#123;</span><br><span class="line">    // 提取程序名（最后一个斜杠后的内容）</span><br><span class="line">    char *programName = strrchr(argv[0], <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">    <span class="keyword">if</span> (programName != NULL) &#123;</span><br><span class="line">        programName++; // 移动到斜杠后的第一个字符</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        programName = argv[0]; // 如果没有斜杠，直接使用整个参数</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 根据程序名执行不同的逻辑</span><br><span class="line">    <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programA&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 A 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programB&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 B 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;未知程序，执行默认逻辑\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">return</span> 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>完结撒花</p>
-]]></content>
-      <categories>
-        <category>linux</category>
-      </categories>
-      <tags>
-        <tag>reboot</tag>
-        <tag>systemd</tag>
-        <tag>sbin</tag>
-        <tag>link</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Run Your Own OBS 编译系统</title>
-    <url>/run-your-own-obs-open-build-service/</url>
-    <content><![CDATA[<p>OBS（Open Build Service）是一个由 SUSE 开源的操作系统发行版的构建系统，可以用来创建和分发软件包。OBS支持几乎所有的主流发行版的包，比如说 SUSE系，RedHat系，Debian系，Arch系等等。</p>
-<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p>安装 OBS 最简单的方式就是使用 <a class="link"   href="https://openbuildservice.org/download/" >openbuildservice<i class="fas fa-external-link-alt"></i></a> 网站提供的镜像（iso&#x2F;qcow2&#x2F;vmdk&#x2F;vdi），将镜像部署机器上就获得一个 OBS 实例。<br>通常情况下，使用 SUSE 制作好的虚拟机镜像是最省时间的，比如使用 qemu-kvm 下载 qcow2 镜像，使用 VMware 下载 vmdk 镜像，使用 virtualbox 下载 vdi 镜像。也可以使用 SUSE 提供的 iso 镜像重新安装一台 OBS 实例，缺点是需要等待 iso 安装完成才能得到一台 OBS 实例，使用虚拟机镜像，启动后就可以获得 OBS 实例，节省了 iso 的安装时间。</p>
-<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><p>在 Linux 平台部署 OBS 应该是大多数人的需求。当然也很简单，Linux 平台下大家经常使用 libvirt&#x2F;qemu 组合创建虚拟机，使用 <code>virt-install</code> 会比写 libvirt xml 或写 qemu 命令行简单一些</p>
-<p>可以使用 virt-install 命令行快速创建一个 OBS 实例,</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/usr/bin/bash</span></span><br><span class="line"></span><br><span class="line">VM_NAME=&quot;OBS&quot;</span><br><span class="line">DISK=&quot;obs-server.x86_64-qcow2.qcow2&quot;</span><br><span class="line"></span><br><span class="line">virt-install \</span><br><span class="line">--name &quot;$&#123;VM_NAME&#125;&quot; \</span><br><span class="line">--memory 32768 \</span><br><span class="line">--vcpus 16 \</span><br><span class="line">--import \</span><br><span class="line">--os-variant opensuse15.3 \</span><br><span class="line">--disk &quot;$&#123;DISK&#125;&quot; \</span><br><span class="line">--network network=default,model=virtio \</span><br><span class="line">--graphics none \</span><br><span class="line">--virt-type kvm</span><br></pre></td></tr></table></figure>
-<p>注：cpu 和 内存可以根据 host 机器的实际 cpu 和内存进行调整，示例是 16 核 32g 的配置，网络默认是 nat 网络。</p>
-<p>默认的登录名和密码分别是 <code>root</code> &#x2F; <code>opensuse</code></p>
-<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>当我们成功创建了一个 OBS 实例，打开浏览器访问OBS对应的 ip 地址就可以访问到 OBS 网页了。<br>OBS 镜像首次启动至少需要 10 分钟，使用 vnc 连接服务器就可以看到 OBS 实例的启动卡在这个地方，待会会介绍这里进行的实际是 OBS 读取 fqdn，默认超时时间是 10 mins</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">A start job is running for OBS API Setup (8min 34s / no limit )</span><br></pre></td></tr></table></figure>
-
-<p>journal 看日志可以看到，setup-appliance.sh 脚本在持续等待 fqdn，而且超时时间设置为 600 秒，也就是 10mins，感觉时间设置的过长了，如果本地网络比较好的话，改下脚本将超时时间设置为 十几秒就够了<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/obs-set-fqdn-journal-log.png"
-                      alt="image.png"
-                ></p>
-<p>&#x2F;usr&#x2F;lib&#x2F;obs&#x2F;server&#x2F;setup-appliance.sh</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">function get_hostname &#123;</span><br><span class="line"></span><br><span class="line">  if [[ $1 &amp;&amp; $BOOTSTRAP_TEST_MODE == 1 ]];then</span><br><span class="line">    FQHOSTNAME=$1</span><br><span class="line">  else</span><br><span class="line">    TIMEOUT=600</span><br><span class="line">    while [ -z &quot;$FQHOSTNAME&quot; -o &quot;$FQHOSTNAME&quot; = &quot;localhost&quot; ];do</span><br><span class="line">      FQHOSTNAME=`hostname -f 2&gt;/dev/null`</span><br><span class="line">      TIMEOUT=$(($TIMEOUT-1))</span><br><span class="line">      [ &quot;$TIMEOUT&quot; -le 0 ] &amp;&amp; break</span><br><span class="line">      echo &quot;Waiting for FQHOSTNAME ($TIMEOUT)&quot;</span><br><span class="line">      sleep 1</span><br><span class="line">    done</span><br><span class="line">  fi</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>超时时间设置为 600 s ，在目前的网络条件下可能是没有必要的，改为十几秒足够了<br>注：在目前版本的 OBS  Git 仓库上，超时时间已经被调整为 30 s 了（<a class="link"   href="https://github.com/openSUSE/open-build-service/blob/c5ad76b359fd8b2ad77a597fa7cd65ed47b93d76/dist/functions.setup-appliance.sh#L144" >functions.setup-appliance.sh<i class="fas fa-external-link-alt"></i></a>），感觉这才是比较合理的值</p>
-<h3 id="设置-ssh-服务开机自启"><a href="#设置-ssh-服务开机自启" class="headerlink" title="设置 ssh 服务开机自启"></a>设置 ssh 服务开机自启</h3><p>默认 OBS 2.10 镜像是没有开启 ssh 远程连接的，推荐开启，方便远程登录</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">systemctl enable --now sshd</span><br></pre></td></tr></table></figure>
-<p>云厂商虚拟机可以先通过控制台的 vnc 连接到服务器，执行以上命令。之后可以通过 ssh 连接 OBS 实例了，OBS 镜像默认的登录用户名和密码是 root&#x2F;opensuse 。</p>
-<p>现在针对各个云服务器的攻击非常多，保持默认密码很容易被攻击者入侵服务器，导致服务器成为肉鸡。。<br>为了安全起见，在以下几种方案里选择一个方式保护自己的云服务器<br>1、禁用密码登录、采用公钥登录，目前最安全的方案<br>2、禁用 root 远程登录，新增一个用户用于远程登录，修改默认 ssh 端口号，安全性适中<br>3、不禁用 root 远程登录，但是修改一个复杂一点的密码，修改默认 ssh 端口号，安全性弱</p>
-<h3 id="更换国内镜像源"><a href="#更换国内镜像源" class="headerlink" title="更换国内镜像源"></a>更换国内镜像源</h3><p>OBS 默认的镜像源速度不是很理想，换成国内源加快安装软件包的速度</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">禁用已有所有镜像源</span></span><br><span class="line">zypper mr -da</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用 USTC 的软件源</span></span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/distribution/leap/\$releasever/repo/oss USTC:OSS</span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/distribution/leap/\$releasever/repo/non-oss USTC:NON-OSS</span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/update/leap/\$releasever/oss USTC:UPDATE-OSS</span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/update/leap/\$releasever/non-oss USTC:UPDATE-NON-OSS</span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/update/leap/\$releasever/sle USTC:UPDATE-SLE</span><br></pre></td></tr></table></figure>
-<p>注：SUSE 系列 OS 存放 repo 文件的目录是<code>/etc/zypp/repos.d</code></p>
-<h2 id="数据分盘（强烈推荐）"><a href="#数据分盘（强烈推荐）" class="headerlink" title="数据分盘（强烈推荐）"></a>数据分盘（强烈推荐）</h2><p><strong>如果你是想搭建一个试一下或者自己使用，并不是用于企业的生产环境，可以跳过这一步。</strong><br>在生产环境中，数据的价值是很高的，假如重要数据发生了丢失，而且没有备份（重要数据还不备份。。。<del>活该</del>（大雾）），造成的损失就比较严重了。<br>OBS 作为一个打包系统，数据虽然不是特别的重要，但是还是建议将 OBS 的数据分盘存储。<br>在介绍数据分盘的逻辑前，先介绍一下 OBS 镜像本身，下载下来的 OBS 镜像安装好后是一个 openSUSE leap 15.3 系统，我们的 OBS 服务安装在 openSUSE 操作系统上的，更具体来说，是安装在<code>/srv</code> 目录下，所以数据分盘的逻辑就很显而易见了。将 OBS <code>/srv </code>目录单独放到一个数据盘上，剩下的作为系统盘。</p>
-<h3 id="分盘操作原理"><a href="#分盘操作原理" class="headerlink" title="分盘操作原理"></a>分盘操作原理</h3><p>我们可以很轻松的联想到，单独给我们 OBS 虚拟机通一块数据盘，将数据盘挂在到 &#x2F;srv 分区，将原有的数据拷贝到数据盘上就可以实现 OBS 服务与系统盘脱钩。</p>
-<h3 id="查看磁盘的情况"><a href="#查看磁盘的情况" class="headerlink" title="查看磁盘的情况"></a>查看磁盘的情况</h3><p>查看系统的磁盘情况，此处挂了一块 100G 的磁盘，被 Linux 系统标识为 &#x2F;dev&#x2F;vdb</p>
-<blockquote>
-<p>注：这里的 vda 是 &#x2F;dev&#x2F;vda，是系统盘，vda1 是在系统盘上分区，这里分区设置是将整个磁盘的空间全部分给 vda1，这里没必要讲磁盘分区。官方提供的 OBS 镜像里做了分区，那就保持这样就好了，系统盘和我们的数据分盘操作关系不大。</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">lsblk</span></span><br><span class="line">NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT</span><br><span class="line">sr0     11:0    1  368K  0 rom</span><br><span class="line">vda    253:0    0  100G  0 disk</span><br><span class="line">`-vda1 253:1    0  100G  0 part /</span><br><span class="line">vdb    253:16   0  100G  0 disk</span><br></pre></td></tr></table></figure>
-<h3 id="磁盘需要格式化为文件系统"><a href="#磁盘需要格式化为文件系统" class="headerlink" title="磁盘需要格式化为文件系统"></a>磁盘需要格式化为文件系统</h3><p>将单独的数据盘 vdb 全盘格式化为 ext4 文件系统，此处不需要将磁盘分区为 1,2,3。（可以，但没必要）</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkfs -t ext4 /dev/vdb</span><br></pre></td></tr></table></figure>
-
-<p>将格式化好的磁盘挂在到 &#x2F;mnt 目录，（挂载到 &#x2F;mnt 目录下是为了拷贝数据用的，算是个临时目录 ）接着将 &#x2F;srv 目录下的所有文件同步到 &#x2F;mnt 目录，也就是同步到单独的数据盘上</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mount /dev/vdb /mnt</span><br><span class="line">rsync -av --progress /srv/ /mnt</span><br></pre></td></tr></table></figure>
-
-<h3 id="设置开机挂载"><a href="#设置开机挂载" class="headerlink" title="设置开机挂载"></a>设置开机挂载</h3><p>在 systemd 启动 OBS 服务之前，我们需要将我们的数据盘 mount 到 &#x2F;sev 目录下，隐藏原有的文件。这样当 systemd 拉起 OBS 服务是时候，读取的数据就是从<br>通过 <code>lsblk -f</code> 命令查询 &#x2F;dev&#x2F;vdb 磁盘的 uuid 号，将数据盘开机挂载到 &#x2F;srv 目录， Linux mount 会隐藏原有目录的内容，不用担心 &#x2F;srv 目录非空，OBS 运行过程中对 &#x2F;srv 目录下的文件读写会写到系统盘上的位置，这种情况是不会发生的，这个是文件系统的实现，mount 过后，对 &#x2F;srv 路径下所有文件读写都会被文件系统重定向到 mount 的数据盘上。<br>mount 之后，这样每次 OBS 服务启动时读取的数据都是从单独的数据盘上读的，这样实现数据分离。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cat</span> /etc/fatab</span></span><br><span class="line">UUID=bedc29dd-b6c7-408d-917e-05d13111e056 /     ext4 defaults 1 1</span><br><span class="line">UUID=ba63af21-95d4-4fcc-b77e-a4e8de89280c /srv  ext4 defaults 1 1</span><br></pre></td></tr></table></figure>
-<p>这里有一个问题，要不要在上一步的 rsync 过后，将原有的 &#x2F;srv 目录清空，其实是可以的，但是没有必要。</p>
-<p>此时我们已经完成了 OBS 的数据分盘。</p>
-<h2 id="为-OBS-添加-build-target"><a href="#为-OBS-添加-build-target" class="headerlink" title="为 OBS 添加 build target"></a>为 OBS 添加 build target</h2><p>默认情况下，新创建的 OBS 是没有 build target。添加了对应发行版的 build target 后，就可以为对应的发行版编译软件包了。<br>我们查看 <a class="link"   href="https://build.opensuse.org/project" >https://build.opensuse.org<i class="fas fa-external-link-alt"></i></a> 网站上，发现拥有许多 build target，比如说 CentOS 7, CentOS 8，CentOS Stream，SUSE SLE，openSUSE，AlmaLinux，RockyLinux，Debian 等等。</p>
-<p>推荐先创建一个 Meta 项目，在以这个 Meta 项目作为基石，创建 AlmaLinux:9 的编译环境。</p>
-<h3 id="1-为发行版编译项目创建一个-meta-项目"><a href="#1-为发行版编译项目创建一个-meta-项目" class="headerlink" title="1) 为发行版编译项目创建一个 meta 项目"></a>1) 为发行版编译项目创建一个 meta 项目</h3><p>创建 meta 项目是必要的，后面会介绍。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">osc meta -e prj Meta:AlmaLinux:9</span><br></pre></td></tr></table></figure>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">&lt;project name=&quot;Meta:AlmaLinux:9&quot;&gt;</span><br><span class="line">  &lt;title&gt;Meta AlmaLinux 9&lt;/title&gt;</span><br><span class="line">  &lt;description/&gt;</span><br><span class="line">  &lt;person userid=&quot;Admin&quot; role=&quot;maintainer&quot;/&gt;</span><br><span class="line"></span><br><span class="line">  &lt;repository name=&quot;standard&quot;&gt;</span><br><span class="line">    &lt;arch&gt;x86_64&lt;/arch&gt;</span><br><span class="line">  &lt;/repository&gt;</span><br><span class="line"></span><br><span class="line">&lt;/project&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>编写好项目的 build target 之后，会自动创建如下目录<br><code>/srv/obs/build/AlmaLinux:9/standard/x86_64</code></p>
-<h3 id="2-添加编译依赖-rpm-包（BuildRequire-）"><a href="#2-添加编译依赖-rpm-包（BuildRequire-）" class="headerlink" title="2) 添加编译依赖 rpm 包（BuildRequire ）"></a>2) 添加编译依赖 rpm 包（BuildRequire ）</h3><p>对于 AlmaLinux 来说，以 repo粒度来说最小化的依赖包是 baseos 和 appstream 里面的包。但是通常情况下，这些包是不够用的，比如说编译 kernel, 还需要 crb 和 epel 里的包。<br>这里推荐将发行版的，baseos, appstream, crb, epel 仓库的对应 arch 的包都下载到 :full 路径下作为依赖。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir /srv/obs/build/Meta:AlmaLinux:9/standard/x86_64/:full</span><br><span class="line"></span><br><span class="line">cp &lt;needed-packages-to-build-packages&gt;/*.rpm /srv/obs/build/Meta:AlmaLinux:9/standard/x86_64/:full/</span><br><span class="line">chown -R obsrun.obsrun /srv/obs/build/Meta:AlmaLinux:9</span><br></pre></td></tr></table></figure>
-<h3 id="3-添加项目的配置文件"><a href="#3-添加项目的配置文件" class="headerlink" title="3) 添加项目的配置文件"></a>3) 添加项目的配置文件</h3><p>没添加 project config 之前，项目是处于 broken 状态的<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/obs-broken-status.png"
-                      alt="obs-broken-status"
-                ></p>
-<p>添加也很简单，将 openSUSE  网站的 project conf 复制过来即可<br><a class="link"   href="https://build.opensuse.org/projects/AlmaLinux:9/prjconf" >https://build.opensuse.org/projects/AlmaLinux:9/prjconf<i class="fas fa-external-link-alt"></i></a></p>
-<h3 id="4-扫描项目解决依赖"><a href="#4-扫描项目解决依赖" class="headerlink" title="4) 扫描项目解决依赖"></a>4) 扫描项目解决依赖</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">obs_admin --rescan-repository Meta:AlmaLinux:9 standard x86_64</span><br></pre></td></tr></table></figure>
-
-<p>执行完 rescan-repository 命令后，如果出现 :repodone 文件代表文件扫描完毕<br>如果配置不完整，查下目录下的文件里面的内容，可以看出报错出在哪里</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">ls</span> /srv/obs/build/AlmaLinux:9/standard/x86_64</span></span><br><span class="line">:bininfo  :depends  :full  :full.solv  :packstatus  :repodone  :repoinfo  :schedulerstate</span><br></pre></td></tr></table></figure>
-<p>5）以 meta 项目为基础创建发行版编译项目<br>添加完 build target 之后，就可以为这个发行版构建软件包了<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/obs-public-status.png"
-                      alt="obs-public-status"
-                ></p>
-<h3 id="5）如法炮制，创建一个用于发行版编译的项目"><a href="#5）如法炮制，创建一个用于发行版编译的项目" class="headerlink" title="5）如法炮制，创建一个用于发行版编译的项目"></a>5）如法炮制，创建一个用于发行版编译的项目</h3><p>前面 4 个步骤中，我们已经创建了 一个 Meta 项目，但是这个项目并不能作为发行版编译的项目，需要以 meta 项目为模板创建用于发行版编译的项目<br>因为在 OBS 里所有的项目都是一样的，这里和创建 meta 项目一样创建一个用于发行版编译的项目。<br>这里的区别是，repository 标签的写法，我们复用了之前创建的 meta 项目。创建完成，扫描仓库解决依赖后就可以正式用作编译的仓库了。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">osc meta -e prj AlmaLinux:9</span><br></pre></td></tr></table></figure>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">&lt;project name=&quot;AlmaLinux:9&quot;&gt;</span><br><span class="line">  &lt;title&gt;AlmaLinux 9&lt;/title&gt;</span><br><span class="line">  &lt;description&gt;AlmaLinux 9 distribution project.</span><br><span class="line"></span><br><span class="line">  &lt;/description&gt;</span><br><span class="line">  &lt;person userid=&quot;Admin&quot; role=&quot;maintainer&quot;/&gt;</span><br><span class="line">  &lt;repository name=&quot;standard&quot;&gt;</span><br><span class="line">    &lt;path project=&quot;Meta:AlmaLinux:9&quot; repository=&quot;standard&quot;/&gt;</span><br><span class="line">    &lt;arch&gt;x86_64&lt;/arch&gt;</span><br><span class="line">  &lt;/repository&gt;</span><br><span class="line">&lt;/project&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">obs_admin --rescan-repository AlmaLinux:9 standard x86_64</span><br></pre></td></tr></table></figure>
-
-<p>现在可以为 AlmaLinux 编译软件包了，如下图<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/img/obs-build-success-status.png"
-                      alt="obs-build-success-status"
-                ></p>
-<h2 id="已知问题"><a href="#已知问题" class="headerlink" title="已知问题"></a>已知问题</h2><h3 id="OBS-使用-qemu-kvm-作为构建环境会构建失败"><a href="#OBS-使用-qemu-kvm-作为构建环境会构建失败" class="headerlink" title="OBS 使用 qemu-kvm 作为构建环境会构建失败"></a>OBS 使用 qemu-kvm 作为构建环境会构建失败</h3><p>OBS 默认采用 qemu-kvm 创建的虚拟机作为编译环境，采用 qemu-kvm 作为构建方式很多情况下会报错，导致构建失败。这个问题没有仔细研究过，有一个 workaround 可以比较简单的解决这个问题，那就是将 qemu-kvm 命令重命名，然后重启 obsworker.service 。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mv /usr/bin/qemu-kvm /usr/bin/qemu-kvm.bak</span><br><span class="line">systemctl restart obsworker.service</span><br></pre></td></tr></table></figure>
-
-<h3 id="waiting-for-8-compliant-workers-8-of-them-bad"><a href="#waiting-for-8-compliant-workers-8-of-them-bad" class="headerlink" title="waiting for 8 compliant workers (8 of them bad)"></a>waiting for 8 compliant workers (8 of them bad)</h3><p>执行以下命令可以解决这个问题</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">obs_admin --drop-badhosts</span><br></pre></td></tr></table></figure>
-
-<h3 id="warning-Signature-not-supported-Hash-algorithm-SHA1-not-available"><a href="#warning-Signature-not-supported-Hash-algorithm-SHA1-not-available" class="headerlink" title="warning: Signature not supported. Hash algorithm SHA1 not available"></a>warning: Signature not supported. Hash algorithm SHA1 not available</h3><p>因为 OBS 默认采用 SHA1 算法为 RPM 包签名，在一些系统上比如 RHEL 9 上 sha1 算法被弃用。因为 OBS 为了保证兼容性，默认的签名算法依然是 sha1。<br>通过编辑 sign.conf 文件可以将签名算法改为 sha256。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /etc/sign.conf</span></span><br><span class="line">user: obsrun@localhost</span><br><span class="line">server: 127.0.0.1</span><br><span class="line">allowuser: obsrun</span><br><span class="line">allow: 127.0.0.1</span><br><span class="line">hash: sha256</span><br><span class="line">phrases: /srv/obs/gnupg/phrases</span><br></pre></td></tr></table></figure>
-
-<h3 id="obs-页面点击下载会被重定向回首页"><a href="#obs-页面点击下载会被重定向回首页" class="headerlink" title="obs 页面点击下载会被重定向回首页"></a>obs 页面点击下载会被重定向回首页</h3><p>修改 external_frontend 可以解决这个问题。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /srv/www/obs/api/config/options.yml</span></span><br><span class="line"></span><br><span class="line">external_frontend_host: &lt;ip or hostname&gt;</span><br><span class="line">external_frontend_port: 443</span><br><span class="line">external_frontend_protocol: https</span><br></pre></td></tr></table></figure>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>1、Archive:Build Service adding build targets<br><a class="link"   href="https://en.opensuse.org/Archive:Build_Service_adding_build_targets" >https://en.opensuse.org/Archive:Build_Service_adding_build_targets<i class="fas fa-external-link-alt"></i></a><br>2、Local OBS doesn’t build anymore (waiting for 4 compliant workers (4 of them bad))<br><a class="link"   href="https://lists.opensuse.org/archives/list/buildservice@lists.opensuse.org/thread/EGWPVEZXSBAB3TTFKPERUNBU5SWECYNB/" >https://lists.opensuse.org/archives/list/buildservice@lists.opensuse.org/thread/EGWPVEZXSBAB3TTFKPERUNBU5SWECYNB/<i class="fas fa-external-link-alt"></i></a><br>3、Enhancing RHEL Security: Understanding SHA-1 deprecation on RHEL 9<br><a class="link"   href="https://www.redhat.com/en/blog/rhel-security-sha-1-package-signatures-distrusted-rhel-9" >https://www.redhat.com/en/blog/rhel-security-sha-1-package-signatures-distrusted-rhel-9<i class="fas fa-external-link-alt"></i></a><br>4、man sign.conf<br>5、初始化Linux数据盘<br> <a class="link"   href="https://support.huaweicloud.com/qs-ecs/zh-cn_topic_0085634797.html" >https://support.huaweicloud.com/qs-ecs/zh-cn_topic_0085634797.html<i class="fas fa-external-link-alt"></i></a><br>6、openSUSE 源使用帮助<br><a class="link"   href="https://mirrors.ustc.edu.cn/help/opensuse.html" >https://mirrors.ustc.edu.cn/help/opensuse.html<i class="fas fa-external-link-alt"></i></a></p>
-]]></content>
-      <categories>
-        <category>OBS</category>
-      </categories>
-      <tags>
-        <tag>OBS</tag>
-        <tag>rpmbuild</tag>
-        <tag>rpmsign</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用 ebpf USDT 追踪用户态程序</title>
-    <url>/tracing-userspace-process-ebpf-usdt/</url>
-    <content><![CDATA[<p>USDT 是一种探针技术，让用户态程序也支持使用 perf&#x2F;ebpf 性能分析工具进行 tracing&#x2F;profiling。做性能分析通常听过 perf&#x2F;ebpf 这些工具，这些工具通常用在内核上，用于分析内核的一些性能问题，如果是用户态程序也遇到性能问题了，我们希望用户态程序也能使用 perf&#x2F;ebpf 工具进行 tracing&#x2F;profiling。那么就需要 USDT 技术了。</p>
-<p>简单来说，USDT 就是探针技术，我们在源码里插入一个固定的探针。当我们 tracing 这个探针的时候，就获取我们埋点的数据了。</p>
-<h2 id="USDT-如何插入探针？"><a href="#USDT-如何插入探针？" class="headerlink" title="USDT  如何插入探针？"></a>USDT  如何插入探针？</h2><p>插入探针，有时候也叫做埋点。只需要包含 &lt;sys&#x2F;sdt.h&gt; 头文件，然后利用 DTRACE_PROBE 系列函数埋点即可。</p>
-<p>DTRACE_PROBE 系列函数定义在  <code>/usr/include/sys/sdt.h</code></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* DTrace compatible macro names.  */</span></span><br><span class="line">DTRACE_PROBE(provider,probe)</span><br><span class="line">DTRACE_PROBE1(provider,probe,parm1)</span><br><span class="line">DTRACE_PROBE2(provider,probe,parm1,parm2)</span><br><span class="line">DTRACE_PROBE3(provider,probe,parm1,parm2,parm3)</span><br><span class="line">[...]</span><br></pre></td></tr></table></figure>
-<p>第一次看到DTRACE_PROBE1, 2, 3, 4 … 可能会有些懵，这都是啥呀？！</p>
-<p>实际上很简单，而且用法也很简单，我用 DPDK l2fwd 举个例子，<br><a class="link"   href="https://git.dpdk.org/dpdk/tree/examples/l2fwd" >https://git.dpdk.org/dpdk/tree/examples/l2fwd<i class="fas fa-external-link-alt"></i></a></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line">        </span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line">        </span><br><span class="line">    	<span class="built_in">printf</span>(<span class="string">&quot;portid: %d, queueid: %d, rcvd: %d\n&quot;</span>, portid, <span class="number">0</span>, nb_rx);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>上面的代码是一个利用 DPDK l2 fwd 里的示例代码， rte_eth_rx_burst 函数从网卡收包，我们想知道本次收包收了多少个，于是我们打了一条 log。</p>
-<p>这样实现很不优雅，<strong>首先是在 datapath 打 log 是错误的决定</strong>。其次，我们只希望在 tracing 的时候打印结果，不 tracing 的时候不打印结果。使用 打 log 的方式是无法实现这种效果的，我们需要一个开关，能动态打开和关闭 tracing 的开关，当我们 attach 到这个探针时候，我们可以观测到数据，当我们 detach 的时候，就去掉这个探针，不增加额外的观测消耗。</p>
-<p>USDT 可以实现动态开关的功能。我们只需要添加 &lt;sys&#x2F;sdt.h&gt; 头文件，将 log 语句替换为 DTRACE_PROBE3 语句即可。DTRACE_PROBE5 的数字 3 代表 3 个观测参数，前两个是标识参数，第一个通常用 appname 填充,第二个通常用函数名称填充。当我们使用 perf、ebpf 等观测工具时，通过这两个参数定位我们预先埋下的观测点。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/sdt.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line"></span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line"></span><br><span class="line">		DTRACE_PROBE3(l2fwd, l2fwd_main_loop, portid, <span class="number">0</span>, rcvd);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="查看可用的探针"><a href="#查看可用的探针" class="headerlink" title="查看可用的探针"></a>查看可用的探针</h2><p>查看可用探针</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -l <span class="string">&quot;usdt:/usr/bin/l2fwd:*&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>查看正在运行的进程的可用探针，会同时展示其链接的动态库的可用探针</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -lp $(pidof l2fwd) <span class="string">&quot;usdt:*&quot;</span></span><br></pre></td></tr></table></figure>
-<h2 id="USDT-使用"><a href="#USDT-使用" class="headerlink" title="USDT 使用"></a>USDT 使用</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bpftrace -e &#x27;usdt:/usr/bin/l2fwd:l2fwd_main_loop &#123; printf(&quot;%d,%d,%d\n&quot;,arg0,arg1,arg2); &#125;&#x27;</span><br></pre></td></tr></table></figure>
-<p>bpftrace 内置许多参数，比如 comm, pid, cpu, elapsed，利用这些参数可以实现更高级的 tracing。<br>还可以通过 bcc&#x2F;libbpf 将一段时间的数据收集起来，进行统计，得出更宏观的指标，这样有一定的代码量。bpftrace 的优势就是一行，很简单。</p>
-<h2 id="USDT-原理"><a href="#USDT-原理" class="headerlink" title="USDT 原理"></a>USDT 原理</h2><p>包含 USDT 的代码经过编译后生成的二进制文件将有一个名为 .stapsdt.base 的 ELF 段。这个 .stapsdt.base 有助于 tracing 工具在二进制文件加载到内存后计算探针的内存地址。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">readelf -S l2fwd | grep sdt</span></span><br><span class="line">  [17] .stapsdt.base     PROGBITS         00000000004053d0  000053d0</span><br><span class="line">  [28] .note.stapsdt     NOTE             0000000000000000  000061fc</span><br></pre></td></tr></table></figure>
-
-<p>还有一个 ELF note，note 记录了探针的相关信息（名称、地址、信号量、参数）。用户态进程可以读取这个段获得探针的信息。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Displaying notes found in: .note.stapsdt</span><br><span class="line">  Owner                Data size 	Description</span><br><span class="line">  stapsdt              0x00000042	NT_STAPSDT (SystemTap probe descriptors)</span><br><span class="line">    Provider: l2fwd</span><br><span class="line">    Name: l2fwd_main_loop</span><br><span class="line">    Location: 0x0000000000402596, Base: 0x00000000004053d0, Semaphore: 0x0000000000000000</span><br><span class="line">    Arguments: 4@%ebp -4@$0 4@%ecx</span><br></pre></td></tr></table></figure>
-<h2 id="USDT-动态开关"><a href="#USDT-动态开关" class="headerlink" title="USDT 动态开关"></a>USDT 动态开关</h2><p>反汇编二进制，发现 DTRACE_PROBE 被编译为一条 nop 指令，当不进行 probe 时候，就是执行一条 nop 指令，当进行 probe 的时候替换为 int3 进行跳转到 hook 函数。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1706001641941-1e147d49-ec2e-4ecb-8cdc-6dbec57fbf17.png"
-                      alt="image.png"
-                ></p>
-]]></content>
-      <categories>
-        <category>tracing</category>
-      </categories>
-      <tags>
-        <tag>ebpf</tag>
-        <tag>usdt</tag>
-        <tag>sdt</tag>
-        <tag>tracing</tag>
-        <tag>userspace</tag>
       </tags>
   </entry>
 </search>
