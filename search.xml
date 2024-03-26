@@ -10,11 +10,11 @@
 <p>另外一个原因是，数据访问是具有局部性特点的，并不是所有数据都是热点数据，我们只需要在内存里缓存热点数据，保证绝大多数磁盘访问请求可以得到加速即可。</p>
 <p>所以我们不能把所有磁盘的数据都搬到内存里来加速，我们请求一个固定大小的一块内存区域作为的 buffer pool，把最常用的页在内存里建立缓存。</p>
 <p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1690016109627-ecdbf8d8-0857-4d21-9377-f7fac1cd53b2.png"
-                      alt="image.png"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1690016109627-ecdbf8d8-0857-4d21-9377-f7fac1cd53b2.png"
+                        alt="image.png"
+                 ></p>
 <p>图：不同存储介质的访问延迟</p>
 <p>回到项目，项目将实现 buffer pool manager 分为 3 个子任务，</p>
 <ul>
@@ -43,17 +43,17 @@
 <li>p 打印，等价 gdb 中的 p。打印变量。</li>
 </ul>
 <p>举一个当时做项目 debug 的例子，看图，<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1687340563374-349c877d-1bc0-48f6-8171-16b681066f11.png"
-                      alt="image.png"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1687340563374-349c877d-1bc0-48f6-8171-16b681066f11.png"
+                        alt="image.png"
+                 ></p>
 <p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1687340791159-3ce16ec2-205b-49f4-9291-53d5259948df.png"
-                      alt="image.png"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1687340791159-3ce16ec2-205b-49f4-9291-53d5259948df.png"
+                        alt="image.png"
+                 ></p>
 <p>debug 时候会发现， lldb 打印了结构体类型就打印了很长很长，，，，这是因为 C++ STL 标准库后面隐藏了很多细节，但这些细节在 debug 时候会暴露出来了，图中可以看到 debug 时候会 lldb 输出的一个对象结构体是一层套一层。。。<br><strong>Don’t panic</strong>，不熟悉的同学可以去看看侯捷的《STL源码剖析》这本书，这本书是每一位 C++er 必看的一本书了。书中介绍了STL 标准库如何实现这些 <code>vector</code>, <code>string</code> 等高级数据结构的。b 站也有对应的视频，搭配食用，效果更好哈。</p>
 <h3 id="为什么我通过不了InsertMultipleSplit-？"><a href="#为什么我通过不了InsertMultipleSplit-？" class="headerlink" title="为什么我通过不了InsertMultipleSplit ？"></a>为什么我通过不了InsertMultipleSplit ？</h3><p>InsertMultipleSplit，测试检测的是，某一次插入会造成 <code>dir_</code> 不止一次的 split。<br>通常没通过的原因是判断 <code>bucket-&gt;IsFull()</code>只判断了一次，实际需要使用 while 循环持续判断 bucket 是否满了，直到知道找到适合的位置。<br>下面解释为什么，<br>首先，这是两个测试用例，</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 测试用例 1</span></span><br><span class="line">table-&gt;Insert(<span class="number">0</span>, <span class="string">&quot;0&quot;</span>);</span><br><span class="line">table-&gt;Insert(<span class="number">1024</span>, <span class="string">&quot;1024&quot;</span>);</span><br><span class="line">table-&gt;Insert(<span class="number">4</span>, <span class="string">&quot;4&quot;</span>);  <span class="comment">// this causes 3 splits</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 测试用例 2</span></span><br><span class="line">table-&gt;Insert(<span class="number">0</span>, <span class="string">&quot;0&quot;</span>);</span><br><span class="line">table-&gt;Insert(<span class="number">1024</span>, <span class="string">&quot;1024&quot;</span>);</span><br><span class="line">table-&gt;Insert(<span class="number">16</span>, <span class="string">&quot;16&quot;</span>);  <span class="comment">// this causes 5 splits</span></span><br></pre></td></tr></table></figure>
@@ -76,11 +76,11 @@
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">LRUKReplacer::Remove</span><span class="params">(<span class="type">frame_id_t</span> frame_id)</span> </span>&#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">auto</span> it = table_.<span class="built_in">find</span>(frame_id);</span><br><span class="line">  <span class="keyword">if</span> (it == table_.<span class="built_in">end</span>()) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (it-&gt;second.nr_accessed_ &lt; k_) &#123;</span><br><span class="line">    inactive_list_.<span class="built_in">remove</span>(frame_id);</span><br><span class="line">    nr_evictable_--;</span><br><span class="line">    table_.<span class="built_in">erase</span>(frame_id);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    active_list_.<span class="built_in">remove</span>(frame_id);</span><br><span class="line">    nr_evictable_--;</span><br><span class="line">    table_.<span class="built_in">erase</span>(frame_id);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="Size"><a href="#Size" class="headerlink" title="Size"></a>Size</h2><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">LRUKReplacer::Size</span><span class="params">()</span> -&gt; <span class="type">size_t</span> </span>&#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line">  <span class="keyword">return</span> nr_evictable_;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="DEBUG-1"><a href="#DEBUG-1" class="headerlink" title="DEBUG"></a>DEBUG</h2><p>遇到过项目要求理解错了导致测试用例 failed 的情况，<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1689524734379-14876210-a882-4ad0-b730-bc18c50ef606.png"
-                      alt="image.png"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1689524734379-14876210-a882-4ad0-b730-bc18c50ef606.png"
+                        alt="image.png"
+                 ></p>
 <p>修改成这样可以过了，项目的意思是 inactive list 用 FIFO 换出策略。active list 才采用 classic LRU 换出策略。inactive list 也采用 LRU 换出策略，会导致此测试用例 failed。</p>
 <figure class="highlight diff"><table><tr><td class="code"><pre><span class="line"># git diff</span><br><span class="line"><span class="comment">diff --git a/src/buffer/lru_k_replacer.cpp b/src/buffer/lru_k_replacer.cpp</span></span><br><span class="line"><span class="comment">index d2f0eea..8b41fa0 100644</span></span><br><span class="line"><span class="comment">--- a/src/buffer/lru_k_replacer.cpp</span></span><br><span class="line"><span class="comment">+++ b/src/buffer/lru_k_replacer.cpp</span></span><br><span class="line"><span class="meta">@@ -67,8 +67,6 @@</span> void LRUKReplacer::RecordAccess(frame_id_t frame_id) &#123;</span><br><span class="line"></span><br><span class="line">if (accs_cnt &lt; k_) &#123;</span><br><span class="line">// should still stay in inactive list</span><br><span class="line"><span class="deletion">-    inactive_list_.remove(frame_id);</span></span><br><span class="line"><span class="deletion">-    inactive_list_.emplace_back(frame_id);</span></span><br><span class="line"></span><br><span class="line">struct FrameItem *f_item = &amp;(it-&gt;second);</span><br><span class="line">f_item-&gt;nr_accessed_ = accs_cnt;</span><br></pre></td></tr></table></figure>
 <h1 id="Task-3-Buffer-Pool-Manager-Instance"><a href="#Task-3-Buffer-Pool-Manager-Instance" class="headerlink" title="Task #3 - Buffer Pool Manager Instance"></a>Task #3 - Buffer Pool Manager Instance</h1><p>实现 bpm，bpm 负责管理磁盘的页缓存。</p>
@@ -106,11 +106,11 @@
 <h2 id="FlushAllPgsImp"><a href="#FlushAllPgsImp" class="headerlink" title="FlushAllPgsImp"></a>FlushAllPgsImp</h2><p>所有页刷回磁盘。</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">BufferPoolManagerInstance::FlushAllPgsImp</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; pool_size_; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (pages_[i].is_dirty_) &#123;</span><br><span class="line">      disk_manager_-&gt;<span class="built_in">WritePage</span>(pages_[i].page_id_, pages_[i].data_);</span><br><span class="line">      pages_[i].is_dirty_ = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h1 id="Gradescope"><a href="#Gradescope" class="headerlink" title="Gradescope"></a>Gradescope</h1><p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1690008398782-42d06603-c39a-43e3-a4f5-db350ec06d78.png"
-                      alt="image.png"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1690008398782-42d06603-c39a-43e3-a4f5-db350ec06d78.png"
+                        alt="image.png"
+                 ></p>
 ]]></content>
       <categories>
         <category>cmu15445</category>
@@ -120,6 +120,88 @@
         <tag>buffer pool</tag>
         <tag>extendible hash</tag>
         <tag>LRU-K</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CMU 15-445 Fall 2022 Project0: C++ Primer</title>
+    <url>/cmu-15-445-fall-2022-project0-cpp-primer/</url>
+    <content><![CDATA[<p>这个项目是使用 Modern C++ 17 实现一个 字典树（<code>Trie</code>）<br>项目难点在于理解项目里如何使用 TrieNode 和 TrieTerminalNode 来组合实现一个 Trie Tree。另外一个难点是对 unique_ptr 的理解。理解 unique_ptr 智能指针对生命周期的管理。</p>
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>项目提供了图对 Trie Tree 介绍的，理解这两张图，基本理解了这个项目里我们需要实现什么了。<br>下面这张图是我们最终实现的 Trie Tree。图中红色的格子是要实现的 Terminal Node（TrieNodeWithValue），<br>图中包含字母的格子是要实现的 Trie Node。其中 Terminal Node 算是 Trie Node 的一个特殊情况。</p>
+<p>回来继续介绍 TrieNode，他有三个成员</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">char</span> key_char_;</span><br><span class="line"><span class="type">bool</span> is_end_&#123;<span class="literal">false</span>&#125;;</span><br><span class="line">std::unordered_map&lt;<span class="type">char</span>, std::unique_ptr&lt;TrieNode&gt;&gt; children_;</span><br></pre></td></tr></table></figure>
+<p><code>key_char_</code> 是路径的字符，比如 H，A，E<br><code>is_end_</code> 是表示当前 Node 是否是 Terminal Node，默认初始化为 false<br><code>children_</code> 是一个 hashmap，key 是当前节点的 <code>key_char_</code> ，value 是一个指向下一个节点的独占指针 unique_ptr 。图中代表 <code>children_</code> 是 T 和 V 的那一部分。T 和 V 都是 A 节点的子节点。<br><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1685814840719-8f6f1d8e-6e09-4030-bdb3-d65e14f17057.png"
+                        alt="image.png"
+                 ></p>
+<p>为什么说 Terminal Node 是 Trie Node 的特殊情况，因为项目中TrieNodeWithValue 是从 TrieNode 继承过来的，算是子类了。<br>比如，我们现在要用 Trie Tree 存储N个键值对，其中两个键值对是 (ab, 1) (ac, “val”) 。那么他们存放在书上就是下图展示的样子，因为我们要实现的 TrieNodeWithValue 的 value 被设计成支持任意类型的 value 存储，所以 TrieNodeWithValue 是一个模板类。<br><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1685814852620-97e656e5-5d1b-4825-8b3c-580e59a63b3b.png"
+                        alt="image.png"
+                 ></p>
+<h1 id="实现-TrieNode"><a href="#实现-TrieNode" class="headerlink" title="实现 TrieNode"></a>实现 TrieNode</h1><h2 id="InsertChildNode-amp-GetChildNode-amp-RemoveChildNode"><a href="#InsertChildNode-amp-GetChildNode-amp-RemoveChildNode" class="headerlink" title="InsertChildNode &amp; GetChildNode &amp; RemoveChildNode"></a>InsertChildNode &amp; GetChildNode &amp; RemoveChildNode</h2><p>实现 ChildNode 相关操作就是玩 unordered_map 。C++ 里面是 unordered_map 就是通常所说的 hashmap。<br><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1685814082740-b9cc70ec-2a11-498f-9230-af89469726ac.png"
+                        alt="image.png"
+                 ><br><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1685814148701-eb8add28-1474-4ec5-b18e-718690c95809.png"
+                        alt="image.png"
+                 ><br><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1685814178989-21743ecf-471d-4df5-8854-540ff1b1a2cf.png"
+                        alt="image.png"
+                 ></p>
+<h1 id="实现-TrieNodeWithValue"><a href="#实现-TrieNodeWithValue" class="headerlink" title="实现 TrieNodeWithValue"></a>实现 TrieNodeWithValue</h1><h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p>第一次碰到这个函数，有一点懵，没明白子类怎么移动构造，现在想想其实很简单，利用初始化列表将父类 move，然后在大括号里最定制化修改。果然， C++ 好久不用就容易忘。<br><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1685814224952-0f2eb4d9-6b50-44f5-a46e-2de2d6a803d6.png"
+                        alt="image.png"
+                 ></p>
+<h1 id="实现-Trie"><a href="#实现-Trie" class="headerlink" title="实现 Trie"></a>实现 Trie</h1><h2 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h2><p>我们 <code>root_</code> Node 是一个空节点，而且要是一个由 unique_ptr 管理的 TrieNode。最初时候没想到使用 make_unique 来构造一个，想了挺久的（蠢哭了……）<br><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1685814249460-e7710c91-d861-4e26-8ba2-33394a92c6ba.png"
+                        alt="image.png"
+                 ></p>
+<h2 id="Insert"><a href="#Insert" class="headerlink" title="Insert"></a>Insert</h2><p>项目要求要支持并发访问，加锁是必须的了。当然在实现的视线可以先实现不加锁版本的 Insert 保证代码没有逻辑错误，然后再为代码加锁。<br>其实我的最初版本，我的逻辑代码和加锁是混合在一起的，各种 for loop 中间 return，有了 return 就需要在 return 之前把之前加的锁释放掉。。。就挺混乱的，另外因为多个 return 位置，容易忘记解锁。<br>后来，我参考内核调度器那块代码，把解锁放到函数末尾做，当代码中需要 return 的时候，用 goto 跳转到 out label，这样也就统一了解锁的位置，代码看起来舒服多了。<br>其实更好的办法是像 DPDK 那样实现一个 unsafe 版本的函数，在实现一个 safe 版本的，锁加在 safe 版本的函数里，在 safe 调用 unsafe 函数，这样实现了逻辑代码和加锁代码分离。唯一的缺点可能是锁的粒度大，不容易优化锁的粒度吧。</p>
+<p>首先从 <code>root_</code> 的指针，开始遍历 Tree，执行插入操作<br>我们选择是遍历整个 string，我们把 string 分成两部分，[0, key.size()-1) 和 [key.size()-1] 两部分来实现。这样写的代码更加简单，感觉项目里的注释描述稍微有点引导学生将字符串分成两部分处理。其实完全没有必要，这样作为一个整体处理逻辑也更简单。<br>遍历整个 string 会把整个路径所有节点类型设置为 TrieNode，所以最后需要将 Terminal Node move 一下，转为  TrieNodeWithValue 类型。然后让 unique_ptr 指针指向 TrieNodeWithValue即可。<br><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1685814266393-3af38181-5068-4c7c-9de9-5d61d4539944.png"
+                        alt="image.png"
+                 ></p>
+<h2 id="Remove"><a href="#Remove" class="headerlink" title="Remove"></a>Remove</h2><p>删除要求如果需要中间节点没有 child 节点，这个节点也需要被 remove 掉。这就说明在遍历的时候我们要记录父节点的指针，但是指针一旦调到下一个节点，就回不去了，我们用的也不是双向版本的指针。所有，我们要记录我们的遍历的路径，我们用 vector 存，其实用 stack 也没问题。<br>最终，我们先遍历一遍 string，走到底部。然后开始反向遍历，检查节点有没有子节点，没有就将节点删除。<br><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1685814387701-325c9397-b39d-4577-8dc8-1abf27a9dd2c.png"
+                        alt="image.png"
+                 ></p>
+<h2 id="GetValue"><a href="#GetValue" class="headerlink" title="GetValue"></a>GetValue</h2><p>从 <code>root_</code> 开始遍历,项目要求检查存储在 Terminal Node 的 value 类型。这里借助 <code>dynamic_cast</code>  来判断。<br><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1685814364319-80f212cb-0856-424b-b227-1a8582a6fb66.png"
+                        alt="image.png"
+                 ></p>
+<h1 id="Gradescope"><a href="#Gradescope" class="headerlink" title="Gradescope"></a>Gradescope</h1><p><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1685818990987-6e025706-9621-4ca9-b691-6b4a81f141aa.png"
+                        alt="image.png"
+                 ></p>
+]]></content>
+      <categories>
+        <category>cmu15445</category>
+      </categories>
+      <tags>
+        <tag>cmu15445</tag>
+        <tag>c++ Primer</tag>
+        <tag>Trie</tag>
       </tags>
   </entry>
   <entry>
@@ -161,85 +243,51 @@
       </tags>
   </entry>
   <entry>
-    <title>CMU 15-445 Fall 2022 Project0: C++ Primer</title>
-    <url>/cmu-15-445-fall-2022-project0-cpp-primer/</url>
-    <content><![CDATA[<p>这个项目是使用 Modern C++ 17 实现一个 字典树（<code>Trie</code>）<br>项目难点在于理解项目里如何使用 TrieNode 和 TrieTerminalNode 来组合实现一个 Trie Tree。另外一个难点是对 unique_ptr 的理解。理解 unique_ptr 智能指针对生命周期的管理。</p>
-<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>项目提供了图对 Trie Tree 介绍的，理解这两张图，基本理解了这个项目里我们需要实现什么了。<br>下面这张图是我们最终实现的 Trie Tree。图中红色的格子是要实现的 Terminal Node（TrieNodeWithValue），<br>图中包含字母的格子是要实现的 Trie Node。其中 Terminal Node 算是 Trie Node 的一个特殊情况。</p>
-<p>回来继续介绍 TrieNode，他有三个成员</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">char</span> key_char_;</span><br><span class="line"><span class="type">bool</span> is_end_&#123;<span class="literal">false</span>&#125;;</span><br><span class="line">std::unordered_map&lt;<span class="type">char</span>, std::unique_ptr&lt;TrieNode&gt;&gt; children_;</span><br></pre></td></tr></table></figure>
-<p><code>key_char_</code> 是路径的字符，比如 H，A，E<br><code>is_end_</code> 是表示当前 Node 是否是 Terminal Node，默认初始化为 false<br><code>children_</code> 是一个 hashmap，key 是当前节点的 <code>key_char_</code> ，value 是一个指向下一个节点的独占指针 unique_ptr 。图中代表 <code>children_</code> 是 T 和 V 的那一部分。T 和 V 都是 A 节点的子节点。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814840719-8f6f1d8e-6e09-4030-bdb3-d65e14f17057.png"
-                      alt="image.png"
-                ></p>
-<p>为什么说 Terminal Node 是 Trie Node 的特殊情况，因为项目中TrieNodeWithValue 是从 TrieNode 继承过来的，算是子类了。<br>比如，我们现在要用 Trie Tree 存储N个键值对，其中两个键值对是 (ab, 1) (ac, “val”) 。那么他们存放在书上就是下图展示的样子，因为我们要实现的 TrieNodeWithValue 的 value 被设计成支持任意类型的 value 存储，所以 TrieNodeWithValue 是一个模板类。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814852620-97e656e5-5d1b-4825-8b3c-580e59a63b3b.png"
-                      alt="image.png"
-                ></p>
-<h1 id="实现-TrieNode"><a href="#实现-TrieNode" class="headerlink" title="实现 TrieNode"></a>实现 TrieNode</h1><h2 id="InsertChildNode-amp-GetChildNode-amp-RemoveChildNode"><a href="#InsertChildNode-amp-GetChildNode-amp-RemoveChildNode" class="headerlink" title="InsertChildNode &amp; GetChildNode &amp; RemoveChildNode"></a>InsertChildNode &amp; GetChildNode &amp; RemoveChildNode</h2><p>实现 ChildNode 相关操作就是玩 unordered_map 。C++ 里面是 unordered_map 就是通常所说的 hashmap。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814082740-b9cc70ec-2a11-498f-9230-af89469726ac.png"
-                      alt="image.png"
-                ><br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814148701-eb8add28-1474-4ec5-b18e-718690c95809.png"
-                      alt="image.png"
-                ><br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814178989-21743ecf-471d-4df5-8854-540ff1b1a2cf.png"
-                      alt="image.png"
-                ></p>
-<h1 id="实现-TrieNodeWithValue"><a href="#实现-TrieNodeWithValue" class="headerlink" title="实现 TrieNodeWithValue"></a>实现 TrieNodeWithValue</h1><h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p>第一次碰到这个函数，有一点懵，没明白子类怎么移动构造，现在想想其实很简单，利用初始化列表将父类 move，然后在大括号里最定制化修改。果然， C++ 好久不用就容易忘。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814224952-0f2eb4d9-6b50-44f5-a46e-2de2d6a803d6.png"
-                      alt="image.png"
-                ></p>
-<h1 id="实现-Trie"><a href="#实现-Trie" class="headerlink" title="实现 Trie"></a>实现 Trie</h1><h2 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h2><p>我们 <code>root_</code> Node 是一个空节点，而且要是一个由 unique_ptr 管理的 TrieNode。最初时候没想到使用 make_unique 来构造一个，想了挺久的（蠢哭了……）<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814249460-e7710c91-d861-4e26-8ba2-33394a92c6ba.png"
-                      alt="image.png"
-                ></p>
-<h2 id="Insert"><a href="#Insert" class="headerlink" title="Insert"></a>Insert</h2><p>项目要求要支持并发访问，加锁是必须的了。当然在实现的视线可以先实现不加锁版本的 Insert 保证代码没有逻辑错误，然后再为代码加锁。<br>其实我的最初版本，我的逻辑代码和加锁是混合在一起的，各种 for loop 中间 return，有了 return 就需要在 return 之前把之前加的锁释放掉。。。就挺混乱的，另外因为多个 return 位置，容易忘记解锁。<br>后来，我参考内核调度器那块代码，把解锁放到函数末尾做，当代码中需要 return 的时候，用 goto 跳转到 out label，这样也就统一了解锁的位置，代码看起来舒服多了。<br>其实更好的办法是像 DPDK 那样实现一个 unsafe 版本的函数，在实现一个 safe 版本的，锁加在 safe 版本的函数里，在 safe 调用 unsafe 函数，这样实现了逻辑代码和加锁代码分离。唯一的缺点可能是锁的粒度大，不容易优化锁的粒度吧。</p>
-<p>首先从 <code>root_</code> 的指针，开始遍历 Tree，执行插入操作<br>我们选择是遍历整个 string，我们把 string 分成两部分，[0, key.size()-1) 和 [key.size()-1] 两部分来实现。这样写的代码更加简单，感觉项目里的注释描述稍微有点引导学生将字符串分成两部分处理。其实完全没有必要，这样作为一个整体处理逻辑也更简单。<br>遍历整个 string 会把整个路径所有节点类型设置为 TrieNode，所以最后需要将 Terminal Node move 一下，转为  TrieNodeWithValue 类型。然后让 unique_ptr 指针指向 TrieNodeWithValue即可。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814266393-3af38181-5068-4c7c-9de9-5d61d4539944.png"
-                      alt="image.png"
-                ></p>
-<h2 id="Remove"><a href="#Remove" class="headerlink" title="Remove"></a>Remove</h2><p>删除要求如果需要中间节点没有 child 节点，这个节点也需要被 remove 掉。这就说明在遍历的时候我们要记录父节点的指针，但是指针一旦调到下一个节点，就回不去了，我们用的也不是双向版本的指针。所有，我们要记录我们的遍历的路径，我们用 vector 存，其实用 stack 也没问题。<br>最终，我们先遍历一遍 string，走到底部。然后开始反向遍历，检查节点有没有子节点，没有就将节点删除。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814387701-325c9397-b39d-4577-8dc8-1abf27a9dd2c.png"
-                      alt="image.png"
-                ></p>
-<h2 id="GetValue"><a href="#GetValue" class="headerlink" title="GetValue"></a>GetValue</h2><p>从 <code>root_</code> 开始遍历,项目要求检查存储在 Terminal Node 的 value 类型。这里借助 <code>dynamic_cast</code>  来判断。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685814364319-80f212cb-0856-424b-b227-1a8582a6fb66.png"
-                      alt="image.png"
-                ></p>
-<h1 id="Gradescope"><a href="#Gradescope" class="headerlink" title="Gradescope"></a>Gradescope</h1><p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1685818990987-6e025706-9621-4ca9-b691-6b4a81f141aa.png"
-                      alt="image.png"
-                ></p>
+    <title>Hexo-Next主题配置</title>
+    <url>/hexo-next-theme-configuration-picture-configuration/</url>
+    <content><![CDATA[<h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
+<p><strong>修改引入图片路径即可解决，</strong></p>
+<p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
+<p><code>../img/gris.png</code> (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常预览&#x2F;显示图片，<strong>但是文件名不要有空格</strong>，有空格云端显示不出来。</p>
+<p><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/gris.png"
+                        alt="Gris"
+                 ></p>
+<p><strong>结构展示</strong></p>
+<p>如果没有理解的话，看看这张结构图</p>
+<p><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/dict_tree.png"
+                       
+                 ></p>
+<h1 id="二、插件"><a href="#二、插件" class="headerlink" title="二、插件"></a>二、插件</h1><p>安装插件的时候要多搜索，寻找最近的文章看，如果你也是使用Next 主题，尽量找Hexo Next 官方最近更新的文档看，因为随着<code>Hexo/Next</code>的版本更新，很多功能都被开发者集成进去了，只需要修改一下主题配置文件即可，<strong>简而言之，找最新的文章&#x2F;文档参考。</strong></p>
+<blockquote>
+<p>Hexo-Next 文档地址</p>
+<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<h2 id="安装的插件"><a href="#安装的插件" class="headerlink" title="安装的插件"></a>安装的插件</h2><p>安装的插件并不多，主要是够用即可</p>
+<p>hexo-symbols-count-time</p>
+<p>hexo-excerpt —— Because, auto_excerpt not working</p>
+<p>hexo-generator-searchdb——站内搜索</p>
+<p>大家都喜欢的插件，Next 文档都已经列出来了，去找就行了🤣</p>
+<blockquote>
+<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<p><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/Next_dos_advanced.png"
+                       
+                 ></p>
 ]]></content>
       <categories>
-        <category>cmu15445</category>
+        <category>hexo</category>
       </categories>
       <tags>
-        <tag>cmu15445</tag>
-        <tag>c++ Primer</tag>
-        <tag>Trie</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -308,11 +356,11 @@
     <url>/intel-cpu-cve/</url>
     <content><![CDATA[<h2 id="Intel-处理器安全漏洞表"><a href="#Intel-处理器安全漏洞表" class="headerlink" title="Intel 处理器安全漏洞表"></a>Intel 处理器安全漏洞表</h2><p><a class="link"   href="https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html" >https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html<i class="fas fa-external-link-alt"></i></a></p>
 <p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1701078889956-2908e693-214c-4762-9897-53c5924ec88c.png"
-                      alt="image.png"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1701078889956-2908e693-214c-4762-9897-53c5924ec88c.png"
+                        alt="image.png"
+                 ></p>
 <h2 id="处理器安全漏洞只需要关注这两个方面"><a href="#处理器安全漏洞只需要关注这两个方面" class="headerlink" title="处理器安全漏洞只需要关注这两个方面"></a>处理器安全漏洞只需要关注这两个方面</h2><p>Intel 处理器的漏洞表，包含了所有漏洞，每个漏洞一列（图中右上角），漏洞描述包含 CVE 名称，编号以及 Intel 的编号。新披露的漏洞靠左，老披露的靠右。</p>
 <p>1、我用的是哪一款 CPU？<br>通过 <code>Family</code>、<code>Model</code> 、<code>Stepping</code> 三项就可以定位到列表中的特定型号所在行（<strong>图中左上角</strong>），查看 CPU 型号通过 lscpu 命令。<br>2、我是否受到此次 CVE 的影响？<br>观察<strong>图中右下角</strong>的字段，</p>
 <ul>
@@ -331,6 +379,55 @@
         <tag>processor</tag>
         <tag>lscpu</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Lab1: Xv6 and Unix utilities</title>
+    <url>/lab1-xv6-and-unix-utilities/</url>
+    <content><![CDATA[<p>Lab1 为 xv6 实现用户态程序。</p>
+<h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>看 xv6 网站上的教程，安装依赖软件包<br><a class="link"   href="https://pdos.csail.mit.edu/6.828/2023/tools.html" >https://pdos.csail.mit.edu/6.828/2023/tools.html<i class="fas fa-external-link-alt"></i></a><br>笔者选择的是 Debian 操作系统，执行一行命令即可完成环境配置，</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu </span><br></pre></td></tr></table></figure>
+
+<p>依赖安装完成后，编译运行 xv6，</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git clone git://g.csail.mit.edu/xv6-labs-2023</span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">make qemu</span><br></pre></td></tr></table></figure>
+<p><strong>特别备注：防止发生和如何退出 vim 一样的问题，笔者特别提醒。 执行 <code>make qemu</code>  会进入 xv6 系统里，想退出 qemu， 先按 ctrl + a, 紧接着按 x 即可退出 qemu。</strong></p>
+<h2 id="sleep"><a href="#sleep" class="headerlink" title="sleep"></a>sleep</h2><p>写第一个程序，主要的体会就是懵。不知道从哪下手，在看了内核态的对应实现，看了用户态 kill.c 的实现后，理清思路后，才发现 sleep 其实很简单。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span> &#123;</span><br><span class="line">    <span class="type">int</span> ticks;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;usage: sleep ticks...\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ticks = atoi(argv[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    sleep(ticks);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="pingpong"><a href="#pingpong" class="headerlink" title="pingpong"></a>pingpong</h2><p>利用管道实现 pingpong，<code>fork() </code>的父子进程都拥有同样的 fd，父子进程可以通过向一端写，另一端阻塞读来实现 ping-pong, 管道的规范是 pipe 的 0 是读，1 是写，记住这个很好实现了。<br>另外，pingpong 只需要创建一个管道即可，无需为父子进程各自创建一条管道，然后 close 掉不用的通道。共用一条管道即可，这是因为 pingpong 程序不存在竞争的情况。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAX_BUF_SIZE 32</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> ** argv)</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> pipe_fds[<span class="number">2</span>];</span><br><span class="line">    <span class="type">int</span> nr_read = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> nr_write = <span class="number">0</span>;</span><br><span class="line">    <span class="type">char</span> buf[MAX_BUF_SIZE];</span><br><span class="line"></span><br><span class="line">    pipe(pipe_fds);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (fork() == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// child</span></span><br><span class="line"></span><br><span class="line">        nr_read = read(pipe_fds[<span class="number">0</span>], buf, MAX_BUF_SIZE);</span><br><span class="line">        <span class="keyword">if</span> (nr_read &gt; <span class="number">0</span>)</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d: received ping\n&quot;</span>, getpid());</span><br><span class="line"></span><br><span class="line">        nr_write = write(pipe_fds[<span class="number">1</span>], <span class="string">&quot;ping-pong&quot;</span>, MAX_BUF_SIZE);</span><br><span class="line">        <span class="keyword">if</span> (nr_write &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// parent</span></span><br><span class="line"></span><br><span class="line">        nr_write = write(pipe_fds[<span class="number">1</span>], <span class="string">&quot;ping-pong&quot;</span>, MAX_BUF_SIZE);</span><br><span class="line">        <span class="keyword">if</span> (nr_write &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        nr_read = read(pipe_fds[<span class="number">0</span>], buf, MAX_BUF_SIZE);</span><br><span class="line">        <span class="keyword">if</span> (nr_read &gt; <span class="number">0</span>)</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d: received pong\n&quot;</span>, getpid());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="primes"><a href="#primes" class="headerlink" title="primes"></a>primes</h2><p>利用 pipe + fork() 实现质数筛。核心思想如下图所示，首先一堆数 2-35，利用 2 将 2-35 树筛一遍，其中能被 2 整除的自然不是质数了，将不能被 2 整除的数保存下来，通过管道传递给子进程，子进程的得到的一系列数，利用第一个数 3 将不能被 3 整除的数保存下来，传递给子进程，接下来是 5,7 依次递归下去，每个进程打印出一个质数，最后结果就是所有质数。<br><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1708324546344-eff1d2ab-81c4-4b74-b0d5-fd711f72b724.png"
+                        alt="image.png"
+                 ></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAX_NUMBER 35</span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">filter</span><span class="params">(<span class="type">int</span> pipe_read)</span> &#123;</span><br><span class="line">    <span class="type">int</span> pipe_fds[<span class="number">2</span>];</span><br><span class="line">    <span class="type">int</span> primes[MAX_NUMBER];</span><br><span class="line">    <span class="type">int</span> nr_read;</span><br><span class="line">    <span class="type">int</span> cnt = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        nr_read = read(pipe_read, &amp; primes[cnt], <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">        <span class="keyword">if</span> (nr_read &lt;= <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">        cnt++;</span><br><span class="line">    &#125;</span><br><span class="line">    close(pipe_read);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (cnt == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> first = primes[<span class="number">0</span>];</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;prime %d\n&quot;</span>, first);</span><br><span class="line"></span><br><span class="line">    pipe(pipe_fds);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; cnt; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (primes[i] % first != <span class="number">0</span>) &#123;</span><br><span class="line">            write(pipe_fds[<span class="number">1</span>], &amp; primes[i], <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    close(pipe_fds[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (fork() == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// child</span></span><br><span class="line">        filter(pipe_fds[<span class="number">0</span>]);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// parent</span></span><br><span class="line">        wait(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> * argv[])</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> pipe_fds[<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">    pipe(pipe_fds);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">2</span>; i &lt; MAX_NUMBER; i++) &#123;</span><br><span class="line">        write(pipe_fds[<span class="number">1</span>], &amp; i, <span class="keyword">sizeof</span>(i));</span><br><span class="line">    &#125;</span><br><span class="line">    close(pipe_fds[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    filter(pipe_fds[<span class="number">0</span>]);</span><br><span class="line">    close(pipe_fds[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="find"><a href="#find" class="headerlink" title="find"></a>find</h2><p>为 xv6 实现一个简单的 find。核心是理解如何遍历目录下的所有文件（看代码中的注释），代码可以直接参考 xv6 的 ls.c 修改得来。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/stat.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/fs.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">char</span> *<span class="title function_">fmtname</span><span class="params">(<span class="type">char</span> *path)</span> <span class="comment">//格式化名字，把名字变成前面没有左斜杠/，仅仅保存文件名</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">static</span> <span class="type">char</span> buf[DIRSIZ + <span class="number">1</span>];</span><br><span class="line">    <span class="type">char</span> *p;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Find first character after last slash.</span></span><br><span class="line">    <span class="keyword">for</span> (p = path + <span class="built_in">strlen</span>(path); p &gt;= path &amp;&amp; *p != <span class="string">&#x27;/&#x27;</span>; p--)</span><br><span class="line">        ;</span><br><span class="line">    p++;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Return blank-padded name.</span></span><br><span class="line">    memmove(buf, p, <span class="built_in">strlen</span>(p) + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> buf;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">find</span><span class="params">(<span class="type">char</span> *dir, <span class="type">char</span> *name)</span> &#123;</span><br><span class="line">    <span class="type">char</span> path[<span class="number">512</span>];</span><br><span class="line">    <span class="type">char</span> *p;</span><br><span class="line">    <span class="type">int</span> fd;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">dirent</span> <span class="title">de</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">stat</span> <span class="title">st</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((fd = open(dir, <span class="number">0</span>)) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;find: cannot open %s\n&quot;</span>, dir);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (fstat(fd, &amp;st) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;find: cannot stat %s\n&quot;</span>, dir);</span><br><span class="line">        close(fd);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (st.type) &#123;</span><br><span class="line">        <span class="keyword">case</span> T_FILE:</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">strcmp</span>(fmtname(dir), name) == <span class="number">0</span>)</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, dir);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> T_DIR:</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">strlen</span>(dir) + <span class="number">1</span> + DIRSIZ + <span class="number">1</span> &gt; <span class="keyword">sizeof</span> path) &#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;find: path too long\n&quot;</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="built_in">strcpy</span>(path, dir);</span><br><span class="line">            p = path + <span class="built_in">strlen</span>(path);</span><br><span class="line">            *p++ = <span class="string">&#x27;/&#x27;</span>; <span class="comment">// path 追加 &#x27;/&#x27;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// Hint: 目录也是一个 file，循环读取一个 struct dirent 大小，就可以遍历目录下所有文件</span></span><br><span class="line">            <span class="keyword">while</span> (read(fd, &amp;de, <span class="keyword">sizeof</span>(de)) == <span class="keyword">sizeof</span>(de)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (de.inum == <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                memmove(p, de.name, DIRSIZ); <span class="comment">// memmove把 de.name 信息追加到 path</span></span><br><span class="line">                p[<span class="built_in">strlen</span>(de.name)] = <span class="number">0</span>;		 <span class="comment">// EOF</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">// ignore &#x27;.&#x27; and &#x27;..&#x27;</span></span><br><span class="line">                <span class="keyword">if</span> (<span class="built_in">strcmp</span>(de.name, <span class="string">&quot;.&quot;</span>) == <span class="number">0</span> || <span class="built_in">strcmp</span>(de.name, <span class="string">&quot;..&quot;</span>) == <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">                find(path, name);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    close(fd);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Usage: find [path] [name]&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    find(argv[<span class="number">1</span>], argv[<span class="number">2</span>]);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="xargs"><a href="#xargs" class="headerlink" title="xargs"></a>xargs</h2><p>为 xv6 实现一个 xargs。理解 xargs 的工作原理对于实现 xargs 是至关重要的。<br>示例，</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ echo hello too | xargs echo bye</span><br><span class="line">bye hello too</span><br></pre></td></tr></table></figure>
+<p>xargs 是从标准输入(stdin) 读取输入，并将输入作为自己的输入。所以上面的 echo 示例程序，首先 shell 执行 <code>echo hello too</code> 产生的 stdout  通过管道作为 xargs 的 stdin。然后 <code>hello too</code> 会被追加到 <code>bye</code> 后面，所以最终命令的结果是 <code>bye hello too</code>。<br>另外，xargs 遇到换行符 (‘\n’) 会结束本次处理，每一行 xargs 都会 fork + exec 产生一个新的进程进行处理。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/stat.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/param.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BUF_SIZE 512</span></span><br><span class="line"></span><br><span class="line"><span class="type">char</span> *args[MAXARG];</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc &gt; MAXARG) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;xargs: too many args\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// copy xargs&#x27;s args</span></span><br><span class="line">    <span class="type">int</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; argc; i++) &#123;</span><br><span class="line">        args[index] = argv[i];</span><br><span class="line">        index++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">char</span> buf[BUF_SIZE];</span><br><span class="line">    <span class="type">char</span> *p = buf;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// read each byte into buf, from stdin</span></span><br><span class="line">    <span class="keyword">while</span> (read(<span class="number">0</span>, p, <span class="number">1</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (*p == <span class="string">&#x27;\n&#x27;</span>) &#123;</span><br><span class="line">            *p = <span class="number">0</span>; <span class="comment">// set &#x27;\n&#x27; to 0</span></span><br><span class="line">            <span class="keyword">if</span> (fork() == <span class="number">0</span>) &#123;</span><br><span class="line">                args[index] = buf; <span class="comment">// append args read from stdin into args[]</span></span><br><span class="line">                exec(argv[<span class="number">1</span>], args);</span><br><span class="line"></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// parent</span></span><br><span class="line">                wait(<span class="number">0</span>);</span><br><span class="line">                <span class="comment">// Continue reading from stdin, resetting buf and reset the pointer</span></span><br><span class="line">                <span class="built_in">memset</span>(buf, <span class="number">0</span>, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">                p = buf;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            p++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">make grade</span><br></pre></td></tr></table></figure>
+<p><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1708322801588-f8187388-62ec-4921-beda-8244ee803d6b.png"
+                        alt="image.png"
+                 ></p>
+<p>至此， lab 的所有程序都结束了。下面的部分对于我们舒服的写代码有很大帮助，介绍了如何为 vscode 配置 clangd + clang-format 提供 xv6 的代码自动跳转以及格式化。</p>
+<h2 id="附录：让写代码更舒适"><a href="#附录：让写代码更舒适" class="headerlink" title="附录：让写代码更舒适"></a>附录：让写代码更舒适</h2><h3 id="clangd-代码跳转"><a href="#clangd-代码跳转" class="headerlink" title="clangd 代码跳转"></a>clangd 代码跳转</h3><p>当使用 vscode 编写 xv6 代码时候，即使安装 clangd，也是没有代码自动跳转的。因为 clangd 需要<br><code>compile_commands.json</code> 理解项目代码，才能实现正确的代码跳转。对于 xv6 项目，我们使用 bear 将整个项目完整编译一遍，bear 会为我们生成需要的 <code>compile_commands.json</code>。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt install bear</span><br><span class="line"></span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">bear -- make</span><br></pre></td></tr></table></figure>
+
+<p><a class="link"   href="https://clangd.llvm.org/installation.html#compile_commandsjson" >https://clangd.llvm.org/installation.html#compile_commandsjson<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="禁用-clangd-自动插入头文件"><a href="#禁用-clangd-自动插入头文件" class="headerlink" title="禁用 clangd 自动插入头文件"></a>禁用 clangd 自动插入头文件</h3><p>有时候，vscode 的 clagnd 会自动为我们加入 glibc 的头文件，<br><strong>因为 xv6 不是 linux，也不使用 glibc，所以 clangd 自动加入的头文件也是错误的</strong>。 在 vscode 设置的 clangd 插件添加 <code>--header-insertion=never</code> 命令行选项，禁用自动插入头文件。重启 vscode 生效。<br>路径：<br><code>Settings -&gt; Extensions -&gt; clagnd -&gt; Clangd: Arguments -&gt; Add Item</code></p>
+<h3 id="clang-format-代码格式化"><a href="#clang-format-代码格式化" class="headerlink" title="clang-format 代码格式化"></a>clang-format 代码格式化</h3><p>clang-format 可以用于自动格式化 C&#x2F;C++ 代码，为我们 xv6 写一个 .clang-format 文件后，使用 vscode 的快捷键可以自动格式化代码。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">BasedOnStyle: LLVM</span><br><span class="line">UseTab: Always</span><br><span class="line">IndentWidth: 4</span><br><span class="line">TabWidth: 4</span><br><span class="line">ColumnLimit: 120</span><br><span class="line">SortIncludes: Never</span><br><span class="line">AlignConsecutiveMacros: true</span><br></pre></td></tr></table></figure>
+<p>clang-format 支持很多配置项，<br><a class="link"   href="https://clang.llvm.org/docs/ClangFormatStyleOptions.html" >https://clang.llvm.org/docs/ClangFormatStyleOptions.html<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>xv6</category>
+      </categories>
   </entry>
   <entry>
     <title>Intel &amp; AMD 指令集之间的差异</title>
@@ -809,103 +906,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Lab1: Xv6 and Unix utilities</title>
-    <url>/lab1-xv6-and-unix-utilities/</url>
-    <content><![CDATA[<p>Lab1 为 xv6 实现用户态程序。</p>
-<h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>看 xv6 网站上的教程，安装依赖软件包<br><a class="link"   href="https://pdos.csail.mit.edu/6.828/2023/tools.html" >https://pdos.csail.mit.edu/6.828/2023/tools.html<i class="fas fa-external-link-alt"></i></a><br>笔者选择的是 Debian 操作系统，执行一行命令即可完成环境配置，</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu </span><br></pre></td></tr></table></figure>
-
-<p>依赖安装完成后，编译运行 xv6，</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git clone git://g.csail.mit.edu/xv6-labs-2023</span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">make qemu</span><br></pre></td></tr></table></figure>
-<p><strong>特别备注：防止发生和如何退出 vim 一样的问题，笔者特别提醒。 执行 <code>make qemu</code>  会进入 xv6 系统里，想退出 qemu， 先按 ctrl + a, 紧接着按 x 即可退出 qemu。</strong></p>
-<h2 id="sleep"><a href="#sleep" class="headerlink" title="sleep"></a>sleep</h2><p>写第一个程序，主要的体会就是懵。不知道从哪下手，在看了内核态的对应实现，看了用户态 kill.c 的实现后，理清思路后，才发现 sleep 其实很简单。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span> &#123;</span><br><span class="line">    <span class="type">int</span> ticks;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;usage: sleep ticks...\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ticks = atoi(argv[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    sleep(ticks);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="pingpong"><a href="#pingpong" class="headerlink" title="pingpong"></a>pingpong</h2><p>利用管道实现 pingpong，<code>fork() </code>的父子进程都拥有同样的 fd，父子进程可以通过向一端写，另一端阻塞读来实现 ping-pong, 管道的规范是 pipe 的 0 是读，1 是写，记住这个很好实现了。<br>另外，pingpong 只需要创建一个管道即可，无需为父子进程各自创建一条管道，然后 close 掉不用的通道。共用一条管道即可，这是因为 pingpong 程序不存在竞争的情况。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAX_BUF_SIZE 32</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> ** argv)</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> pipe_fds[<span class="number">2</span>];</span><br><span class="line">    <span class="type">int</span> nr_read = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> nr_write = <span class="number">0</span>;</span><br><span class="line">    <span class="type">char</span> buf[MAX_BUF_SIZE];</span><br><span class="line"></span><br><span class="line">    pipe(pipe_fds);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (fork() == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// child</span></span><br><span class="line"></span><br><span class="line">        nr_read = read(pipe_fds[<span class="number">0</span>], buf, MAX_BUF_SIZE);</span><br><span class="line">        <span class="keyword">if</span> (nr_read &gt; <span class="number">0</span>)</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d: received ping\n&quot;</span>, getpid());</span><br><span class="line"></span><br><span class="line">        nr_write = write(pipe_fds[<span class="number">1</span>], <span class="string">&quot;ping-pong&quot;</span>, MAX_BUF_SIZE);</span><br><span class="line">        <span class="keyword">if</span> (nr_write &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// parent</span></span><br><span class="line"></span><br><span class="line">        nr_write = write(pipe_fds[<span class="number">1</span>], <span class="string">&quot;ping-pong&quot;</span>, MAX_BUF_SIZE);</span><br><span class="line">        <span class="keyword">if</span> (nr_write &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        nr_read = read(pipe_fds[<span class="number">0</span>], buf, MAX_BUF_SIZE);</span><br><span class="line">        <span class="keyword">if</span> (nr_read &gt; <span class="number">0</span>)</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d: received pong\n&quot;</span>, getpid());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="primes"><a href="#primes" class="headerlink" title="primes"></a>primes</h2><p>利用 pipe + fork() 实现质数筛。核心思想如下图所示，首先一堆数 2-35，利用 2 将 2-35 树筛一遍，其中能被 2 整除的自然不是质数了，将不能被 2 整除的数保存下来，通过管道传递给子进程，子进程的得到的一系列数，利用第一个数 3 将不能被 3 整除的数保存下来，传递给子进程，接下来是 5,7 依次递归下去，每个进程打印出一个质数，最后结果就是所有质数。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1708324546344-eff1d2ab-81c4-4b74-b0d5-fd711f72b724.png"
-                      alt="image.png"
-                ></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> MAX_NUMBER 35</span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">filter</span><span class="params">(<span class="type">int</span> pipe_read)</span> &#123;</span><br><span class="line">    <span class="type">int</span> pipe_fds[<span class="number">2</span>];</span><br><span class="line">    <span class="type">int</span> primes[MAX_NUMBER];</span><br><span class="line">    <span class="type">int</span> nr_read;</span><br><span class="line">    <span class="type">int</span> cnt = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">        nr_read = read(pipe_read, &amp; primes[cnt], <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">        <span class="keyword">if</span> (nr_read &lt;= <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">        cnt++;</span><br><span class="line">    &#125;</span><br><span class="line">    close(pipe_read);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (cnt == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> first = primes[<span class="number">0</span>];</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;prime %d\n&quot;</span>, first);</span><br><span class="line"></span><br><span class="line">    pipe(pipe_fds);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; cnt; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (primes[i] % first != <span class="number">0</span>) &#123;</span><br><span class="line">            write(pipe_fds[<span class="number">1</span>], &amp; primes[i], <span class="keyword">sizeof</span>(<span class="type">int</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    close(pipe_fds[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (fork() == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// child</span></span><br><span class="line">        filter(pipe_fds[<span class="number">0</span>]);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// parent</span></span><br><span class="line">        wait(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> * argv[])</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> pipe_fds[<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">    pipe(pipe_fds);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">2</span>; i &lt; MAX_NUMBER; i++) &#123;</span><br><span class="line">        write(pipe_fds[<span class="number">1</span>], &amp; i, <span class="keyword">sizeof</span>(i));</span><br><span class="line">    &#125;</span><br><span class="line">    close(pipe_fds[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    filter(pipe_fds[<span class="number">0</span>]);</span><br><span class="line">    close(pipe_fds[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="find"><a href="#find" class="headerlink" title="find"></a>find</h2><p>为 xv6 实现一个简单的 find。核心是理解如何遍历目录下的所有文件（看代码中的注释），代码可以直接参考 xv6 的 ls.c 修改得来。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/stat.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/fs.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">char</span> *<span class="title function_">fmtname</span><span class="params">(<span class="type">char</span> *path)</span> <span class="comment">//格式化名字，把名字变成前面没有左斜杠/，仅仅保存文件名</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">static</span> <span class="type">char</span> buf[DIRSIZ + <span class="number">1</span>];</span><br><span class="line">    <span class="type">char</span> *p;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Find first character after last slash.</span></span><br><span class="line">    <span class="keyword">for</span> (p = path + <span class="built_in">strlen</span>(path); p &gt;= path &amp;&amp; *p != <span class="string">&#x27;/&#x27;</span>; p--)</span><br><span class="line">        ;</span><br><span class="line">    p++;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Return blank-padded name.</span></span><br><span class="line">    memmove(buf, p, <span class="built_in">strlen</span>(p) + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> buf;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">find</span><span class="params">(<span class="type">char</span> *dir, <span class="type">char</span> *name)</span> &#123;</span><br><span class="line">    <span class="type">char</span> path[<span class="number">512</span>];</span><br><span class="line">    <span class="type">char</span> *p;</span><br><span class="line">    <span class="type">int</span> fd;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">dirent</span> <span class="title">de</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">stat</span> <span class="title">st</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((fd = open(dir, <span class="number">0</span>)) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;find: cannot open %s\n&quot;</span>, dir);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (fstat(fd, &amp;st) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;find: cannot stat %s\n&quot;</span>, dir);</span><br><span class="line">        close(fd);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (st.type) &#123;</span><br><span class="line">        <span class="keyword">case</span> T_FILE:</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">strcmp</span>(fmtname(dir), name) == <span class="number">0</span>)</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, dir);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> T_DIR:</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">strlen</span>(dir) + <span class="number">1</span> + DIRSIZ + <span class="number">1</span> &gt; <span class="keyword">sizeof</span> path) &#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;find: path too long\n&quot;</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="built_in">strcpy</span>(path, dir);</span><br><span class="line">            p = path + <span class="built_in">strlen</span>(path);</span><br><span class="line">            *p++ = <span class="string">&#x27;/&#x27;</span>; <span class="comment">// path 追加 &#x27;/&#x27;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// Hint: 目录也是一个 file，循环读取一个 struct dirent 大小，就可以遍历目录下所有文件</span></span><br><span class="line">            <span class="keyword">while</span> (read(fd, &amp;de, <span class="keyword">sizeof</span>(de)) == <span class="keyword">sizeof</span>(de)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (de.inum == <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                memmove(p, de.name, DIRSIZ); <span class="comment">// memmove把 de.name 信息追加到 path</span></span><br><span class="line">                p[<span class="built_in">strlen</span>(de.name)] = <span class="number">0</span>;		 <span class="comment">// EOF</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">// ignore &#x27;.&#x27; and &#x27;..&#x27;</span></span><br><span class="line">                <span class="keyword">if</span> (<span class="built_in">strcmp</span>(de.name, <span class="string">&quot;.&quot;</span>) == <span class="number">0</span> || <span class="built_in">strcmp</span>(de.name, <span class="string">&quot;..&quot;</span>) == <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">                find(path, name);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    close(fd);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">3</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Usage: find [path] [name]&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    find(argv[<span class="number">1</span>], argv[<span class="number">2</span>]);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="xargs"><a href="#xargs" class="headerlink" title="xargs"></a>xargs</h2><p>为 xv6 实现一个 xargs。理解 xargs 的工作原理对于实现 xargs 是至关重要的。<br>示例，</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ echo hello too | xargs echo bye</span><br><span class="line">bye hello too</span><br></pre></td></tr></table></figure>
-<p>xargs 是从标准输入(stdin) 读取输入，并将输入作为自己的输入。所以上面的 echo 示例程序，首先 shell 执行 <code>echo hello too</code> 产生的 stdout  通过管道作为 xargs 的 stdin。然后 <code>hello too</code> 会被追加到 <code>bye</code> 后面，所以最终命令的结果是 <code>bye hello too</code>。<br>另外，xargs 遇到换行符 (‘\n’) 会结束本次处理，每一行 xargs 都会 fork + exec 产生一个新的进程进行处理。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/stat.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/param.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BUF_SIZE 512</span></span><br><span class="line"></span><br><span class="line"><span class="type">char</span> *args[MAXARG];</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc &gt; MAXARG) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;xargs: too many args\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// copy xargs&#x27;s args</span></span><br><span class="line">    <span class="type">int</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; argc; i++) &#123;</span><br><span class="line">        args[index] = argv[i];</span><br><span class="line">        index++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">char</span> buf[BUF_SIZE];</span><br><span class="line">    <span class="type">char</span> *p = buf;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// read each byte into buf, from stdin</span></span><br><span class="line">    <span class="keyword">while</span> (read(<span class="number">0</span>, p, <span class="number">1</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (*p == <span class="string">&#x27;\n&#x27;</span>) &#123;</span><br><span class="line">            *p = <span class="number">0</span>; <span class="comment">// set &#x27;\n&#x27; to 0</span></span><br><span class="line">            <span class="keyword">if</span> (fork() == <span class="number">0</span>) &#123;</span><br><span class="line">                args[index] = buf; <span class="comment">// append args read from stdin into args[]</span></span><br><span class="line">                exec(argv[<span class="number">1</span>], args);</span><br><span class="line"></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// parent</span></span><br><span class="line">                wait(<span class="number">0</span>);</span><br><span class="line">                <span class="comment">// Continue reading from stdin, resetting buf and reset the pointer</span></span><br><span class="line">                <span class="built_in">memset</span>(buf, <span class="number">0</span>, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">                p = buf;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            p++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">make grade</span><br></pre></td></tr></table></figure>
-<p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1708322801588-f8187388-62ec-4921-beda-8244ee803d6b.png"
-                      alt="image.png"
-                ></p>
-<p>至此， lab 的所有程序都结束了。下面的部分对于我们舒服的写代码有很大帮助，介绍了如何为 vscode 配置 clangd + clang-format 提供 xv6 的代码自动跳转以及格式化。</p>
-<h2 id="附录：让写代码更舒适"><a href="#附录：让写代码更舒适" class="headerlink" title="附录：让写代码更舒适"></a>附录：让写代码更舒适</h2><h3 id="clangd-代码跳转"><a href="#clangd-代码跳转" class="headerlink" title="clangd 代码跳转"></a>clangd 代码跳转</h3><p>当使用 vscode 编写 xv6 代码时候，即使安装 clangd，也是没有代码自动跳转的。因为 clangd 需要<br><code>compile_commands.json</code> 理解项目代码，才能实现正确的代码跳转。对于 xv6 项目，我们使用 bear 将整个项目完整编译一遍，bear 会为我们生成需要的 <code>compile_commands.json</code>。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt install bear</span><br><span class="line"></span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">bear -- make</span><br></pre></td></tr></table></figure>
-
-<p><a class="link"   href="https://clangd.llvm.org/installation.html#compile_commandsjson" >https://clangd.llvm.org/installation.html#compile_commandsjson<i class="fas fa-external-link-alt"></i></a></p>
-<h3 id="禁用-clangd-自动插入头文件"><a href="#禁用-clangd-自动插入头文件" class="headerlink" title="禁用 clangd 自动插入头文件"></a>禁用 clangd 自动插入头文件</h3><p>有时候，vscode 的 clagnd 会自动为我们加入 glibc 的头文件，<br><strong>因为 xv6 不是 linux，也不使用 glibc，所以 clangd 自动加入的头文件也是错误的</strong>。 在 vscode 设置的 clangd 插件添加 <code>--header-insertion=never</code> 命令行选项，禁用自动插入头文件。重启 vscode 生效。<br>路径：<br><code>Settings -&gt; Extensions -&gt; clagnd -&gt; Clangd: Arguments -&gt; Add Item</code></p>
-<h3 id="clang-format-代码格式化"><a href="#clang-format-代码格式化" class="headerlink" title="clang-format 代码格式化"></a>clang-format 代码格式化</h3><p>clang-format 可以用于自动格式化 C&#x2F;C++ 代码，为我们 xv6 写一个 .clang-format 文件后，使用 vscode 的快捷键可以自动格式化代码。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">BasedOnStyle: LLVM</span><br><span class="line">UseTab: Always</span><br><span class="line">IndentWidth: 4</span><br><span class="line">TabWidth: 4</span><br><span class="line">ColumnLimit: 120</span><br><span class="line">SortIncludes: Never</span><br><span class="line">AlignConsecutiveMacros: true</span><br></pre></td></tr></table></figure>
-<p>clang-format 支持很多配置项，<br><a class="link"   href="https://clang.llvm.org/docs/ClangFormatStyleOptions.html" >https://clang.llvm.org/docs/ClangFormatStyleOptions.html<i class="fas fa-external-link-alt"></i></a></p>
-]]></content>
-      <categories>
-        <category>xv6</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>Hexo-Next主题配置</title>
-    <url>/hexo-next-theme-configuration-picture-configuration/</url>
-    <content><![CDATA[<h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
-<p><strong>修改引入图片路径即可解决，</strong></p>
-<p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
-<p><code>../img/gris.png</code> (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常预览&#x2F;显示图片，<strong>但是文件名不要有空格</strong>，有空格云端显示不出来。</p>
-<p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/gris.png"
-                      alt="Gris"
-                ></p>
-<p><strong>结构展示</strong></p>
-<p>如果没有理解的话，看看这张结构图</p>
-<p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/dict_tree.png"
-                     
-                ></p>
-<h1 id="二、插件"><a href="#二、插件" class="headerlink" title="二、插件"></a>二、插件</h1><p>安装插件的时候要多搜索，寻找最近的文章看，如果你也是使用Next 主题，尽量找Hexo Next 官方最近更新的文档看，因为随着<code>Hexo/Next</code>的版本更新，很多功能都被开发者集成进去了，只需要修改一下主题配置文件即可，<strong>简而言之，找最新的文章&#x2F;文档参考。</strong></p>
-<blockquote>
-<p>Hexo-Next 文档地址</p>
-<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
-</blockquote>
-<h2 id="安装的插件"><a href="#安装的插件" class="headerlink" title="安装的插件"></a>安装的插件</h2><p>安装的插件并不多，主要是够用即可</p>
-<p>hexo-symbols-count-time</p>
-<p>hexo-excerpt —— Because, auto_excerpt not working</p>
-<p>hexo-generator-searchdb——站内搜索</p>
-<p>大家都喜欢的插件，Next 文档都已经列出来了，去找就行了🤣</p>
-<blockquote>
-<p>Hexo-Next: <a class="link"   href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
-</blockquote>
-<p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/Next_dos_advanced.png"
-                     
-                ></p>
-]]></content>
-      <categories>
-        <category>hexo</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Lab3: page tables</title>
     <url>/lab3-page-tables/</url>
     <content><![CDATA[<p>Page table 使用用来映射进程虚拟地址到物理地址。有了 pagetable 进程看到的是虚拟地址，对操作系统来说，有了 pagetable，可以实现更多的管理面的控制，Isolating，Guarding and etc.</p>
@@ -924,19 +924,19 @@
 <h3 id="Show-me-the-code-1"><a href="#Show-me-the-code-1" class="headerlink" title="Show me the code"></a>Show me the code</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">diff --git a/kernel/defs.h b/kernel/defs.h</span><br><span class="line">index a3c962b..bdbd654 <span class="number">100644</span></span><br><span class="line">--- a/kernel/defs.h</span><br><span class="line">+++ b/kernel/defs.h</span><br><span class="line">@@ <span class="number">-173</span>,<span class="number">6</span> +<span class="number">173</span>,<span class="number">7</span> @@ uint64          <span class="title function_">walkaddr</span><span class="params">(<span class="type">pagetable_t</span>, uint64)</span>;</span><br><span class="line"> <span class="type">int</span>             <span class="title function_">copyout</span><span class="params">(<span class="type">pagetable_t</span>, uint64, <span class="type">char</span> *, uint64)</span>;</span><br><span class="line"> <span class="type">int</span>             <span class="title function_">copyin</span><span class="params">(<span class="type">pagetable_t</span>, <span class="type">char</span> *, uint64, uint64)</span>;</span><br><span class="line"> <span class="type">int</span>             <span class="title function_">copyinstr</span><span class="params">(<span class="type">pagetable_t</span>, <span class="type">char</span> *, uint64, uint64)</span>;</span><br><span class="line">+<span class="type">void</span>            <span class="title function_">vmprint</span><span class="params">(<span class="type">pagetable_t</span> pagetable)</span>;</span><br><span class="line"> </span><br><span class="line"> <span class="comment">// plic.c</span></span><br><span class="line"> <span class="type">void</span>            <span class="title function_">plicinit</span><span class="params">(<span class="type">void</span>)</span>;</span><br><span class="line">diff --git a/kernel/exec.c b/kernel/exec.c</span><br><span class="line">index e18bbb6..b5adef2 <span class="number">100644</span></span><br><span class="line">--- a/kernel/exec.c</span><br><span class="line">+++ b/kernel/exec.c</span><br><span class="line">@@ <span class="number">-128</span>,<span class="number">6</span> +<span class="number">128</span>,<span class="number">11</span> @@ exec(<span class="type">char</span> *path, <span class="type">char</span> **argv)</span><br><span class="line">   p-&gt;trapframe-&gt;sp = sp; <span class="comment">// initial stack pointer</span></span><br><span class="line">   proc_freepagetable(oldpagetable, oldsz);</span><br><span class="line"> </span><br><span class="line">+  <span class="comment">// print pagetable</span></span><br><span class="line">+  <span class="keyword">if</span>(p-&gt;pid == <span class="number">1</span>) &#123;</span><br><span class="line">+    vmprint(pagetable);</span><br><span class="line">+  &#125;</span><br><span class="line">+</span><br><span class="line">   <span class="keyword">return</span> argc; <span class="comment">// this ends up in a0, the first argument to main(argc, argv)</span></span><br><span class="line"> </span><br><span class="line">  bad:</span><br><span class="line">diff --git a/kernel/vm.c b/kernel/vm.c</span><br><span class="line">index <span class="number">5</span>c31e87.<span class="number">.0</span>d7338d <span class="number">100644</span></span><br><span class="line">--- a/kernel/vm.c</span><br><span class="line">+++ b/kernel/vm.c</span><br><span class="line">@@ <span class="number">-449</span>,<span class="number">3</span> +<span class="number">449</span>,<span class="number">29</span> @@ copyinstr(<span class="type">pagetable_t</span> pagetable, <span class="type">char</span> *dst, uint64 srcva, uint64 max)</span><br><span class="line">     <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line">+</span><br><span class="line">+<span class="type">void</span> <span class="title function_">pte_print_walk</span><span class="params">(<span class="type">pagetable_t</span> pagetable, <span class="type">int</span> level)</span> &#123;</span><br><span class="line">+	<span class="comment">// there are 2^9 = 512 PTEs in a page table.</span></span><br><span class="line">+	<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">512</span>; i++) &#123;</span><br><span class="line">+		<span class="type">pte_t</span> pte = pagetable[i];</span><br><span class="line">+		<span class="keyword">if</span> (!(pte &amp; PTE_V)) &#123;</span><br><span class="line">+			<span class="keyword">continue</span>;</span><br><span class="line">+		&#125;</span><br><span class="line">+</span><br><span class="line">+		<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt;= level; i++) &#123;</span><br><span class="line">+			<span class="built_in">printf</span>(<span class="string">&quot;..&quot;</span>);</span><br><span class="line">+		&#125;</span><br><span class="line">+		<span class="built_in">printf</span>(<span class="string">&quot;%d: pte %p pa %p\n&quot;</span>, i, pte, PTE2PA(pte));</span><br><span class="line">+</span><br><span class="line">+		<span class="keyword">if</span> ((pte &amp; (PTE_R | PTE_W | PTE_X)) == <span class="number">0</span>) &#123;</span><br><span class="line">+			<span class="comment">// this PTE points to a lower-level page table.</span></span><br><span class="line">+			uint64 child = PTE2PA(pte);</span><br><span class="line">+			pte_print_walk((<span class="type">pagetable_t</span>)child, level + <span class="number">1</span>);</span><br><span class="line">+		&#125;</span><br><span class="line">+	&#125;</span><br><span class="line">+&#125;</span><br><span class="line">+</span><br><span class="line">+<span class="type">void</span> <span class="title function_">vmprint</span><span class="params">(<span class="type">pagetable_t</span> pagetable)</span> &#123;</span><br><span class="line">+	<span class="built_in">printf</span>(<span class="string">&quot;page table %p\n&quot;</span>, pagetable);</span><br><span class="line">+	pte_print_walk(pagetable, <span class="number">0</span>);</span><br><span class="line">+&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="Detect-which-pages-have-been-accessed"><a href="#Detect-which-pages-have-been-accessed" class="headerlink" title="Detect which pages have been accessed"></a>Detect which pages have been accessed</h2><p>查看 xv6-book ，其中 Figure 3.2 写了 RISC-V 的 Paging(换页) 的细节。<br>其中 bit 6 就是本次实验要用的 access bit。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1710949515204-e21356df-78c2-4507-b6a8-256088296112.png"
-                      alt="image.png"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1710949515204-e21356df-78c2-4507-b6a8-256088296112.png"
+                        alt="image.png"
+                 ></p>
 <p>根据最后的实现，我们只声明了 pte 的 bit 6 为 PTE_A, 但并没有时间使用它。所以，这部分访问是硬件置位，xv6 里 paging 是硬件实现的，置位也是硬件做。</p>
 <h3 id="Show-me-the-code-2"><a href="#Show-me-the-code-2" class="headerlink" title="Show me the code"></a>Show me the code</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">diff --git a/kernel/riscv.h b/kernel/riscv.h</span><br><span class="line">index <span class="number">20</span>a01db.<span class="number">.100895</span>e <span class="number">100644</span></span><br><span class="line">--- a/kernel/riscv.h</span><br><span class="line">+++ b/kernel/riscv.h</span><br><span class="line">@@ <span class="number">-343</span>,<span class="number">6</span> +<span class="number">343</span>,<span class="number">7</span> @@ <span class="keyword">typedef</span> uint64 *<span class="type">pagetable_t</span>; <span class="comment">// 512 PTEs</span></span><br><span class="line"> <span class="meta">#<span class="keyword">define</span> PTE_W (1L &lt;&lt; 2)</span></span><br><span class="line"> <span class="meta">#<span class="keyword">define</span> PTE_X (1L &lt;&lt; 3)</span></span><br><span class="line"> <span class="meta">#<span class="keyword">define</span> PTE_U (1L &lt;&lt; 4) <span class="comment">// user can access</span></span></span><br><span class="line">+<span class="meta">#<span class="keyword">define</span> PTE_A (1L &lt;&lt; 6)</span></span><br><span class="line"> </span><br><span class="line"> <span class="comment">// shift a physical address to the right place for a PTE.</span></span><br><span class="line"> <span class="meta">#<span class="keyword">define</span> PA2PTE(pa) ((((uint64)pa) &gt;&gt; 12) &lt;&lt; 10)</span></span><br><span class="line">diff --git a/kernel/sysproc.c b/kernel/sysproc.c</span><br><span class="line">index <span class="number">88644b</span>2.<span class="number">.296935</span>f <span class="number">100644</span></span><br><span class="line">--- a/kernel/sysproc.c</span><br><span class="line">+++ b/kernel/sysproc.c</span><br><span class="line">@@ <span class="number">-71</span>,<span class="number">11</span> +<span class="number">71</span>,<span class="number">36</span> @@ sys_sleep(<span class="type">void</span>)</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> <span class="meta">#<span class="keyword">ifdef</span> LAB_PGTBL</span></span><br><span class="line">-<span class="type">int</span></span><br><span class="line">-sys_pgaccess(<span class="type">void</span>)</span><br><span class="line">-&#123;</span><br><span class="line">-  <span class="comment">// lab pgtbl: your code here.</span></span><br><span class="line">-  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">+<span class="type">int</span> <span class="title function_">sys_pgaccess</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">+</span><br><span class="line">+	uint64 baseaddr;</span><br><span class="line">+	<span class="type">int</span> upper;</span><br><span class="line">+	uint64 outaddr;</span><br><span class="line">+</span><br><span class="line">+	uint64 va;</span><br><span class="line">+	<span class="type">pte_t</span> *pte;</span><br><span class="line">+	uint64 abits = <span class="number">0</span>;</span><br><span class="line">+</span><br><span class="line">+	argaddr(<span class="number">0</span>, &amp;baseaddr);</span><br><span class="line">+	argint(<span class="number">1</span>, &amp;upper);</span><br><span class="line">+	argaddr(<span class="number">2</span>, &amp;outaddr);</span><br><span class="line">+</span><br><span class="line">+	<span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line">+</span><br><span class="line">+	<span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; upper; i++) &#123;</span><br><span class="line">+		va = baseaddr + i * PGSIZE;</span><br><span class="line">+		pte = walk(p-&gt;pagetable, va, <span class="number">0</span>);</span><br><span class="line">+</span><br><span class="line">+		<span class="keyword">if</span> (*pte &amp; PTE_A) &#123;</span><br><span class="line">+			abits = abits | (<span class="number">1</span> &lt;&lt; i); <span class="comment">// set bit</span></span><br><span class="line">+			*pte = (*pte) &amp; (~PTE_A); <span class="comment">// reset PTE_A</span></span><br><span class="line">+		&#125;</span><br><span class="line">+	&#125;</span><br><span class="line">+</span><br><span class="line">+	<span class="keyword">if</span> (copyout(p-&gt;pagetable, outaddr, (<span class="type">char</span> *)&amp;abits, <span class="keyword">sizeof</span>(abits)) &lt; <span class="number">0</span>)</span><br><span class="line">+		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">+</span><br><span class="line">+	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
 <h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1710908226434-effac210-4e3a-4a70-bfd2-b7f4cf52105d.png"
-                      alt="image.png"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1710908226434-effac210-4e3a-4a70-bfd2-b7f4cf52105d.png"
+                        alt="image.png"
+                 ></p>
 ]]></content>
       <categories>
         <category>xv6</category>
@@ -977,6 +977,94 @@
       </tags>
   </entry>
   <entry>
+    <title>PARSEC 3.0 编译报错</title>
+    <url>/parsec3.0-compile-error/</url>
+    <content><![CDATA[<p>PARSEC 3.0(Parallel Applications Research for System Efficiency Collectio)是一个基准测试套件，用于评估多核处理器和系统的性能，也就是跑分软件。</p>
+<p>工作中需要使用到这个软件作为基准测试软件，因为 PARSEC 从官网下载下来是不能直接运行的，所以有了下面适配 RHEL 9 操作系统的内容。<br>文章末尾有所有修改的 patches 文件，里面记录详细的修改地方。</p>
+<h1 id="安装-PARSEC-3-0"><a href="#安装-PARSEC-3-0" class="headerlink" title="安装 PARSEC 3.0"></a>安装 PARSEC 3.0</h1><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Full PARSEC 3.0 tarball</span></span><br><span class="line">wget http://parsec.cs.princeton.edu/download/3.0/parsec-3.0.tar.gz</span><br><span class="line"></span><br><span class="line">tar xvf parsec-3.0.tar.gz</span><br><span class="line">cd parsec-3.0</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">编译</span></span><br><span class="line">source env.sh</span><br><span class="line">parsecmgmt -a build</span><br></pre></td></tr></table></figure>
+
+<h1 id="编译错误合集"><a href="#编译错误合集" class="headerlink" title="编译错误合集"></a>编译错误合集</h1><h2 id="error-ISO-C-17-does-not-allow-dynamic-exception-specifications"><a href="#error-ISO-C-17-does-not-allow-dynamic-exception-specifications" class="headerlink" title="error: ISO C++17 does not allow dynamic exception specifications"></a>error: ISO C++17 does not allow dynamic exception specifications</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Thread.h:62:24: error: ISO C++17 does not allow dynamic exception specifications</span><br><span class="line">   62 |     Thread(Runnable &amp;) throw(ThreadCreationException);</span><br></pre></td></tr></table></figure>
+<p>在 C++17 标准中，将动态异常规范（Dynamic Exception Specification）声明为废弃（deprecated），也就是不推荐使用。在 RHEL 9 操作系统上默认的 C++ 标准是 17。所以会遇到这个编译报错，我们只需要使用老版本的 C++ 标准来编译代码可以规避这个问题。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">config/gcc.bldconf</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Arguments to use</span></span><br><span class="line">export CFLAGS=&quot; -O3 -g -funroll-loops -fprefetch-loop-arrays -std=gnu11 $&#123;PORTABILITY_FLAGS&#125;&quot;</span><br><span class="line">export CXXFLAGS=&quot;-O3 -g -funroll-loops -fprefetch-loop-arrays -fpermissive -fno-exceptions -std=gnu++11 $&#123;PORTABILITY_FLAGS&#125;&quot;</span><br></pre></td></tr></table></figure>
+<p>在 gcc.bldconf 里指明让 gcc 使用 gnu11&#x2F;gnu++11 标准编译代码。</p>
+<p>这里没有使用 c11、c++11 标准而是使用 gnu 版本实现的 C、C++  标准。<br>如果使用 c11&#x2F;c++11 标准，会遇到这个报错 <code>warning: implicit declaration of function &#39;strdup&#39;</code> gcc 编译器会申明 这个宏—— “<strong>STRICT_ANSI</strong>“，代表只使用 c11、 spec 里的标准 C 库。这会导致我们经常使用的一些像 strdup 这些库函数不能使用（parsec3 用到了这些库函数）</p>
+<h2 id="error-looser-exception-specification-on-overriding-virtual-function"><a href="#error-looser-exception-specification-on-overriding-virtual-function" class="headerlink" title="error: looser exception specification on overriding virtual function"></a>error: looser exception specification on overriding virtual function</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">WorkerGroup.h:88:5: error: looser exception specification on overriding virtual function &#x27;virtual threads::WorkerGroup::~WorkerGroup() throw (threads::CondException, threads::MutexException)&#x27;</span><br><span class="line">   88 |     ~WorkerGroup();</span><br></pre></td></tr></table></figure>
+<p>这个错误意思是子类 override 父类的虚函数时候，子类的异常规范比父类更宽松（looser），也就是说子类的异常规范允许抛出更多类型的异常，这与 C++ 的异常规范要求相违背。所以，我们要让子类的异常更严格，而不是更宽容。</p>
+<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">// WorkerGroup.h</span><br><span class="line"><span class="deletion">-    ~WorkerGroup();</span></span><br><span class="line"><span class="addition">+    ~WorkerGroup() throw();</span></span><br></pre></td></tr></table></figure>
+<p>显式指示不抛出异常即可。或者用 noexcept 也行。</p>
+<h2 id="multiple-definition"><a href="#multiple-definition" class="headerlink" title="multiple definition"></a>multiple definition</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/usr/bin/ld: encoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/encoder.c:65: multiple definition of `conf&#x27;; dedup.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/dedup.c:25: first defined here</span><br><span class="line">/usr/bin/ld: decoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/decoder.c:39: multiple definition of `conf&#x27;; dedup.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/dedup.c:25: first defined here</span><br><span class="line">/usr/bin/ld: decoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/decoder.c:42: multiple definition of `cache&#x27;; encoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/encoder.c:68: first defined here</span><br></pre></td></tr></table></figure>
+<p>gcc 10 后，默认使能了  -fno-common  选项，编译器检查更加严格了 <a class="link"   href="https://gcc.gnu.org/gcc-10/porting_to.html" >https://gcc.gnu.org/gcc-10/porting_to.html<i class="fas fa-external-link-alt"></i></a>。最简单的办法是，rollback(指定使用 -fcommon 编译代码即可)</p>
+<h2 id="mismatched-comparison-between-std-ifstream-and-int"><a href="#mismatched-comparison-between-std-ifstream-and-int" class="headerlink" title="mismatched comparison between std::ifstream and int"></a>mismatched comparison between std::ifstream and int</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FILE_UTILITIES.h:83:49: error: no match for ‘operator!=’ (operand types are ‘std::ofstream’ &#123;aka ‘std::basic_ofstream&lt;char&gt;’&#125; and ‘int’)</span><br><span class="line">   83 |         return std::ofstream (filename.c_str()) != 0;</span><br><span class="line">      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~ ~</span><br><span class="line">      |                     |                              |</span><br><span class="line">      |                     |                              int</span><br><span class="line">      |                     std::ofstream &#123;aka std::basic_ofstream&lt;char&gt;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>std::ofstream 和 int 之间无法直接比较，需要强转，举个栗子，</p>
+<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">// FILE_UTILITIES.h</span><br><span class="line"></span><br><span class="line"><span class="deletion">-	return std::ifstream (filename.c_str()) != 0;</span></span><br><span class="line"><span class="addition">+	return (bool)std::ifstream (filename.c_str()) != 0;</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="error-‘HUGE’-undeclared"><a href="#error-‘HUGE’-undeclared" class="headerlink" title="error: ‘HUGE’ undeclared"></a>error: ‘HUGE’ undeclared</h2><figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">LSH_query.c:361:34: error: ‘HUGE’ undeclared (first use in this function)</span><br><span class="line">  361 |         TOPK_INIT(topk, dist, K, HUGE);</span><br></pre></td></tr></table></figure>
+<p>没有定义 <code>HUGE</code> 宏。我们将 C 数学库里的 HUGE_VAL 定义为 HUGE即可，<code>#define HUGE HUGE_VAL</code></p>
+<h2 id="conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib"><a href="#conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib" class="headerlink" title="conflicting type __mbstate_t, both provided by glibc and parsec lib"></a>conflicting type __mbstate_t, both provided by glibc and parsec lib</h2><figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">/usr/include/bits/types/__mbstate_t.h:21:3: error: conflicting types for ‘__mbstate_t’; have ‘struct &lt;anonymous&gt;’</span><br><span class="line">   21 | &#125; __mbstate_t;</span><br></pre></td></tr></table></figure>
+<p>C 库和 parsec 库同时提供了 __mbstate_t 的定义，二者冲突了，将 parsec 库提供的定义重命名。</p>
+<h2 id="POD-document-had-syntax-errors"><a href="#POD-document-had-syntax-errors" class="headerlink" title="POD document had syntax errors"></a>POD document had syntax errors</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">smime.pod around line 272: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 276: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 280: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 285: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 289: Expected text after =item, not a number</span><br><span class="line">POD document had syntax errors at /usr/bin/pod2man line 69.</span><br><span class="line">make: *** [Makefile:681: install_docs] Error 255</span><br></pre></td></tr></table></figure>
+<p>提示POD doc 有语法错误，应该是软件升级，语法变了导致的。使用下面的脚本一键修正过来就好了，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#! /bin/bash</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> 0 1 2 3 4 5 6 7 8 9</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">&quot;Replacing &#x27;=item <span class="variable">$i</span>&#x27; to &#x27;=item C&lt;<span class="variable">$i</span>&gt;&#x27;&quot;</span></span><br><span class="line">	grep -rl <span class="string">&quot;=item <span class="variable">$i</span>&quot;</span> * | xargs sed -i <span class="string">&quot;s/=item <span class="variable">$i</span>/=item C&lt;<span class="variable">$i</span>&gt;/g&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+
+<h1 id="PATCHES"><a href="#PATCHES" class="headerlink" title="PATCHES"></a>PATCHES</h1><p>1、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0002-fix-error-looser-exception-specification-on-overridi.patch" >fix-error-looser-exception-specification-on-overridi.patch<i class="fas fa-external-link-alt"></i></a><br>2、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0001-use-gnu11-gnu-11-std-to-build-parsec.patch" >use-gnu11-gnu-11-std-to-build-parsec.patch<i class="fas fa-external-link-alt"></i></a><br>3、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0007-fix-multiple-definition-when-build-with-gcc-10-or-ab.patch" >fix-multiple-definition-when-build-with-gcc-10-or-ab.patch<i class="fas fa-external-link-alt"></i></a><br>4、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0004-fix-A-mismatched-comparison-between-std-ifstream-and.patch" >fix-A-mismatched-comparison-between-std-ifstream-and.patch<i class="fas fa-external-link-alt"></i></a><br>5、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0005-fix-HUGE-macro-undeclared-error.patch" >fix-HUGE-macro-undeclared-error.patch<i class="fas fa-external-link-alt"></i></a><br>6、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0006-fix-conflicting-type-__mbstate_t-both-provided-by-gl.patch" >fix-conflicting-type-__mbstate_t-both-provided-by-gl.patch<i class="fas fa-external-link-alt"></i></a><br>7、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0003-fix-POD-document-had-syntax-errors.patch" >fix-POD-document-had-syntax-errors.patch<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>parsec</category>
+      </categories>
+      <tags>
+        <tag>parsec</tag>
+        <tag>RHEL 9</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用 ebpf USDT 追踪用户态程序</title>
+    <url>/tracing-userspace-process-ebpf-usdt/</url>
+    <content><![CDATA[<p>USDT 是一种探针技术，让用户态程序也支持使用 perf&#x2F;ebpf 性能分析工具进行 tracing&#x2F;profiling。做性能分析通常听过 perf&#x2F;ebpf 这些工具，这些工具通常用在内核上，用于分析内核的一些性能问题，如果是用户态程序也遇到性能问题了，我们希望用户态程序也能使用 perf&#x2F;ebpf 工具进行 tracing&#x2F;profiling。那么就需要 USDT 技术了。</p>
+<p>简单来说，USDT 就是探针技术，我们在源码里插入一个固定的探针。当我们 tracing 这个探针的时候，就获取我们埋点的数据了。</p>
+<h2 id="USDT-如何插入探针？"><a href="#USDT-如何插入探针？" class="headerlink" title="USDT  如何插入探针？"></a>USDT  如何插入探针？</h2><p>插入探针，有时候也叫做埋点。只需要包含 &lt;sys&#x2F;sdt.h&gt; 头文件，然后利用 DTRACE_PROBE 系列函数埋点即可。</p>
+<p>DTRACE_PROBE 系列函数定义在  <code>/usr/include/sys/sdt.h</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* DTrace compatible macro names.  */</span></span><br><span class="line">DTRACE_PROBE(provider,probe)</span><br><span class="line">DTRACE_PROBE1(provider,probe,parm1)</span><br><span class="line">DTRACE_PROBE2(provider,probe,parm1,parm2)</span><br><span class="line">DTRACE_PROBE3(provider,probe,parm1,parm2,parm3)</span><br><span class="line">[...]</span><br></pre></td></tr></table></figure>
+<p>第一次看到DTRACE_PROBE1, 2, 3, 4 … 可能会有些懵，这都是啥呀？！</p>
+<p>实际上很简单，而且用法也很简单，我用 DPDK l2fwd 举个例子，<br><a class="link"   href="https://git.dpdk.org/dpdk/tree/examples/l2fwd" >https://git.dpdk.org/dpdk/tree/examples/l2fwd<i class="fas fa-external-link-alt"></i></a></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line">        </span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line">        </span><br><span class="line">    	<span class="built_in">printf</span>(<span class="string">&quot;portid: %d, queueid: %d, rcvd: %d\n&quot;</span>, portid, <span class="number">0</span>, nb_rx);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>上面的代码是一个利用 DPDK l2 fwd 里的示例代码， rte_eth_rx_burst 函数从网卡收包，我们想知道本次收包收了多少个，于是我们打了一条 log。</p>
+<p>这样实现很不优雅，<strong>首先是在 datapath 打 log 是错误的决定</strong>。其次，我们只希望在 tracing 的时候打印结果，不 tracing 的时候不打印结果。使用 打 log 的方式是无法实现这种效果的，我们需要一个开关，能动态打开和关闭 tracing 的开关，当我们 attach 到这个探针时候，我们可以观测到数据，当我们 detach 的时候，就去掉这个探针，不增加额外的观测消耗。</p>
+<p>USDT 可以实现动态开关的功能。我们只需要添加 &lt;sys&#x2F;sdt.h&gt; 头文件，将 log 语句替换为 DTRACE_PROBE3 语句即可。DTRACE_PROBE5 的数字 3 代表 3 个观测参数，前两个是标识参数，第一个通常用 appname 填充,第二个通常用函数名称填充。当我们使用 perf、ebpf 等观测工具时，通过这两个参数定位我们预先埋下的观测点。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/sdt.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line"></span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line"></span><br><span class="line">		DTRACE_PROBE3(l2fwd, l2fwd_main_loop, portid, <span class="number">0</span>, rcvd);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="查看可用的探针"><a href="#查看可用的探针" class="headerlink" title="查看可用的探针"></a>查看可用的探针</h2><p>查看可用探针</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -l <span class="string">&quot;usdt:/usr/bin/l2fwd:*&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>查看正在运行的进程的可用探针，会同时展示其链接的动态库的可用探针</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -lp $(pidof l2fwd) <span class="string">&quot;usdt:*&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="USDT-使用"><a href="#USDT-使用" class="headerlink" title="USDT 使用"></a>USDT 使用</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bpftrace -e &#x27;usdt:/usr/bin/l2fwd:l2fwd_main_loop &#123; printf(&quot;%d,%d,%d\n&quot;,arg0,arg1,arg2); &#125;&#x27;</span><br></pre></td></tr></table></figure>
+<p>bpftrace 内置许多参数，比如 comm, pid, cpu, elapsed，利用这些参数可以实现更高级的 tracing。<br>还可以通过 bcc&#x2F;libbpf 将一段时间的数据收集起来，进行统计，得出更宏观的指标，这样有一定的代码量。bpftrace 的优势就是一行，很简单。</p>
+<h2 id="USDT-原理"><a href="#USDT-原理" class="headerlink" title="USDT 原理"></a>USDT 原理</h2><p>包含 USDT 的代码经过编译后生成的二进制文件将有一个名为 .stapsdt.base 的 ELF 段。这个 .stapsdt.base 有助于 tracing 工具在二进制文件加载到内存后计算探针的内存地址。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">readelf -S l2fwd | grep sdt</span></span><br><span class="line">  [17] .stapsdt.base     PROGBITS         00000000004053d0  000053d0</span><br><span class="line">  [28] .note.stapsdt     NOTE             0000000000000000  000061fc</span><br></pre></td></tr></table></figure>
+
+<p>还有一个 ELF note，note 记录了探针的相关信息（名称、地址、信号量、参数）。用户态进程可以读取这个段获得探针的信息。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Displaying notes found in: .note.stapsdt</span><br><span class="line">  Owner                Data size 	Description</span><br><span class="line">  stapsdt              0x00000042	NT_STAPSDT (SystemTap probe descriptors)</span><br><span class="line">    Provider: l2fwd</span><br><span class="line">    Name: l2fwd_main_loop</span><br><span class="line">    Location: 0x0000000000402596, Base: 0x00000000004053d0, Semaphore: 0x0000000000000000</span><br><span class="line">    Arguments: 4@%ebp -4@$0 4@%ecx</span><br></pre></td></tr></table></figure>
+<h2 id="USDT-动态开关"><a href="#USDT-动态开关" class="headerlink" title="USDT 动态开关"></a>USDT 动态开关</h2><p>反汇编二进制，发现 DTRACE_PROBE 被编译为一条 nop 指令，当不进行 probe 时候，就是执行一条 nop 指令，当进行 probe 的时候替换为 int3 进行跳转到 hook 函数。<br><img  
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1706001641941-1e147d49-ec2e-4ecb-8cdc-6dbec57fbf17.png"
+                        alt="image.png"
+                 ></p>
+]]></content>
+      <categories>
+        <category>tracing</category>
+      </categories>
+      <tags>
+        <tag>ebpf</tag>
+        <tag>usdt</tag>
+        <tag>sdt</tag>
+        <tag>tracing</tag>
+        <tag>userspace</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Lab2: system calls</title>
     <url>/lab2-system-calls/</url>
     <content><![CDATA[<p>Lab2 实现 2 个 syscall。</p>
@@ -984,20 +1072,20 @@
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">其中一个窗口启动 qemu-gdb</span></span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">make qemu-gdb</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新开另一个窗口，连接 gdb</span></span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">gdb-multiarch</span><br></pre></td></tr></table></figure>
 
 <p> xv6 项目，为我们提供了便捷的 <code>.gdbinit</code> 脚本，默认情况下（下图）， GDB 好像不为我们自动加载这个脚本，<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1708328101386-4416f785-08b3-481e-8d6a-618828bfe114.png"
-                      alt="image.png"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1708328101386-4416f785-08b3-481e-8d6a-618828bfe114.png"
+                        alt="image.png"
+                 ></p>
 <p>有两种方式可以让图中的提示消失，<br>第一种是将 xv6 的 .gdbinit 文件设置为 auto-load</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir -p /root/.config/gdb</span><br><span class="line">echo &quot;add-auto-load-safe-path /root/xv6-labs-2023/.gdbinit&quot; &gt; /root/.config/gdb/gdbinit</span><br></pre></td></tr></table></figure>
 <p>第二种是直接执行 <code>source .gdbinit</code> 手动加载，第一种设置 auto-load 的方式一劳永逸，下次 gdb 的时候，不用敲 source 了。</p>
 <p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1708328293952-be1287b8-996a-465d-af29-a8122c891b13.png"
-                      alt="image.png"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1708328293952-be1287b8-996a-465d-af29-a8122c891b13.png"
+                        alt="image.png"
+                 ></p>
 <p>下面查看一下.<code>gdbinit</code> 里写了什么，打开 <code>.gdbinit </code>发现它会帮我们，</p>
 <ul>
 <li>设置远端机器的架构 set architecture</li>
@@ -1052,60 +1140,15 @@
 
 <h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">make grade</span><br></pre></td></tr></table></figure>
 <p><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1708507727024-a28b6098-4b77-4dab-8e3c-978f5dd5f4ac.png"
-                      alt="image.png"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/1708507727024-a28b6098-4b77-4dab-8e3c-978f5dd5f4ac.png"
+                        alt="image.png"
+                 ></p>
 ]]></content>
       <categories>
         <category>xv6</category>
       </categories>
-  </entry>
-  <entry>
-    <title>使用 ebpf USDT 追踪用户态程序</title>
-    <url>/tracing-userspace-process-ebpf-usdt/</url>
-    <content><![CDATA[<p>USDT 是一种探针技术，让用户态程序也支持使用 perf&#x2F;ebpf 性能分析工具进行 tracing&#x2F;profiling。做性能分析通常听过 perf&#x2F;ebpf 这些工具，这些工具通常用在内核上，用于分析内核的一些性能问题，如果是用户态程序也遇到性能问题了，我们希望用户态程序也能使用 perf&#x2F;ebpf 工具进行 tracing&#x2F;profiling。那么就需要 USDT 技术了。</p>
-<p>简单来说，USDT 就是探针技术，我们在源码里插入一个固定的探针。当我们 tracing 这个探针的时候，就获取我们埋点的数据了。</p>
-<h2 id="USDT-如何插入探针？"><a href="#USDT-如何插入探针？" class="headerlink" title="USDT  如何插入探针？"></a>USDT  如何插入探针？</h2><p>插入探针，有时候也叫做埋点。只需要包含 &lt;sys&#x2F;sdt.h&gt; 头文件，然后利用 DTRACE_PROBE 系列函数埋点即可。</p>
-<p>DTRACE_PROBE 系列函数定义在  <code>/usr/include/sys/sdt.h</code></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* DTrace compatible macro names.  */</span></span><br><span class="line">DTRACE_PROBE(provider,probe)</span><br><span class="line">DTRACE_PROBE1(provider,probe,parm1)</span><br><span class="line">DTRACE_PROBE2(provider,probe,parm1,parm2)</span><br><span class="line">DTRACE_PROBE3(provider,probe,parm1,parm2,parm3)</span><br><span class="line">[...]</span><br></pre></td></tr></table></figure>
-<p>第一次看到DTRACE_PROBE1, 2, 3, 4 … 可能会有些懵，这都是啥呀？！</p>
-<p>实际上很简单，而且用法也很简单，我用 DPDK l2fwd 举个例子，<br><a class="link"   href="https://git.dpdk.org/dpdk/tree/examples/l2fwd" >https://git.dpdk.org/dpdk/tree/examples/l2fwd<i class="fas fa-external-link-alt"></i></a></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line">        </span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line">        </span><br><span class="line">    	<span class="built_in">printf</span>(<span class="string">&quot;portid: %d, queueid: %d, rcvd: %d\n&quot;</span>, portid, <span class="number">0</span>, nb_rx);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>上面的代码是一个利用 DPDK l2 fwd 里的示例代码， rte_eth_rx_burst 函数从网卡收包，我们想知道本次收包收了多少个，于是我们打了一条 log。</p>
-<p>这样实现很不优雅，<strong>首先是在 datapath 打 log 是错误的决定</strong>。其次，我们只希望在 tracing 的时候打印结果，不 tracing 的时候不打印结果。使用 打 log 的方式是无法实现这种效果的，我们需要一个开关，能动态打开和关闭 tracing 的开关，当我们 attach 到这个探针时候，我们可以观测到数据，当我们 detach 的时候，就去掉这个探针，不增加额外的观测消耗。</p>
-<p>USDT 可以实现动态开关的功能。我们只需要添加 &lt;sys&#x2F;sdt.h&gt; 头文件，将 log 语句替换为 DTRACE_PROBE3 语句即可。DTRACE_PROBE5 的数字 3 代表 3 个观测参数，前两个是标识参数，第一个通常用 appname 填充,第二个通常用函数名称填充。当我们使用 perf、ebpf 等观测工具时，通过这两个参数定位我们预先埋下的观测点。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/sdt.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line"></span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line"></span><br><span class="line">		DTRACE_PROBE3(l2fwd, l2fwd_main_loop, portid, <span class="number">0</span>, rcvd);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="查看可用的探针"><a href="#查看可用的探针" class="headerlink" title="查看可用的探针"></a>查看可用的探针</h2><p>查看可用探针</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -l <span class="string">&quot;usdt:/usr/bin/l2fwd:*&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>查看正在运行的进程的可用探针，会同时展示其链接的动态库的可用探针</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -lp $(pidof l2fwd) <span class="string">&quot;usdt:*&quot;</span></span><br></pre></td></tr></table></figure>
-<h2 id="USDT-使用"><a href="#USDT-使用" class="headerlink" title="USDT 使用"></a>USDT 使用</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bpftrace -e &#x27;usdt:/usr/bin/l2fwd:l2fwd_main_loop &#123; printf(&quot;%d,%d,%d\n&quot;,arg0,arg1,arg2); &#125;&#x27;</span><br></pre></td></tr></table></figure>
-<p>bpftrace 内置许多参数，比如 comm, pid, cpu, elapsed，利用这些参数可以实现更高级的 tracing。<br>还可以通过 bcc&#x2F;libbpf 将一段时间的数据收集起来，进行统计，得出更宏观的指标，这样有一定的代码量。bpftrace 的优势就是一行，很简单。</p>
-<h2 id="USDT-原理"><a href="#USDT-原理" class="headerlink" title="USDT 原理"></a>USDT 原理</h2><p>包含 USDT 的代码经过编译后生成的二进制文件将有一个名为 .stapsdt.base 的 ELF 段。这个 .stapsdt.base 有助于 tracing 工具在二进制文件加载到内存后计算探针的内存地址。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">readelf -S l2fwd | grep sdt</span></span><br><span class="line">  [17] .stapsdt.base     PROGBITS         00000000004053d0  000053d0</span><br><span class="line">  [28] .note.stapsdt     NOTE             0000000000000000  000061fc</span><br></pre></td></tr></table></figure>
-
-<p>还有一个 ELF note，note 记录了探针的相关信息（名称、地址、信号量、参数）。用户态进程可以读取这个段获得探针的信息。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Displaying notes found in: .note.stapsdt</span><br><span class="line">  Owner                Data size 	Description</span><br><span class="line">  stapsdt              0x00000042	NT_STAPSDT (SystemTap probe descriptors)</span><br><span class="line">    Provider: l2fwd</span><br><span class="line">    Name: l2fwd_main_loop</span><br><span class="line">    Location: 0x0000000000402596, Base: 0x00000000004053d0, Semaphore: 0x0000000000000000</span><br><span class="line">    Arguments: 4@%ebp -4@$0 4@%ecx</span><br></pre></td></tr></table></figure>
-<h2 id="USDT-动态开关"><a href="#USDT-动态开关" class="headerlink" title="USDT 动态开关"></a>USDT 动态开关</h2><p>反汇编二进制，发现 DTRACE_PROBE 被编译为一条 nop 指令，当不进行 probe 时候，就是执行一条 nop 指令，当进行 probe 的时候替换为 int3 进行跳转到 hook 函数。<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/1706001641941-1e147d49-ec2e-4ecb-8cdc-6dbec57fbf17.png"
-                      alt="image.png"
-                ></p>
-]]></content>
-      <categories>
-        <category>tracing</category>
-      </categories>
-      <tags>
-        <tag>ebpf</tag>
-        <tag>usdt</tag>
-        <tag>sdt</tag>
-        <tag>tracing</tag>
-        <tag>userspace</tag>
-      </tags>
   </entry>
   <entry>
     <title>Run Your Own OBS 编译系统</title>
@@ -1121,11 +1164,11 @@
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">A start job is running for OBS API Setup (8min 34s / no limit )</span><br></pre></td></tr></table></figure>
 
 <p>journal 看日志可以看到，setup-appliance.sh 脚本在持续等待 fqdn，而且超时时间设置为 600 秒，也就是 10mins，感觉时间设置的过长了，如果本地网络比较好的话，改下脚本将超时时间设置为 十几秒就够了<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/obs-set-fqdn-journal-log.png"
-                      alt="image.png"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/obs-set-fqdn-journal-log.png"
+                        alt="image.png"
+                 ></p>
 <p>&#x2F;usr&#x2F;lib&#x2F;obs&#x2F;server&#x2F;setup-appliance.sh</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">function get_hostname &#123;</span><br><span class="line"></span><br><span class="line">  if [[ $1 &amp;&amp; $BOOTSTRAP_TEST_MODE == 1 ]];then</span><br><span class="line">    FQHOSTNAME=$1</span><br><span class="line">  else</span><br><span class="line">    TIMEOUT=600</span><br><span class="line">    while [ -z &quot;$FQHOSTNAME&quot; -o &quot;$FQHOSTNAME&quot; = &quot;localhost&quot; ];do</span><br><span class="line">      FQHOSTNAME=`hostname -f 2&gt;/dev/null`</span><br><span class="line">      TIMEOUT=$(($TIMEOUT-1))</span><br><span class="line">      [ &quot;$TIMEOUT&quot; -le 0 ] &amp;&amp; break</span><br><span class="line">      echo &quot;Waiting for FQHOSTNAME ($TIMEOUT)&quot;</span><br><span class="line">      sleep 1</span><br><span class="line">    done</span><br><span class="line">  fi</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>超时时间设置为 600 s ，在目前的网络条件下可能是没有必要的，改为十几秒足够了<br>注：在目前版本的 OBS  Git 仓库上，超时时间已经被调整为 30 s 了（<a class="link"   href="https://github.com/openSUSE/open-build-service/blob/c5ad76b359fd8b2ad77a597fa7cd65ed47b93d76/dist/functions.setup-appliance.sh#L144" >functions.setup-appliance.sh<i class="fas fa-external-link-alt"></i></a>），感觉这才是比较合理的值</p>
@@ -1163,33 +1206,33 @@
 <h3 id="2-添加编译依赖-rpm-包（BuildRequire-）"><a href="#2-添加编译依赖-rpm-包（BuildRequire-）" class="headerlink" title="2) 添加编译依赖 rpm 包（BuildRequire ）"></a>2) 添加编译依赖 rpm 包（BuildRequire ）</h3><p>对于 AlmaLinux 来说，以 repo粒度来说最小化的依赖包是 baseos 和 appstream 里面的包。但是通常情况下，这些包是不够用的，比如说编译 kernel, 还需要 crb 和 epel 里的包。<br>这里推荐将发行版的，baseos, appstream, crb, epel 仓库的对应 arch 的包都下载到 :full 路径下作为依赖。</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mkdir /srv/obs/build/Meta:AlmaLinux:9/standard/x86_64/:full</span><br><span class="line"></span><br><span class="line">cp &lt;needed-packages-to-build-packages&gt;/*.rpm /srv/obs/build/Meta:AlmaLinux:9/standard/x86_64/:full/</span><br><span class="line">chown -R obsrun.obsrun /srv/obs/build/Meta:AlmaLinux:9</span><br></pre></td></tr></table></figure>
 <h3 id="3-添加项目的配置文件"><a href="#3-添加项目的配置文件" class="headerlink" title="3) 添加项目的配置文件"></a>3) 添加项目的配置文件</h3><p>没添加 project config 之前，项目是处于 broken 状态的<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/obs-broken-status.png"
-                      alt="obs-broken-status"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/obs-broken-status.png"
+                        alt="obs-broken-status"
+                 ></p>
 <p>添加也很简单，将 openSUSE  网站的 project conf 复制过来即可<br><a class="link"   href="https://build.opensuse.org/projects/AlmaLinux:9/prjconf" >https://build.opensuse.org/projects/AlmaLinux:9/prjconf<i class="fas fa-external-link-alt"></i></a></p>
 <h3 id="4-扫描项目解决依赖"><a href="#4-扫描项目解决依赖" class="headerlink" title="4) 扫描项目解决依赖"></a>4) 扫描项目解决依赖</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">obs_admin --rescan-repository Meta:AlmaLinux:9 standard x86_64</span><br></pre></td></tr></table></figure>
 
 <p>执行完 rescan-repository 命令后，如果出现 :repodone 文件代表文件扫描完毕<br>如果配置不完整，查下目录下的文件里面的内容，可以看出报错出在哪里</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">ls</span> /srv/obs/build/AlmaLinux:9/standard/x86_64</span></span><br><span class="line">:bininfo  :depends  :full  :full.solv  :packstatus  :repodone  :repoinfo  :schedulerstate</span><br></pre></td></tr></table></figure>
 <p>5）以 meta 项目为基础创建发行版编译项目<br>添加完 build target 之后，就可以为这个发行版构建软件包了<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/../img/obs-public-status.png"
-                      alt="obs-public-status"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/../img/obs-public-status.png"
+                        alt="obs-public-status"
+                 ></p>
 <h3 id="5）如法炮制，创建一个用于发行版编译的项目"><a href="#5）如法炮制，创建一个用于发行版编译的项目" class="headerlink" title="5）如法炮制，创建一个用于发行版编译的项目"></a>5）如法炮制，创建一个用于发行版编译的项目</h3><p>前面 4 个步骤中，我们已经创建了 一个 Meta 项目，但是这个项目并不能作为发行版编译的项目，需要以 meta 项目为模板创建用于发行版编译的项目<br>因为在 OBS 里所有的项目都是一样的，这里和创建 meta 项目一样创建一个用于发行版编译的项目。<br>这里的区别是，repository 标签的写法，我们复用了之前创建的 meta 项目。创建完成，扫描仓库解决依赖后就可以正式用作编译的仓库了。</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">osc meta -e prj AlmaLinux:9</span><br></pre></td></tr></table></figure>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">&lt;project name=&quot;AlmaLinux:9&quot;&gt;</span><br><span class="line">  &lt;title&gt;AlmaLinux 9&lt;/title&gt;</span><br><span class="line">  &lt;description&gt;AlmaLinux 9 distribution project.</span><br><span class="line"></span><br><span class="line">  &lt;/description&gt;</span><br><span class="line">  &lt;person userid=&quot;Admin&quot; role=&quot;maintainer&quot;/&gt;</span><br><span class="line">  &lt;repository name=&quot;standard&quot;&gt;</span><br><span class="line">    &lt;path project=&quot;Meta:AlmaLinux:9&quot; repository=&quot;standard&quot;/&gt;</span><br><span class="line">    &lt;arch&gt;x86_64&lt;/arch&gt;</span><br><span class="line">  &lt;/repository&gt;</span><br><span class="line">&lt;/project&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">obs_admin --rescan-repository AlmaLinux:9 standard x86_64</span><br></pre></td></tr></table></figure>
 
 <p>现在可以为 AlmaLinux 编译软件包了，如下图<br><img  
-                     lazyload
-                     alt="image"
-                     data-src="/img/obs-build-success-status.png"
-                      alt="obs-build-success-status"
-                ></p>
+                       lazyload
+                       alt="image"
+                       data-src="/img/obs-build-success-status.png"
+                        alt="obs-build-success-status"
+                 ></p>
 <h2 id="已知问题"><a href="#已知问题" class="headerlink" title="已知问题"></a>已知问题</h2><h3 id="OBS-使用-qemu-kvm-作为构建环境会构建失败"><a href="#OBS-使用-qemu-kvm-作为构建环境会构建失败" class="headerlink" title="OBS 使用 qemu-kvm 作为构建环境会构建失败"></a>OBS 使用 qemu-kvm 作为构建环境会构建失败</h3><p>OBS 默认采用 qemu-kvm 创建的虚拟机作为编译环境，采用 qemu-kvm 作为构建方式很多情况下会报错，导致构建失败。这个问题没有仔细研究过，有一个 workaround 可以比较简单的解决这个问题，那就是将 qemu-kvm 命令重命名，然后重启 obsworker.service 。</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">mv /usr/bin/qemu-kvm /usr/bin/qemu-kvm.bak</span><br><span class="line">systemctl restart obsworker.service</span><br></pre></td></tr></table></figure>
 
@@ -1210,49 +1253,6 @@
         <tag>OBS</tag>
         <tag>rpmbuild</tag>
         <tag>rpmsign</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>PARSEC 3.0 编译报错</title>
-    <url>/parsec3.0-compile-error/</url>
-    <content><![CDATA[<p>PARSEC 3.0(Parallel Applications Research for System Efficiency Collectio)是一个基准测试套件，用于评估多核处理器和系统的性能，也就是跑分软件。</p>
-<p>工作中需要使用到这个软件作为基准测试软件，因为 PARSEC 从官网下载下来是不能直接运行的，所以有了下面适配 RHEL 9 操作系统的内容。<br>文章末尾有所有修改的 patches 文件，里面记录详细的修改地方。</p>
-<h1 id="安装-PARSEC-3-0"><a href="#安装-PARSEC-3-0" class="headerlink" title="安装 PARSEC 3.0"></a>安装 PARSEC 3.0</h1><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Full PARSEC 3.0 tarball</span></span><br><span class="line">wget http://parsec.cs.princeton.edu/download/3.0/parsec-3.0.tar.gz</span><br><span class="line"></span><br><span class="line">tar xvf parsec-3.0.tar.gz</span><br><span class="line">cd parsec-3.0</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">编译</span></span><br><span class="line">source env.sh</span><br><span class="line">parsecmgmt -a build</span><br></pre></td></tr></table></figure>
-
-<h1 id="编译错误合集"><a href="#编译错误合集" class="headerlink" title="编译错误合集"></a>编译错误合集</h1><h2 id="error-ISO-C-17-does-not-allow-dynamic-exception-specifications"><a href="#error-ISO-C-17-does-not-allow-dynamic-exception-specifications" class="headerlink" title="error: ISO C++17 does not allow dynamic exception specifications"></a>error: ISO C++17 does not allow dynamic exception specifications</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Thread.h:62:24: error: ISO C++17 does not allow dynamic exception specifications</span><br><span class="line">   62 |     Thread(Runnable &amp;) throw(ThreadCreationException);</span><br></pre></td></tr></table></figure>
-<p>在 C++17 标准中，将动态异常规范（Dynamic Exception Specification）声明为废弃（deprecated），也就是不推荐使用。在 RHEL 9 操作系统上默认的 C++ 标准是 17。所以会遇到这个编译报错，我们只需要使用老版本的 C++ 标准来编译代码可以规避这个问题。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">config/gcc.bldconf</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Arguments to use</span></span><br><span class="line">export CFLAGS=&quot; -O3 -g -funroll-loops -fprefetch-loop-arrays -std=gnu11 $&#123;PORTABILITY_FLAGS&#125;&quot;</span><br><span class="line">export CXXFLAGS=&quot;-O3 -g -funroll-loops -fprefetch-loop-arrays -fpermissive -fno-exceptions -std=gnu++11 $&#123;PORTABILITY_FLAGS&#125;&quot;</span><br></pre></td></tr></table></figure>
-<p>在 gcc.bldconf 里指明让 gcc 使用 gnu11&#x2F;gnu++11 标准编译代码。</p>
-<p>这里没有使用 c11、c++11 标准而是使用 gnu 版本实现的 C、C++  标准。<br>如果使用 c11&#x2F;c++11 标准，会遇到这个报错 <code>warning: implicit declaration of function &#39;strdup&#39;</code> gcc 编译器会申明 这个宏—— “<strong>STRICT_ANSI</strong>“，代表只使用 c11、 spec 里的标准 C 库。这会导致我们经常使用的一些像 strdup 这些库函数不能使用（parsec3 用到了这些库函数）</p>
-<h2 id="error-looser-exception-specification-on-overriding-virtual-function"><a href="#error-looser-exception-specification-on-overriding-virtual-function" class="headerlink" title="error: looser exception specification on overriding virtual function"></a>error: looser exception specification on overriding virtual function</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">WorkerGroup.h:88:5: error: looser exception specification on overriding virtual function &#x27;virtual threads::WorkerGroup::~WorkerGroup() throw (threads::CondException, threads::MutexException)&#x27;</span><br><span class="line">   88 |     ~WorkerGroup();</span><br></pre></td></tr></table></figure>
-<p>这个错误意思是子类 override 父类的虚函数时候，子类的异常规范比父类更宽松（looser），也就是说子类的异常规范允许抛出更多类型的异常，这与 C++ 的异常规范要求相违背。所以，我们要让子类的异常更严格，而不是更宽容。</p>
-<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">// WorkerGroup.h</span><br><span class="line"><span class="deletion">-    ~WorkerGroup();</span></span><br><span class="line"><span class="addition">+    ~WorkerGroup() throw();</span></span><br></pre></td></tr></table></figure>
-<p>显式指示不抛出异常即可。或者用 noexcept 也行。</p>
-<h2 id="multiple-definition"><a href="#multiple-definition" class="headerlink" title="multiple definition"></a>multiple definition</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/usr/bin/ld: encoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/encoder.c:65: multiple definition of `conf&#x27;; dedup.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/dedup.c:25: first defined here</span><br><span class="line">/usr/bin/ld: decoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/decoder.c:39: multiple definition of `conf&#x27;; dedup.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/dedup.c:25: first defined here</span><br><span class="line">/usr/bin/ld: decoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/decoder.c:42: multiple definition of `cache&#x27;; encoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/encoder.c:68: first defined here</span><br></pre></td></tr></table></figure>
-<p>gcc 10 后，默认使能了  -fno-common  选项，编译器检查更加严格了 <a class="link"   href="https://gcc.gnu.org/gcc-10/porting_to.html" >https://gcc.gnu.org/gcc-10/porting_to.html<i class="fas fa-external-link-alt"></i></a>。最简单的办法是，rollback(指定使用 -fcommon 编译代码即可)</p>
-<h2 id="mismatched-comparison-between-std-ifstream-and-int"><a href="#mismatched-comparison-between-std-ifstream-and-int" class="headerlink" title="mismatched comparison between std::ifstream and int"></a>mismatched comparison between std::ifstream and int</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FILE_UTILITIES.h:83:49: error: no match for ‘operator!=’ (operand types are ‘std::ofstream’ &#123;aka ‘std::basic_ofstream&lt;char&gt;’&#125; and ‘int’)</span><br><span class="line">   83 |         return std::ofstream (filename.c_str()) != 0;</span><br><span class="line">      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~ ~</span><br><span class="line">      |                     |                              |</span><br><span class="line">      |                     |                              int</span><br><span class="line">      |                     std::ofstream &#123;aka std::basic_ofstream&lt;char&gt;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>std::ofstream 和 int 之间无法直接比较，需要强转，举个栗子，</p>
-<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">// FILE_UTILITIES.h</span><br><span class="line"></span><br><span class="line"><span class="deletion">-	return std::ifstream (filename.c_str()) != 0;</span></span><br><span class="line"><span class="addition">+	return (bool)std::ifstream (filename.c_str()) != 0;</span></span><br></pre></td></tr></table></figure>
-
-
-<h2 id="error-‘HUGE’-undeclared"><a href="#error-‘HUGE’-undeclared" class="headerlink" title="error: ‘HUGE’ undeclared"></a>error: ‘HUGE’ undeclared</h2><figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">LSH_query.c:361:34: error: ‘HUGE’ undeclared (first use in this function)</span><br><span class="line">  361 |         TOPK_INIT(topk, dist, K, HUGE);</span><br></pre></td></tr></table></figure>
-<p>没有定义 <code>HUGE</code> 宏。我们将 C 数学库里的 HUGE_VAL 定义为 HUGE即可，<code>#define HUGE HUGE_VAL</code></p>
-<h2 id="conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib"><a href="#conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib" class="headerlink" title="conflicting type __mbstate_t, both provided by glibc and parsec lib"></a>conflicting type __mbstate_t, both provided by glibc and parsec lib</h2><figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">/usr/include/bits/types/__mbstate_t.h:21:3: error: conflicting types for ‘__mbstate_t’; have ‘struct &lt;anonymous&gt;’</span><br><span class="line">   21 | &#125; __mbstate_t;</span><br></pre></td></tr></table></figure>
-<p>C 库和 parsec 库同时提供了 __mbstate_t 的定义，二者冲突了，将 parsec 库提供的定义重命名。</p>
-<h2 id="POD-document-had-syntax-errors"><a href="#POD-document-had-syntax-errors" class="headerlink" title="POD document had syntax errors"></a>POD document had syntax errors</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">smime.pod around line 272: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 276: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 280: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 285: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 289: Expected text after =item, not a number</span><br><span class="line">POD document had syntax errors at /usr/bin/pod2man line 69.</span><br><span class="line">make: *** [Makefile:681: install_docs] Error 255</span><br></pre></td></tr></table></figure>
-<p>提示POD doc 有语法错误，应该是软件升级，语法变了导致的。使用下面的脚本一键修正过来就好了，</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#! /bin/bash</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> 0 1 2 3 4 5 6 7 8 9</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">&quot;Replacing &#x27;=item <span class="variable">$i</span>&#x27; to &#x27;=item C&lt;<span class="variable">$i</span>&gt;&#x27;&quot;</span></span><br><span class="line">	grep -rl <span class="string">&quot;=item <span class="variable">$i</span>&quot;</span> * | xargs sed -i <span class="string">&quot;s/=item <span class="variable">$i</span>/=item C&lt;<span class="variable">$i</span>&gt;/g&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
-
-
-<h1 id="PATCHES"><a href="#PATCHES" class="headerlink" title="PATCHES"></a>PATCHES</h1><p>1、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0002-fix-error-looser-exception-specification-on-overridi.patch" >fix-error-looser-exception-specification-on-overridi.patch<i class="fas fa-external-link-alt"></i></a><br>2、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0001-use-gnu11-gnu-11-std-to-build-parsec.patch" >use-gnu11-gnu-11-std-to-build-parsec.patch<i class="fas fa-external-link-alt"></i></a><br>3、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0007-fix-multiple-definition-when-build-with-gcc-10-or-ab.patch" >fix-multiple-definition-when-build-with-gcc-10-or-ab.patch<i class="fas fa-external-link-alt"></i></a><br>4、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0004-fix-A-mismatched-comparison-between-std-ifstream-and.patch" >fix-A-mismatched-comparison-between-std-ifstream-and.patch<i class="fas fa-external-link-alt"></i></a><br>5、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0005-fix-HUGE-macro-undeclared-error.patch" >fix-HUGE-macro-undeclared-error.patch<i class="fas fa-external-link-alt"></i></a><br>6、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0006-fix-conflicting-type-__mbstate_t-both-provided-by-gl.patch" >fix-conflicting-type-__mbstate_t-both-provided-by-gl.patch<i class="fas fa-external-link-alt"></i></a><br>7、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0003-fix-POD-document-had-syntax-errors.patch" >fix-POD-document-had-syntax-errors.patch<i class="fas fa-external-link-alt"></i></a></p>
-]]></content>
-      <categories>
-        <category>parsec</category>
-      </categories>
-      <tags>
-        <tag>parsec</tag>
-        <tag>RHEL 9</tag>
       </tags>
   </entry>
 </search>
