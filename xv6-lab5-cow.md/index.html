@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="Lapin Gris">
+    
+    <title>
+        
+            xv6 Lab5: COW |
+        
+        Lapin Gris
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/font/css/regular.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/font/css/solid.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/font/css/brands.min.css">
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.xml"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"Lapin Gris","author":"Lapin Gris","avatar":"/images/avatar_folklore.png","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":false,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":false},"social_contact":{"enable":true,"links":{"github":"https://github.com/markyangcc","weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":"travelsu97@163.com"}},"scroll":{"progress_bar":true,"percent":true,"hide_header":true},"home":{"announcement":null,"category":false,"tag":false,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":false,"share":false,"reward":{"enable":false,"img_link":null,"text":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":false,"site_pv":false,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":true,"use":"valine","valine":{"appid":"qRv6si8r4jUsBpjFlotXQBmP-gzGzoHsz","appkey":"upvGfvF70Sd2tCMoFM1ehslV","server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.21"},"waline":{"server_url":null,"reaction":false,"version":2},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":true},"cdn":{"enable":true,"provider":"cdnjs"},"pjax":{"enable":true},"footer":{"since":2020,"word_count":false,"icp":{"enable":false,"record_code":null,"url":"https://beian.miit.gov.cn"},"site_deploy":{"enable":false,"provider":"github","url":null},"shields_style":{"enable":false,"custom":[{"link_url":null,"img_url":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.1.0"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               Lapin Gris
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                
+                                HOME
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                
+                                TAGS
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                
+                                CATEGORIES
+                            </a>
+                        </li>
+                    
+                        
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/"
+                    >HOME</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives"
+                    >ARCHIVES</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags"
+                    >TAGS</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories"
+                    >CATEGORIES</a>
+                </li>
+            
+                
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about"
+                    >ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        xv6 Lab5: COW
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/avatar_folklore.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">Lapin Gris</span>
+                                
+                                    <span class="author-badge">Lv3</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2024-05-24 19:50:08</span>
+            </span>
+
+            <span class="meta-info-item post-update-date">
+                <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                <span class="datetime" data-updated="Fri May 24 2024 19:52:42 GMT+0800">2024-05-24 19:52:42</span>
+            </span>
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/xv6/">xv6</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+
+        
+        
+            <span class="meta-info-item post-wordcount">
+                <i class="icon fas fa-file-word"></i>&nbsp;<span>1.7k Words</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-min2read">
+                <i class="icon fas fa-clock"></i>&nbsp;<span>9 Mins</span>
+            </span>
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body">
+                    
+
+                    <p>Lab5 的任务是在 xv6 内核中实现 COW fork。意思是，fork 时候仅增加引用技术，运行时才执行拷贝地址空间的动作。实现的核心是引用计数。</p>
+<h2 id="Implement-copy-on-write-fork"><a href="#Implement-copy-on-write-fork" class="headerlink" title="Implement copy-on-write fork"></a>Implement copy-on-write fork</h2><h2 id="关键实现"><a href="#关键实现" class="headerlink" title="关键实现"></a>关键实现</h2><h3 id="struct-kmem"><a href="#struct-kmem" class="headerlink" title="struct kmem"></a>struct kmem</h3><p>在 struct kmem 结构体中引入引用计数成员。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">spinlock</span> <span class="title">lock</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">freelist</span>;</span></span><br><span class="line">    <span class="type">int</span> ref_count[PHYSTOP / PGSIZE];</span><br><span class="line">&#125; kmem;</span><br></pre></td></tr></table></figure>
+<p>并引入几个快捷操作函数，</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">get_kmemref</span><span class="params">(<span class="type">void</span> *pa)</span> &#123;</span><br><span class="line">    acquire(&amp;kmem.lock);</span><br><span class="line">    <span class="type">int</span> refcnt = kmem.ref_count[(uint64)pa / PGSIZE];</span><br><span class="line">    release(&amp;kmem.lock);</span><br><span class="line">    <span class="keyword">return</span> refcnt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">inc_kmemref</span><span class="params">(<span class="type">void</span> *pa)</span> &#123;</span><br><span class="line">    acquire(&amp;kmem.lock);</span><br><span class="line">    kmem.ref_count[(uint64)pa / PGSIZE]++;</span><br><span class="line">    release(&amp;kmem.lock);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">dec_kmemref</span><span class="params">(<span class="type">void</span> *pa)</span> &#123;</span><br><span class="line">    acquire(&amp;kmem.lock);</span><br><span class="line">    kmem.ref_count[(uint64)pa / PGSIZE]--;</span><br><span class="line">    release(&amp;kmem.lock);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="uvmcopy"><a href="#uvmcopy" class="headerlink" title="uvmcopy"></a>uvmcopy</h3><p>uvmcopy 是用来拷贝父进程的地址空间的，将其修改为 COW 形式，将原有的 kalloc 行为延迟的运行时。实现方式为，</p>
+<ul>
+<li>移除父子进程地址空间的写权限</li>
+<li>增加 COW 标记</li>
+<li>增加引用计数（kfree 需要）<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Given a parent process&#x27;s page table, copy</span></span><br><span class="line"><span class="comment">// its memory into a child&#x27;s page table.</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">uvmcopy</span><span class="params">(<span class="type">pagetable_t</span> old, <span class="type">pagetable_t</span> new, uint64 sz)</span> &#123;</span><br><span class="line">    <span class="type">pte_t</span> *pte;</span><br><span class="line">    uint64 pa, i;</span><br><span class="line">    uint flags;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; sz; i += PGSIZE) &#123;</span><br><span class="line">        <span class="keyword">if</span> ((pte = walk(old, i, <span class="number">0</span>)) == <span class="number">0</span>)</span><br><span class="line">            panic(<span class="string">&quot;uvmcopy: pte should exist&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> ((*pte &amp; PTE_V) == <span class="number">0</span>)</span><br><span class="line">            panic(<span class="string">&quot;uvmcopy: page not present&quot;</span>);</span><br><span class="line"></span><br><span class="line">        *pte = (*pte &amp; (~PTE_W)) | PTE_COW;</span><br><span class="line">        pa = PTE2PA(*pte);</span><br><span class="line">        flags = PTE_FLAGS(*pte);</span><br><span class="line">        <span class="keyword">if</span> (mappages(new, i, PGSIZE, (uint64)pa, flags) != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">goto</span> err;</span><br><span class="line">        &#125;</span><br><span class="line">        inc_kmemref((<span class="type">void</span> *)pa);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    err:</span><br><span class="line">    uvmunmap(new, <span class="number">0</span>, i / PGSIZE, <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="usertrap"><a href="#usertrap" class="headerlink" title="usertrap"></a>usertrap</h3><p><code>sscause</code> 寄存器值位 15 代表 page write fault，此时触发 cowhandler 复制地址空间，处理完成移除页面 COW 位，并将页面标记为可写。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">usertrap</span><span class="params">(<span class="type">void</span>)</span> &#123;	</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (r_scause() == <span class="number">15</span>) &#123;</span><br><span class="line">		uint64 va0 = r_stval();</span><br><span class="line">		<span class="keyword">if</span> (cowhandler(p-&gt;pagetable, va0) != <span class="number">0</span>) &#123;</span><br><span class="line">			p-&gt;killed = <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">cowhandler</span><span class="params">(<span class="type">pagetable_t</span> pagetable, uint64 va)</span> &#123;</span><br><span class="line">	<span class="type">pte_t</span> *pte;</span><br><span class="line">	uint64 *mem;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> ((pte = walk(pagetable, va, <span class="number">0</span>)) == <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!(*pte &amp; PTE_COW) || !(*pte &amp; PTE_U) || !(*pte &amp; PTE_V)) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	uint64 pa = PTE2PA(*pte);</span><br><span class="line"></span><br><span class="line">	<span class="type">int</span> refcnt = get_kmemref((<span class="type">void</span> *)pa);</span><br><span class="line">	<span class="keyword">if</span> (refcnt == <span class="number">1</span>) &#123;</span><br><span class="line">		*pte = (*pte &amp; (~PTE_COW)) | PTE_W; <span class="comment">// mark it writeable &amp; remove COW bit</span></span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (refcnt &gt; <span class="number">1</span>) &#123;</span><br><span class="line">		<span class="keyword">if</span> ((mem = kalloc()) == <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		memmove((<span class="type">void</span> *)mem, (<span class="type">void</span> *)pa, PGSIZE);</span><br><span class="line">		kfree((<span class="type">void</span> *)pa); <span class="comment">// remove old ref</span></span><br><span class="line"></span><br><span class="line">		uint flags = PTE_FLAGS(*pte);</span><br><span class="line">		*pte = (PA2PTE(mem) | (flags &amp; ~PTE_COW)) | PTE_W; <span class="comment">// make it writeable &amp; remove COW bit</span></span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="copyout"><a href="#copyout" class="headerlink" title="copyout"></a>copyout</h3><p>copyout 过程中也属于一个 case。需要进行 cow 处理。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">copyout</span><span class="params">(<span class="type">pagetable_t</span> pagetable, uint64 dstva, <span class="type">char</span> *src, uint64 len)</span> &#123;</span><br><span class="line">    uint64 n, va0, pa0;</span><br><span class="line">    <span class="type">pte_t</span> *pte;</span><br><span class="line">    uint64 *mem;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (len &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        va0 = PGROUNDDOWN(dstva);</span><br><span class="line">        pa0 = walkaddr(pagetable, va0);</span><br><span class="line">        <span class="keyword">if</span> (pa0 == <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (va0 &gt;= MAXVA || va0 &lt; PGSIZE)</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ((pte = walk(pagetable, va0, <span class="number">0</span>)) == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ((*pte &amp; PTE_V) &amp;&amp; (*pte &amp; PTE_COW) &amp;&amp; (*pte &amp; PTE_U)) &#123;</span><br><span class="line">            <span class="type">int</span> refcnt = get_kmemref((<span class="type">void</span> *)pa0);</span><br><span class="line">            <span class="keyword">if</span> (refcnt == <span class="number">1</span>) &#123;</span><br><span class="line">                *pte = (*pte &amp; (~PTE_COW)) | PTE_W;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (refcnt &gt; <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((mem = kalloc()) == <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                memmove((<span class="type">void</span> *)mem, (<span class="type">void</span> *)pa0, PGSIZE);</span><br><span class="line">                uint flags = PTE_FLAGS(*pte);</span><br><span class="line">                *pte = (PA2PTE(mem) | (flags &amp; ~PTE_COW)) | PTE_W; <span class="comment">// writeable &amp; remove COW bit</span></span><br><span class="line"></span><br><span class="line">                pa0 = (uint64)mem;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        n = PGSIZE - (dstva - va0);</span><br><span class="line">        <span class="keyword">if</span> (n &gt; len)</span><br><span class="line">            n = len;</span><br><span class="line">        memmove((<span class="type">void</span> *)(pa0 + (dstva - va0)), src, n);</span><br><span class="line"></span><br><span class="line">        len -= n;</span><br><span class="line">        src += n;</span><br><span class="line">        dstva = va0 + PGSIZE;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="Show-me-the-code"><a href="#Show-me-the-code" class="headerlink" title="Show me the code"></a>Show me the code</h2><figure class="highlight diff"><table><tr><td class="code"><pre><span class="line"><span class="comment">diff --git a/kernel/defs.h b/kernel/defs.h</span></span><br><span class="line"><span class="comment">index f3f5fef..bcd200d 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/defs.h</span></span><br><span class="line"><span class="comment">+++ b/kernel/defs.h</span></span><br><span class="line"><span class="meta">@@ -63,6 +63,9 @@</span> void ramdiskrw(struct buf *);</span><br><span class="line"> void *kalloc(void);</span><br><span class="line"> void kfree(void *);</span><br><span class="line"> void kinit(void);</span><br><span class="line"><span class="addition">+void inc_kmemref(void *);</span></span><br><span class="line"><span class="addition">+void dec_kmemref(void *);</span></span><br><span class="line"><span class="addition">+int get_kmemref(void *);</span></span><br><span class="line"> </span><br><span class="line"> // log.c</span><br><span class="line"> void initlog(int, struct superblock *);</span><br><span class="line"><span class="meta">@@ -147,6 +150,7 @@</span> void trapinit(void);</span><br><span class="line"> void trapinithart(void);</span><br><span class="line"> extern struct spinlock tickslock;</span><br><span class="line"> void usertrapret(void);</span><br><span class="line"><span class="addition">+int cowhandler(pagetable_t pagetable, uint64 va);</span></span><br><span class="line"> </span><br><span class="line"> // uart.c</span><br><span class="line"> void uartinit(void);</span><br><span class="line"><span class="comment">diff --git a/kernel/kalloc.c b/kernel/kalloc.c</span></span><br><span class="line"><span class="comment">index e469623..5514da5 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/kalloc.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/kalloc.c</span></span><br><span class="line"><span class="meta">@@ -21,6 +21,7 @@</span> struct run &#123;</span><br><span class="line"> struct &#123;</span><br><span class="line"> 	struct spinlock lock;</span><br><span class="line"> 	struct run *freelist;</span><br><span class="line"><span class="addition">+	int ref_count[PHYSTOP / PGSIZE];</span></span><br><span class="line"> &#125; kmem;</span><br><span class="line"> </span><br><span class="line"> void kinit() &#123;</span><br><span class="line"><span class="meta">@@ -31,8 +32,10 @@</span> void kinit() &#123;</span><br><span class="line"> void freerange(void *pa_start, void *pa_end) &#123;</span><br><span class="line"> 	char *p;</span><br><span class="line"> 	p = (char *)PGROUNDUP((uint64)pa_start);</span><br><span class="line"><span class="deletion">-	for (; p + PGSIZE &lt;= (char *)pa_end; p += PGSIZE)</span></span><br><span class="line"><span class="addition">+	for (; p + PGSIZE &lt;= (char *)pa_end; p += PGSIZE) &#123;</span></span><br><span class="line"><span class="addition">+		kmem.ref_count[(uint64)p / PGSIZE] = 1;</span></span><br><span class="line"> 		kfree(p);</span><br><span class="line"><span class="addition">+	&#125;</span></span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> // Free the page of physical memory pointed at by pa,</span><br><span class="line"><span class="meta">@@ -45,6 +48,11 @@</span> void kfree(void *pa) &#123;</span><br><span class="line"> 	if (((uint64)pa % PGSIZE) != 0 || (char *)pa &lt; end || (uint64)pa &gt;= PHYSTOP)</span><br><span class="line"> 		panic(&quot;kfree&quot;);</span><br><span class="line"> </span><br><span class="line"><span class="addition">+	if (get_kmemref(pa) &gt; 1) &#123;</span></span><br><span class="line"><span class="addition">+		dec_kmemref(pa);</span></span><br><span class="line"><span class="addition">+		return;</span></span><br><span class="line"><span class="addition">+	&#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"> 	// Fill with junk to catch dangling refs.</span><br><span class="line"> 	memset(pa, 1, PGSIZE);</span><br><span class="line"> </span><br><span class="line"><span class="meta">@@ -64,11 +72,32 @@</span> void *kalloc(void) &#123;</span><br><span class="line"> </span><br><span class="line"> 	acquire(&amp;kmem.lock);</span><br><span class="line"> 	r = kmem.freelist;</span><br><span class="line"><span class="deletion">-	if (r)</span></span><br><span class="line"><span class="addition">+	if (r) &#123;</span></span><br><span class="line"> 		kmem.freelist = r-&gt;next;</span><br><span class="line"><span class="addition">+		kmem.ref_count[(uint64)r / PGSIZE] = 1;</span></span><br><span class="line"><span class="addition">+	&#125;</span></span><br><span class="line"> 	release(&amp;kmem.lock);</span><br><span class="line"> </span><br><span class="line"> 	if (r)</span><br><span class="line"> 		memset((char *)r, 5, PGSIZE); // fill with junk</span><br><span class="line"> 	return (void *)r;</span><br><span class="line"> &#125;</span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+int get_kmemref(void *pa) &#123;</span></span><br><span class="line"><span class="addition">+	acquire(&amp;kmem.lock);</span></span><br><span class="line"><span class="addition">+	int refcnt = kmem.ref_count[(uint64)pa / PGSIZE];</span></span><br><span class="line"><span class="addition">+	release(&amp;kmem.lock);</span></span><br><span class="line"><span class="addition">+	return refcnt;</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+void inc_kmemref(void *pa) &#123;</span></span><br><span class="line"><span class="addition">+	acquire(&amp;kmem.lock);</span></span><br><span class="line"><span class="addition">+	kmem.ref_count[(uint64)pa / PGSIZE]++;</span></span><br><span class="line"><span class="addition">+	release(&amp;kmem.lock);</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+void dec_kmemref(void *pa) &#123;</span></span><br><span class="line"><span class="addition">+	acquire(&amp;kmem.lock);</span></span><br><span class="line"><span class="addition">+	kmem.ref_count[(uint64)pa / PGSIZE]--;</span></span><br><span class="line"><span class="addition">+	release(&amp;kmem.lock);</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"><span class="comment">diff --git a/kernel/riscv.h b/kernel/riscv.h</span></span><br><span class="line"><span class="comment">index 890d903..7c54f69 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/riscv.h</span></span><br><span class="line"><span class="comment">+++ b/kernel/riscv.h</span></span><br><span class="line"><span class="meta">@@ -227,6 +227,7 @@</span> typedef uint64 *pagetable_t; // 512 PTEs</span><br><span class="line"> #define PTE_W (1L &lt;&lt; 2)</span><br><span class="line"> #define PTE_X (1L &lt;&lt; 3)</span><br><span class="line"> #define PTE_U (1L &lt;&lt; 4) // user can access</span><br><span class="line"><span class="addition">+#define PTE_COW (1L &lt;&lt; 8) // cow page</span></span><br><span class="line"> </span><br><span class="line"> // shift a physical address to the right place for a PTE.</span><br><span class="line"> #define PA2PTE(pa) ((((uint64)pa) &gt;&gt; 12) &lt;&lt; 10)</span><br><span class="line"><span class="comment">diff --git a/kernel/trap.c b/kernel/trap.c</span></span><br><span class="line"><span class="comment">index e45e5c3..3e07d8e 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/trap.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/trap.c</span></span><br><span class="line"><span class="meta">@@ -55,6 +55,11 @@</span> void usertrap(void) &#123;</span><br><span class="line"> 		intr_on();</span><br><span class="line"> </span><br><span class="line"> 		syscall();</span><br><span class="line"><span class="addition">+	&#125; else if (r_scause() == 15) &#123;</span></span><br><span class="line"><span class="addition">+		uint64 va0 = r_stval();</span></span><br><span class="line"><span class="addition">+		if (cowhandler(p-&gt;pagetable, va0) != 0) &#123;</span></span><br><span class="line"><span class="addition">+			p-&gt;killed = 1;</span></span><br><span class="line"><span class="addition">+		&#125;</span></span><br><span class="line"> 	&#125; else if ((which_dev = devintr()) != 0) &#123;</span><br><span class="line"> 		// ok</span><br><span class="line"> 	&#125; else &#123;</span><br><span class="line"><span class="meta">@@ -73,6 +78,39 @@</span> void usertrap(void) &#123;</span><br><span class="line"> 	usertrapret();</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"><span class="addition">+int cowhandler(pagetable_t pagetable, uint64 va) &#123;</span></span><br><span class="line"><span class="addition">+	pte_t *pte;</span></span><br><span class="line"><span class="addition">+	uint64 *mem;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+	if ((pte = walk(pagetable, va, 0)) == 0) &#123;</span></span><br><span class="line"><span class="addition">+		return -1;</span></span><br><span class="line"><span class="addition">+	&#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+	if (!(*pte &amp; PTE_COW) || !(*pte &amp; PTE_U) || !(*pte &amp; PTE_V)) &#123;</span></span><br><span class="line"><span class="addition">+		return -1;</span></span><br><span class="line"><span class="addition">+	&#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+	uint64 pa = PTE2PA(*pte);</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+	int refcnt = get_kmemref((void *)pa);</span></span><br><span class="line"><span class="addition">+	if (refcnt == 1) &#123;</span></span><br><span class="line"><span class="addition">+		*pte = (*pte &amp; (~PTE_COW)) | PTE_W; // mark it writeable &amp; remove COW bit</span></span><br><span class="line"><span class="addition">+		return 0;</span></span><br><span class="line"><span class="addition">+	&#125; else if (refcnt &gt; 1) &#123;</span></span><br><span class="line"><span class="addition">+		if ((mem = kalloc()) == 0) &#123;</span></span><br><span class="line"><span class="addition">+			return -1;</span></span><br><span class="line"><span class="addition">+		&#125;</span></span><br><span class="line"><span class="addition">+		memmove((void *)mem, (void *)pa, PGSIZE);</span></span><br><span class="line"><span class="addition">+		kfree((void *)pa); // remove old ref</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+		uint flags = PTE_FLAGS(*pte);</span></span><br><span class="line"><span class="addition">+		*pte = (PA2PTE(mem) | (flags &amp; ~PTE_COW)) | PTE_W; // make it writeable &amp; remove COW bit</span></span><br><span class="line"><span class="addition">+		return 0;</span></span><br><span class="line"><span class="addition">+	&#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+	return -1;</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"> //</span><br><span class="line"> // return to user space</span><br><span class="line"> //</span><br><span class="line"><span class="comment">diff --git a/kernel/vm.c b/kernel/vm.c</span></span><br><span class="line"><span class="comment">index 5d745d1..c65e7ba 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/vm.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/vm.c</span></span><br><span class="line"><span class="meta">@@ -5,6 +5,8 @@</span></span><br><span class="line"> #include &quot;riscv.h&quot;</span><br><span class="line"> #include &quot;defs.h&quot;</span><br><span class="line"> #include &quot;fs.h&quot;</span><br><span class="line"><span class="addition">+#include &quot;spinlock.h&quot;</span></span><br><span class="line"><span class="addition">+#include &quot;proc.h&quot;</span></span><br><span class="line"> </span><br><span class="line"> /*</span><br><span class="line">  * the kernel&#x27;s page table.</span><br><span class="line"><span class="meta">@@ -283,22 +285,20 @@</span> int uvmcopy(pagetable_t old, pagetable_t new, uint64 sz) &#123;</span><br><span class="line"> 	pte_t *pte;</span><br><span class="line"> 	uint64 pa, i;</span><br><span class="line"> 	uint flags;</span><br><span class="line"><span class="deletion">-	char *mem;</span></span><br><span class="line"> </span><br><span class="line"> 	for (i = 0; i &lt; sz; i += PGSIZE) &#123;</span><br><span class="line"> 		if ((pte = walk(old, i, 0)) == 0)</span><br><span class="line"> 			panic(&quot;uvmcopy: pte should exist&quot;);</span><br><span class="line"> 		if ((*pte &amp; PTE_V) == 0)</span><br><span class="line"> 			panic(&quot;uvmcopy: page not present&quot;);</span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+		*pte = (*pte &amp; (~PTE_W)) | PTE_COW;</span></span><br><span class="line"> 		pa = PTE2PA(*pte);</span><br><span class="line"> 		flags = PTE_FLAGS(*pte);</span><br><span class="line"><span class="deletion">-		if ((mem = kalloc()) == 0)</span></span><br><span class="line"><span class="deletion">-			goto err;</span></span><br><span class="line"><span class="deletion">-		memmove(mem, (char *)pa, PGSIZE);</span></span><br><span class="line"><span class="deletion">-		if (mappages(new, i, PGSIZE, (uint64)mem, flags) != 0) &#123;</span></span><br><span class="line"><span class="deletion">-			kfree(mem);</span></span><br><span class="line"><span class="addition">+		if (mappages(new, i, PGSIZE, (uint64)pa, flags) != 0) &#123;</span></span><br><span class="line"> 			goto err;</span><br><span class="line"> 		&#125;</span><br><span class="line"><span class="addition">+		inc_kmemref((void *)pa);</span></span><br><span class="line"> 	&#125;</span><br><span class="line"> 	return 0;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@@ -324,15 +324,37 @@</span> void uvmclear(pagetable_t pagetable, uint64 va) &#123;</span><br><span class="line"> int copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len) &#123;</span><br><span class="line"> 	uint64 n, va0, pa0;</span><br><span class="line"> 	pte_t *pte;</span><br><span class="line"><span class="addition">+	uint64 *mem;</span></span><br><span class="line"> </span><br><span class="line"> 	while (len &gt; 0) &#123;</span><br><span class="line"> 		va0 = PGROUNDDOWN(dstva);</span><br><span class="line"><span class="deletion">-		if (va0 &gt;= MAXVA)</span></span><br><span class="line"><span class="addition">+		pa0 = walkaddr(pagetable, va0);</span></span><br><span class="line"><span class="addition">+		if (pa0 == 0)</span></span><br><span class="line"> 			return -1;</span><br><span class="line"><span class="deletion">-		pte = walk(pagetable, va0, 0);</span></span><br><span class="line"><span class="deletion">-		if (pte == 0 || (*pte &amp; PTE_V) == 0 || (*pte &amp; PTE_U) == 0 || (*pte &amp; PTE_W) == 0)</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+		if (va0 &gt;= MAXVA || va0 &lt; PGSIZE)</span></span><br><span class="line"> 			return -1;</span><br><span class="line"><span class="deletion">-		pa0 = PTE2PA(*pte);</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+		if ((pte = walk(pagetable, va0, 0)) == 0) &#123;</span></span><br><span class="line"><span class="addition">+			return -1;</span></span><br><span class="line"><span class="addition">+		&#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+		if ((*pte &amp; PTE_V) &amp;&amp; (*pte &amp; PTE_COW) &amp;&amp; (*pte &amp; PTE_U)) &#123;</span></span><br><span class="line"><span class="addition">+			int refcnt = get_kmemref((void *)pa0);</span></span><br><span class="line"><span class="addition">+			if (refcnt == 1) &#123;</span></span><br><span class="line"><span class="addition">+				*pte = (*pte &amp; (~PTE_COW)) | PTE_W;</span></span><br><span class="line"><span class="addition">+			&#125; else if (refcnt &gt; 1) &#123;</span></span><br><span class="line"><span class="addition">+				if ((mem = kalloc()) == 0) &#123;</span></span><br><span class="line"><span class="addition">+					return -1;</span></span><br><span class="line"><span class="addition">+				&#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+				memmove((void *)mem, (void *)pa0, PGSIZE);</span></span><br><span class="line"><span class="addition">+				uint flags = PTE_FLAGS(*pte);</span></span><br><span class="line"><span class="addition">+				*pte = (PA2PTE(mem) | (flags &amp; ~PTE_COW)) | PTE_W; // writeable &amp; remove COW bit</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+				pa0 = (uint64)mem;</span></span><br><span class="line"><span class="addition">+			&#125;</span></span><br><span class="line"><span class="addition">+		&#125;</span></span><br><span class="line"> 		n = PGSIZE - (dstva - va0);</span><br><span class="line"> 		if (n &gt; len)</span><br><span class="line"> 			n = len;</span><br></pre></td></tr></table></figure>
+
+                </div>
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                    </div>
+                    <div>
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/xv6-lab4-traps/"
+                                   title="xv6 Lab4: Traps"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">xv6 Lab4: Traps</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+    <div class="comments-container border-box">
+        <div id="comments-anchor" class="comment-area-title border-box">
+            <i class="fas fa-comments"></i>&nbsp;Comments
+        </div>
+        <div class="comment-plugin-fail border-box">
+    <span class="fail-tip">Comment plugin failed to load</span>
+    <button class="reload keep-button">Click to reload</button>
+</div>
+<div class="comment-plugin-loading flex-center border-box">
+    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
+    <span class="load-tip">Loading comment plugin</span>
+</div>
+<script data-pjax>
+  window.KeepCommentPlugin = {}
+  window.KeepCommentPlugin.hideLoading = () => {
+    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
+    cplDom.style.display = 'none'
+  }
+  window.KeepCommentPlugin.loadFailHandle = () => {
+    window.KeepCommentPlugin.hideLoading()
+    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
+    cpfDom.style.display = 'flex'
+    cpfDom.querySelector('.reload').addEventListener('click', () => {
+      window.location.reload()
+    })
+  }
+</script>
+
+        
+            
+
+    <div class="valine-container">
+        <div id="vcomments"></div>
+        <script data-pjax
+                src="//cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        ></script>
+        <script data-pjax
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        >
+          window.KeepCommentPlugin.initValine = () => {
+            const config = {
+              el: '#vcomments',
+              appId: 'qRv6si8r4jUsBpjFlotXQBmP-gzGzoHsz',
+              appKey: 'upvGfvF70Sd2tCMoFM1ehslV',
+              meta: ['nick', 'mail', 'link'],
+              avatar: 'wavatar',
+              enableQQ: true,
+              placeholder: '',
+              lang: 'en'.toLowerCase()
+            }
+
+            if ('') {
+              config.serverURLs = ''
+            }
+
+            if (window?.Valine) {
+              new Valine(config)
+              window.KeepCommentPlugin.hideLoading()
+            } else {
+              setTimeout(() => {
+                window.KeepCommentPlugin.initValine()
+              }, 1000)
+            }
+          }
+
+          if ('true' === 'true') {
+            setTimeout(() => {
+              window.KeepCommentPlugin.initValine()
+            }, 1200)
+          } else {
+            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initValine)
+          }
+        </script>
+    </div>
+
+
+        
+    </div>
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Implement-copy-on-write-fork"><span class="nav-text">Implement copy-on-write fork</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AE%9E%E7%8E%B0"><span class="nav-text">关键实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#struct-kmem"><span class="nav-text">struct kmem</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#uvmcopy"><span class="nav-text">uvmcopy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#usertrap"><span class="nav-text">usertrap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#copyout"><span class="nav-text">copyout</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Show-me-the-code"><span class="nav-text">Show me the code</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="border-box website-info-box default">
+        
+            <div class="copyright-info info-item default">
+                &copy;&nbsp;<span>2020</span>&nbsp;-&nbsp;2024
+                
+                    &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">Lapin Gris</a>
+                
+            </div>
+
+            <div class="theme-info info-item default">
+                Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+            </div>
+
+            
+
+            
+        
+
+        <div class="count-item info-item default">
+            
+
+            
+
+            
+        </div>
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="tools-list border-box">
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-toggle-theme-mode flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+            <li class="tools-item go-to-comments-tablet flex-center">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Implement-copy-on-write-fork"><span class="nav-text">Implement copy-on-write fork</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AE%9E%E7%8E%B0"><span class="nav-text">关键实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#struct-kmem"><span class="nav-text">struct kmem</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#uvmcopy"><span class="nav-text">uvmcopy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#usertrap"><span class="nav-text">usertrap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#copyout"><span class="nav-text">copyout</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Show-me-the-code"><span class="nav-text">Show me the code</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+<!-- common -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/js/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/js/header-shrink.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/js/back2top.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/js/toggle-theme.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/js/code-block.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/js/main.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/js/libs/anime.min.js"></script>
+
+<!-- local-search -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/js/local-search.min.js"></script>
+
+
+<!-- lazyload -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/js/lazyload.min.js"></script>
+
+
+<div class="pjax">
+    
+        <!-- post-helper -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/js/post/post-helper.min.js"></script>
+
+        <!-- toc -->
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/js/post/toc.min.js"></script>
+        
+
+        <!-- copyright-info -->
+        
+
+        <!-- share -->
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.1.0/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
