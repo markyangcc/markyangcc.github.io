@@ -238,7 +238,7 @@
 
             <span class="meta-info-item post-update-date">
                 <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                <span class="datetime" data-updated="Mon Apr 22 2024 16:56:35 GMT+0800">2024-04-22 16:56:35</span>
+                <span class="datetime" data-updated="Sun Jun 16 2024 16:04:26 GMT+0800">2024-06-16 16:04:26</span>
             </span>
         
 
@@ -258,12 +258,12 @@
         
         
             <span class="meta-info-item post-wordcount">
-                <i class="icon fas fa-file-word"></i>&nbsp;<span>2k Words</span>
+                <i class="icon fas fa-file-word"></i>&nbsp;<span>1.5k Words</span>
             </span>
         
         
             <span class="meta-info-item post-min2read">
-                <i class="icon fas fa-clock"></i>&nbsp;<span>9 Mins</span>
+                <i class="icon fas fa-clock"></i>&nbsp;<span>7 Mins</span>
             </span>
         
         
@@ -285,12 +285,6 @@
                     
 
                     <p>Lab1 为 xv6 实现用户态程序。</p>
-<h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>看 xv6 网站上的教程，安装依赖软件包<br><a class="link"   target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.828/2023/tools.html" >https://pdos.csail.mit.edu/6.828/2023/tools.html<i class="fas fa-external-link-alt"></i></a><br>笔者选择的是 Debian 操作系统，执行一行命令即可完成环境配置，</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu </span><br></pre></td></tr></table></figure>
-
-<p>依赖安装完成后，编译运行 xv6，</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git clone git://g.csail.mit.edu/xv6-labs-2023</span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">make qemu</span><br></pre></td></tr></table></figure>
-<p><strong>特别备注：防止发生和如何退出 vim 一样的问题，笔者特别提醒。 执行 <code>make qemu</code>  会进入 xv6 系统里，想退出 qemu， 先按 ctrl + a, 紧接着按 x 即可退出 qemu。</strong></p>
 <h2 id="sleep"><a href="#sleep" class="headerlink" title="sleep"></a>sleep</h2><p>写第一个程序，主要的体会就是懵。不知道从哪下手，在看了内核态的对应实现，看了用户态 kill.c 的实现后，理清思路后，才发现 sleep 其实很简单。</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span> &#123;</span><br><span class="line">    <span class="type">int</span> ticks;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;usage: sleep ticks...\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ticks = atoi(argv[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    sleep(ticks);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <h2 id="pingpong"><a href="#pingpong" class="headerlink" title="pingpong"></a>pingpong</h2><p>利用管道实现 pingpong，<code>fork() </code>的父子进程都拥有同样的 fd，父子进程可以通过向一端写，另一端阻塞读来实现 ping-pong, 管道的规范是 pipe 的 0 是读，1 是写，记住这个很好实现了。<br>另外，pingpong 只需要创建一个管道即可，无需为父子进程各自创建一条管道，然后 close 掉不用的通道。共用一条管道即可，这是因为 pingpong 程序不存在竞争的情况。</p>
@@ -313,14 +307,6 @@
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">== Test sleep, no arguments ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">sleep, no arguments: OK (3.5s)</span><br><span class="line">== Test sleep, returns ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">sleep, returns: OK (0.9s)</span><br><span class="line">== Test sleep, makes syscall ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">sleep, makes syscall: OK (1.1s)</span><br><span class="line">== Test pingpong ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">pingpong: OK (1.0s)</span><br><span class="line">== Test primes ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">primes: OK (1.0s)</span><br><span class="line">== Test find, in current directory ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">find, in current directory: OK (1.1s)</span><br><span class="line">== Test find, recursive ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">find, recursive: OK (1.3s)</span><br><span class="line">== Test xargs ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">xargs: OK (1.5s)</span><br><span class="line">== Test time ==</span><br><span class="line">time: OK</span><br><span class="line">Score: 100/100</span><br></pre></td></tr></table></figure>
 
 <p>至此， lab 的所有程序都结束了。下面的部分对于我们舒服的写代码有很大帮助，介绍了如何为 vscode 配置 clangd + clang-format 提供 xv6 的代码自动跳转以及格式化。</p>
-<h2 id="附录：让写代码更舒适"><a href="#附录：让写代码更舒适" class="headerlink" title="附录：让写代码更舒适"></a>附录：让写代码更舒适</h2><h3 id="clangd-代码跳转"><a href="#clangd-代码跳转" class="headerlink" title="clangd 代码跳转"></a>clangd 代码跳转</h3><p>当使用 vscode 编写 xv6 代码时候，即使安装 clangd，也是没有代码自动跳转的。因为 clangd 需要<br><code>compile_commands.json</code> 理解项目代码，才能实现正确的代码跳转。对于 xv6 项目，我们使用 bear 将整个项目完整编译一遍，bear 会为我们生成需要的 <code>compile_commands.json</code>。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt install bear</span><br><span class="line"></span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">bear -- make</span><br></pre></td></tr></table></figure>
-
-<p><a class="link"   target="_blank" rel="noopener" href="https://clangd.llvm.org/installation.html#compile_commandsjson" >https://clangd.llvm.org/installation.html#compile_commandsjson<i class="fas fa-external-link-alt"></i></a></p>
-<h3 id="禁用-clangd-自动插入头文件"><a href="#禁用-clangd-自动插入头文件" class="headerlink" title="禁用 clangd 自动插入头文件"></a>禁用 clangd 自动插入头文件</h3><p>有时候，vscode 的 clagnd 会自动为我们加入 glibc 的头文件，<br><strong>因为 xv6 不是 linux，也不使用 glibc，所以 clangd 自动加入的头文件也是错误的</strong>。 在 vscode 设置的 clangd 插件添加 <code>--header-insertion=never</code> 命令行选项，禁用自动插入头文件。重启 vscode 生效。<br>路径：<br><code>Settings -&gt; Extensions -&gt; clagnd -&gt; Clangd: Arguments -&gt; Add Item</code></p>
-<h3 id="clang-format-代码格式化"><a href="#clang-format-代码格式化" class="headerlink" title="clang-format 代码格式化"></a>clang-format 代码格式化</h3><p>clang-format 可以用于自动格式化 C&#x2F;C++ 代码，为我们 xv6 写一个 .clang-format 文件后，使用 vscode 的快捷键可以自动格式化代码。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">BasedOnStyle: LLVM</span><br><span class="line">UseTab: Always</span><br><span class="line">IndentWidth: 4</span><br><span class="line">TabWidth: 4</span><br><span class="line">ColumnLimit: 120</span><br><span class="line">SortIncludes: Never</span><br><span class="line">AlignConsecutiveMacros: true</span><br></pre></td></tr></table></figure>
-<p>clang-format 支持很多配置项，<br><a class="link"   target="_blank" rel="noopener" href="https://clang.llvm.org/docs/ClangFormatStyleOptions.html" >https://clang.llvm.org/docs/ClangFormatStyleOptions.html<i class="fas fa-external-link-alt"></i></a></p>
 
                 </div>
                 
@@ -359,11 +345,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/intel_amd_isa_difference/"
-                                   title="Intel &amp; AMD 指令集之间的差异"
+                                   href="/xv6-prepare-workspace/"
+                                   title="xv6: 环境准备"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">Intel &amp; AMD 指令集之间的差异</span>
+                                        <span class="post-nav-title-item text-ellipsis">xv6: 环境准备</span>
                                         <span class="post-nav-item">Next posts</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">
@@ -473,7 +459,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83"><span class="nav-text">配置环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sleep"><span class="nav-text">sleep</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pingpong"><span class="nav-text">pingpong</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#primes"><span class="nav-text">primes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#find"><span class="nav-text">find</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xargs"><span class="nav-text">xargs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-text">测试结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95%EF%BC%9A%E8%AE%A9%E5%86%99%E4%BB%A3%E7%A0%81%E6%9B%B4%E8%88%92%E9%80%82"><span class="nav-text">附录：让写代码更舒适</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#clangd-%E4%BB%A3%E7%A0%81%E8%B7%B3%E8%BD%AC"><span class="nav-text">clangd 代码跳转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A6%81%E7%94%A8-clangd-%E8%87%AA%E5%8A%A8%E6%8F%92%E5%85%A5%E5%A4%B4%E6%96%87%E4%BB%B6"><span class="nav-text">禁用 clangd 自动插入头文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#clang-format-%E4%BB%A3%E7%A0%81%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-text">clang-format 代码格式化</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#sleep"><span class="nav-text">sleep</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pingpong"><span class="nav-text">pingpong</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#primes"><span class="nav-text">primes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#find"><span class="nav-text">find</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xargs"><span class="nav-text">xargs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-text">测试结果</span></a></li></ol>
     </div>
 </div>
 
@@ -645,7 +631,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83"><span class="nav-text">配置环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sleep"><span class="nav-text">sleep</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pingpong"><span class="nav-text">pingpong</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#primes"><span class="nav-text">primes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#find"><span class="nav-text">find</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xargs"><span class="nav-text">xargs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-text">测试结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95%EF%BC%9A%E8%AE%A9%E5%86%99%E4%BB%A3%E7%A0%81%E6%9B%B4%E8%88%92%E9%80%82"><span class="nav-text">附录：让写代码更舒适</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#clangd-%E4%BB%A3%E7%A0%81%E8%B7%B3%E8%BD%AC"><span class="nav-text">clangd 代码跳转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A6%81%E7%94%A8-clangd-%E8%87%AA%E5%8A%A8%E6%8F%92%E5%85%A5%E5%A4%B4%E6%96%87%E4%BB%B6"><span class="nav-text">禁用 clangd 自动插入头文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#clang-format-%E4%BB%A3%E7%A0%81%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="nav-text">clang-format 代码格式化</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#sleep"><span class="nav-text">sleep</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pingpong"><span class="nav-text">pingpong</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#primes"><span class="nav-text">primes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#find"><span class="nav-text">find</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xargs"><span class="nav-text">xargs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-text">测试结果</span></a></li></ol>
     </div>
 </div>
 
