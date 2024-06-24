@@ -9,7 +9,7 @@
     
     <title>
         
-            xv6 Lab6: Multithreading |
+            自定义 Linux ISO |
         
         Lapin Gris
     </title>
@@ -205,7 +205,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        xv6 Lab6: Multithreading
+                        自定义 Linux ISO
                     </div>
                 
 
@@ -233,20 +233,25 @@
         
             <span class="meta-info-item post-create-date">
                 <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2024-06-23 15:59:36</span>
+                <span class="datetime">2024-06-24 11:31:44</span>
             </span>
 
             <span class="meta-info-item post-update-date">
                 <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                <span class="datetime" data-updated="Sun Jun 23 2024 16:09:44 GMT+0800">2024-06-23 16:09:44</span>
+                <span class="datetime" data-updated="Mon Jun 24 2024 11:48:31 GMT+0800">2024-06-24 11:48:31</span>
             </span>
         
 
         
-            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
-                <ul class="post-category-ul">
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
                     
-                            <li class="category-item"><a href="/categories/xv6/">xv6</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/iso/">iso</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/linux/">linux</a></li>
                         
                     
                 </ul>
@@ -254,16 +259,14 @@
         
 
         
-
-        
         
             <span class="meta-info-item post-wordcount">
-                <i class="icon fas fa-file-word"></i>&nbsp;<span>981 Words</span>
+                <i class="icon fas fa-file-word"></i>&nbsp;<span>367 Words</span>
             </span>
         
         
             <span class="meta-info-item post-min2read">
-                <i class="icon fas fa-clock"></i>&nbsp;<span>5 Mins</span>
+                <i class="icon fas fa-clock"></i>&nbsp;<span>1 Mins</span>
             </span>
         
         
@@ -284,28 +287,45 @@
                 <div class="post-content keep-markdown-body">
                     
 
-                    <p>这个实验是熟悉多线程。需要实现在一个用户态的线程切换，使用多个线程来加速程序，并实现一个屏障。</p>
-<h2 id="uthread"><a href="#uthread" class="headerlink" title="uthread"></a>uthread</h2><p>打开 user&#x2F;uthread.c 文件，观察 uthread 的数据结构以及部分函数实现能帮我们快速理清思路。</p>
-<h3 id="关键实现"><a href="#关键实现" class="headerlink" title="关键实现"></a>关键实现</h3><h4 id="struct-context-x2F-thread-switch"><a href="#struct-context-x2F-thread-switch" class="headerlink" title="struct context &#x2F; thread_switch"></a>struct context &#x2F; thread_switch</h4><p>一个是上下文，一个是线程切换对应的底层汇编。如介绍所言，从内核部分复制过来就行了。</p>
-<h4 id="thread-schedule"><a href="#thread-schedule" class="headerlink" title="thread_schedule"></a>thread_schedule</h4><p>线程上下文切换，传入上下文 ctx  即可，其他状态的切换代码已经有了。</p>
-<h4 id="thread-create"><a href="#thread-create" class="headerlink" title="thread_create"></a>thread_create</h4><p>线程创建，创建时，只需要指定 ra 和 sp 两个寄存器即可，ra 指向需要执行的 func，sp 指向栈低(高地址)，栈是从高往低增长的，故需指向高地址的栈底。</p>
-<h3 id="Show-me-the-code"><a href="#Show-me-the-code" class="headerlink" title="Show me the code"></a>Show me the code</h3><figure class="highlight diff"><table><tr><td class="code"><pre><span class="line"><span class="comment">diff --git a/user/uthread.c b/user/uthread.c</span></span><br><span class="line"><span class="comment">index f9795ab..0ed406a 100644</span></span><br><span class="line"><span class="comment">--- a/user/uthread.c</span></span><br><span class="line"><span class="comment">+++ b/user/uthread.c</span></span><br><span class="line"><span class="meta">@@ -10,9 +10,31 @@</span></span><br><span class="line"> #define STACK_SIZE 8192</span><br><span class="line"> #define MAX_THREAD 4</span><br><span class="line"> </span><br><span class="line"><span class="addition">+// Saved registers for uthread context switches.</span></span><br><span class="line"><span class="addition">+// Copy from kernel/proc.h</span></span><br><span class="line"><span class="addition">+struct context &#123;</span></span><br><span class="line"><span class="addition">+  uint64 ra; /* return address */</span></span><br><span class="line"><span class="addition">+  uint64 sp; /* stack pointer */</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  // callee-saved</span></span><br><span class="line"><span class="addition">+  uint64 s0;</span></span><br><span class="line"><span class="addition">+  uint64 s1;</span></span><br><span class="line"><span class="addition">+  uint64 s2;</span></span><br><span class="line"><span class="addition">+  uint64 s3;</span></span><br><span class="line"><span class="addition">+  uint64 s4;</span></span><br><span class="line"><span class="addition">+  uint64 s5;</span></span><br><span class="line"><span class="addition">+  uint64 s6;</span></span><br><span class="line"><span class="addition">+  uint64 s7;</span></span><br><span class="line"><span class="addition">+  uint64 s8;</span></span><br><span class="line"><span class="addition">+  uint64 s9;</span></span><br><span class="line"><span class="addition">+  uint64 s10;</span></span><br><span class="line"><span class="addition">+  uint64 s11;</span></span><br><span class="line"><span class="addition">+&#125;;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"> struct thread &#123;</span><br><span class="line">   char stack[STACK_SIZE]; /* the thread&#x27;s stack */</span><br><span class="line">   int state;              /* FREE, RUNNING, RUNNABLE */</span><br><span class="line"><span class="addition">+  struct context ctx;</span></span><br><span class="line"> &#125;;</span><br><span class="line"> struct thread all_thread[MAX_THREAD];</span><br><span class="line"> struct thread *current_thread;</span><br><span class="line"><span class="meta">@@ -55,10 +77,7 @@</span> thread_schedule(void)</span><br><span class="line">     next_thread-&gt;state = RUNNING;</span><br><span class="line">     t = current_thread;</span><br><span class="line">     current_thread = next_thread;</span><br><span class="line"><span class="deletion">-    /* YOUR CODE HERE</span></span><br><span class="line"><span class="deletion">-     * Invoke thread_switch to switch from t to next_thread:</span></span><br><span class="line"><span class="deletion">-     * thread_switch(??, ??);</span></span><br><span class="line"><span class="deletion">-     */</span></span><br><span class="line"><span class="addition">+    thread_switch((uint64)&amp;t-&gt;ctx, (uint64)&amp;current_thread-&gt;ctx);</span></span><br><span class="line">   &#125;</span><br><span class="line">   else</span><br><span class="line">     next_thread = 0;</span><br><span class="line"><span class="meta">@@ -74,7 +93,8 @@</span> thread_create(void (*func)())</span><br><span class="line">       break;</span><br><span class="line">   &#125;</span><br><span class="line">   t-&gt;state = RUNNABLE;</span><br><span class="line"><span class="deletion">-  // YOUR CODE HERE</span></span><br><span class="line"><span class="addition">+  t-&gt;ctx.ra = (uint64)func;</span></span><br><span class="line"><span class="addition">+  t-&gt;ctx.sp = (uint64)&amp;t-&gt;stack[STACK_SIZE - 1];</span></span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> void</span><br><span class="line"><span class="comment">diff --git a/user/uthread_switch.S b/user/uthread_switch.S</span></span><br><span class="line"><span class="comment">index 5defb12..8deb723 100644</span></span><br><span class="line"><span class="comment">--- a/user/uthread_switch.S</span></span><br><span class="line"><span class="comment">+++ b/user/uthread_switch.S</span></span><br><span class="line"><span class="meta">@@ -7,5 +7,35 @@</span></span><br><span class="line"> </span><br><span class="line"> 	.globl thread_switch</span><br><span class="line"> thread_switch:</span><br><span class="line"><span class="deletion">-	/* YOUR CODE HERE */</span></span><br><span class="line"><span class="addition">+	/* Copy from kernel/swtch.S */</span></span><br><span class="line"><span class="addition">+	sd ra, 0(a0)</span></span><br><span class="line"><span class="addition">+	sd sp, 8(a0)</span></span><br><span class="line"><span class="addition">+	sd s0, 16(a0)</span></span><br><span class="line"><span class="addition">+	sd s1, 24(a0)</span></span><br><span class="line"><span class="addition">+	sd s2, 32(a0)</span></span><br><span class="line"><span class="addition">+	sd s3, 40(a0)</span></span><br><span class="line"><span class="addition">+	sd s4, 48(a0)</span></span><br><span class="line"><span class="addition">+	sd s5, 56(a0)</span></span><br><span class="line"><span class="addition">+	sd s6, 64(a0)</span></span><br><span class="line"><span class="addition">+	sd s7, 72(a0)</span></span><br><span class="line"><span class="addition">+	sd s8, 80(a0)</span></span><br><span class="line"><span class="addition">+	sd s9, 88(a0)</span></span><br><span class="line"><span class="addition">+	sd s10, 96(a0)</span></span><br><span class="line"><span class="addition">+	sd s11, 104(a0)</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+	ld ra, 0(a1)</span></span><br><span class="line"><span class="addition">+	ld sp, 8(a1)</span></span><br><span class="line"><span class="addition">+	ld s0, 16(a1)</span></span><br><span class="line"><span class="addition">+	ld s1, 24(a1)</span></span><br><span class="line"><span class="addition">+	ld s2, 32(a1)</span></span><br><span class="line"><span class="addition">+	ld s3, 40(a1)</span></span><br><span class="line"><span class="addition">+	ld s4, 48(a1)</span></span><br><span class="line"><span class="addition">+	ld s5, 56(a1)</span></span><br><span class="line"><span class="addition">+	ld s6, 64(a1)</span></span><br><span class="line"><span class="addition">+	ld s7, 72(a1)</span></span><br><span class="line"><span class="addition">+	ld s8, 80(a1)</span></span><br><span class="line"><span class="addition">+	ld s9, 88(a1)</span></span><br><span class="line"><span class="addition">+	ld s10, 96(a1)</span></span><br><span class="line"><span class="addition">+	ld s11, 104(a1)</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"> 	ret    /* return to ra */</span><br></pre></td></tr></table></figure>
+                    <p>以 Rocky-9.4-x86_64-dvd.iso 为例，</p>
+<h2 id="挂载-ISO"><a href="#挂载-ISO" class="headerlink" title="挂载 ISO"></a>挂载 ISO</h2><p>挂载 ISO 到 &#x2F;mnt 目录</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 挂载 iso</span></span><br><span class="line">mount -o loop Rocky-9.4-x86_64-dvd.iso /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将 ISO 文件拷贝到工作目录，本示例使用的工作目录为 /opt/iso</span></span><br><span class="line"><span class="built_in">cp</span> -a /mnt /opt/iso</span><br><span class="line"></span><br><span class="line"><span class="comment"># umount iso</span></span><br><span class="line">umount /mnt</span><br></pre></td></tr></table></figure>
 
-<h2 id="Using-threads"><a href="#Using-threads" class="headerlink" title="Using threads"></a>Using threads</h2><p>实现  bucket 级别锁利用多线程加速</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">编译</span></span><br><span class="line">make ph</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">执行</span></span><br><span class="line">./ph $(nproc)</span><br></pre></td></tr></table></figure>
-<h3 id="Show-me-the-code-1"><a href="#Show-me-the-code-1" class="headerlink" title="Show me the code"></a>Show me the code</h3><figure class="highlight diff"><table><tr><td class="code"><pre><span class="line"><span class="comment">diff --git a/notxv6/ph.c b/notxv6/ph.c</span></span><br><span class="line"><span class="comment">index 09a72f3..c7b0050 100644</span></span><br><span class="line"><span class="comment">--- a/notxv6/ph.c</span></span><br><span class="line"><span class="comment">+++ b/notxv6/ph.c</span></span><br><span class="line"><span class="meta">@@ -17,6 +17,8 @@</span> struct entry *table[NBUCKET];</span><br><span class="line"> int keys[NKEYS];</span><br><span class="line"> int nthread = 1;</span><br><span class="line"> </span><br><span class="line"><span class="addition">+pthread_mutex_t lock[NBUCKET]; // 定义锁</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"> double</span><br><span class="line"> now()</span><br><span class="line"> &#123;</span><br><span class="line"><span class="meta">@@ -42,6 +44,7 @@</span> put(int key, int value)</span><br><span class="line"> </span><br><span class="line">   // is the key already present?</span><br><span class="line">   struct entry *e = 0;</span><br><span class="line"><span class="addition">+   pthread_mutex_lock(&amp;lock[i]); // 获取锁</span></span><br><span class="line">   for (e = table[i]; e != 0; e = e-&gt;next) &#123;</span><br><span class="line">     if (e-&gt;key == key)</span><br><span class="line">       break;</span><br><span class="line"><span class="meta">@@ -54,6 +57,7 @@</span> put(int key, int value)</span><br><span class="line">     // the new is new.</span><br><span class="line">     insert(key, value, &amp;table[i], table[i]);</span><br><span class="line">   &#125;</span><br><span class="line"><span class="addition">+   pthread_mutex_unlock(&amp;lock[i]); // 释放锁</span></span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> static struct entry *</span><br><span class="line"><span class="meta">@@ -117,6 +121,11 @@</span> main(int argc, char *argv[])</span><br><span class="line">     keys[i] = random();</span><br><span class="line">   &#125;</span><br><span class="line"> </span><br><span class="line"><span class="addition">+  // 初始化锁</span></span><br><span class="line"><span class="addition">+  for (int i = 0; i &lt; NBUCKET; i++) &#123;</span></span><br><span class="line"><span class="addition">+    pthread_mutex_init(&amp;lock[i], NULL);</span></span><br><span class="line"><span class="addition">+  &#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line">   //</span><br><span class="line">   // first the puts</span><br><span class="line">   //</span><br></pre></td></tr></table></figure>
+<h2 id="新增-x2F-删除-RPM-包"><a href="#新增-x2F-删除-RPM-包" class="headerlink" title="新增&#x2F;删除 RPM 包"></a>新增&#x2F;删除 RPM 包</h2><p>Rocky 9.4 ISO RPM 存放目录在 AppStream 和 BaseOS 两个目录下, 与其 yum 源的目录结构相同。</p>
+<p>RPM 以及 repodata, 目录结构如下：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tree -d 1 AppStream/</span></span><br><span class="line">AppStream/</span><br><span class="line">├── Packages</span><br><span class="line">└── repodata</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tree -d 1 BaseOS/</span></span><br><span class="line">BaseOS/</span><br><span class="line">├── Packages</span><br><span class="line">└── repodata</span><br></pre></td></tr></table></figure>
 
-<h2 id="Barrier"><a href="#Barrier" class="headerlink" title="Barrier"></a>Barrier</h2><p>posix 强相关，主打了解一个 posix 的 API， <code>broadcast</code> 这些函数日常码代码见到的不多。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">编译</span></span><br><span class="line">make barrier</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">执行</span></span><br><span class="line">./barrier</span><br></pre></td></tr></table></figure>
-<h3 id="Show-me-the-code-2"><a href="#Show-me-the-code-2" class="headerlink" title="Show me the code"></a>Show me the code</h3><figure class="highlight diff"><table><tr><td class="code"><pre><span class="line"><span class="comment">diff --git a/notxv6/barrier.c b/notxv6/barrier.c</span></span><br><span class="line"><span class="comment">index bcad78f..a9768db 100644</span></span><br><span class="line"><span class="comment">--- a/notxv6/barrier.c</span></span><br><span class="line"><span class="comment">+++ b/notxv6/barrier.c</span></span><br><span class="line"><span class="meta">@@ -25,11 +25,20 @@</span> barrier_init(void)</span><br><span class="line"> static void</span><br><span class="line"> barrier()</span><br><span class="line"> &#123;</span><br><span class="line"><span class="deletion">-  // YOUR CODE HERE</span></span><br><span class="line"><span class="deletion">-  //</span></span><br><span class="line"><span class="deletion">-  // Block until all threads have called barrier() and</span></span><br><span class="line"><span class="deletion">-  // then increment bstate.round.</span></span><br><span class="line"><span class="deletion">-  //</span></span><br><span class="line"><span class="addition">+  pthread_mutex_lock(&amp;bstate.barrier_mutex);</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  bstate.nthread++;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  if (bstate.nthread == nthread) &#123;</span></span><br><span class="line"><span class="addition">+    bstate.round++;</span></span><br><span class="line"><span class="addition">+    bstate.nthread = 0;</span></span><br><span class="line"><span class="addition">+    pthread_cond_broadcast(&amp;bstate.barrier_cond);</span></span><br><span class="line"><span class="addition">+  &#125;</span></span><br><span class="line"><span class="addition">+  else &#123;</span></span><br><span class="line"><span class="addition">+    pthread_cond_wait(&amp;bstate.barrier_cond, &amp;bstate.barrier_mutex);</span></span><br><span class="line"><span class="addition">+  &#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  pthread_mutex_unlock(&amp;bstate.barrier_mutex);</span></span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> static void *</span><br></pre></td></tr></table></figure>
+<p>子目录 Packages 存放 RPM 包文件，repodata 存放 RPM 包的元数据。在 Packages 目录下放入新的包或者删除不需要的包后，需要重新生成 repodata。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">createrepo --update AppStream/</span><br><span class="line">createrepo --update BaseOS/</span><br></pre></td></tr></table></figure>
 
-<h2 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ make qemu-gdb</span><br><span class="line">uthread: OK (4.4s)</span><br><span class="line">== Test answers-thread.txt ==</span><br><span class="line">answers-thread.txt: OK</span><br><span class="line">== Test ph_safe == make[1]: Entering directory &#x27;/root/xv6-labs-2023&#x27;</span><br><span class="line">gcc -o ph -g -O2 -DSOL_THREAD -DLAB_THREAD notxv6/ph.c -pthread</span><br><span class="line">make[1]: Leaving directory &#x27;/root/xv6-labs-2023&#x27;</span><br><span class="line">ph_safe: OK (15.7s)</span><br><span class="line">== Test ph_fast == make[1]: Entering directory &#x27;/root/xv6-labs-2023&#x27;</span><br><span class="line">make[1]: &#x27;ph&#x27; is up to date.</span><br><span class="line">make[1]: Leaving directory &#x27;/root/xv6-labs-2023&#x27;</span><br><span class="line">ph_fast: OK (36.4s)</span><br><span class="line">== Test barrier == make[1]: Entering directory &#x27;/root/xv6-labs-2023&#x27;</span><br><span class="line">gcc -o barrier -g -O2 -DSOL_THREAD -DLAB_THREAD notxv6/barrier.c -pthread</span><br><span class="line">make[1]: Leaving directory &#x27;/root/xv6-labs-2023&#x27;</span><br><span class="line">barrier: OK (2.8s)</span><br><span class="line">== Test time ==</span><br><span class="line">time: OK</span><br><span class="line">Score: 60/60</span><br></pre></td></tr></table></figure>
+
+<h2 id="ISO-换标"><a href="#ISO-换标" class="headerlink" title="ISO 换标"></a>ISO 换标</h2><p>修改 Rocky 为 CustomizedRocky，</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sed -i &#x27;s/Rocky/CustomizedRocky/g&#x27; EFI/BOOT/grub.cfg</span><br><span class="line">sed -i &#x27;s/Rocky/CustomizedRocky/g&#x27; isolinux/grub.conf</span><br><span class="line">sed -i &#x27;s/Rocky/CustomizedRocky/g&#x27; isolinux/isolinux.cfg</span><br></pre></td></tr></table></figure>
+
+<h2 id="封装-ISO"><a href="#封装-ISO" class="headerlink" title="封装 ISO"></a>封装 ISO</h2><p>完成修改后，重新封装 ISO, 命令如下，</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">genisoimage -U -r -v -J -joliet-long -V &quot;CustomizedRocky-9-4-x86_64-dvd&quot; -volset &quot;CustomizedRocky-9-4-x86_64-dvd&quot; \</span><br><span class="line">	-A &quot;CustomizedRocky-9-4-x86_64-dvd&quot; -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 \</span><br><span class="line">	-boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot \</span><br><span class="line">	-o /Rocky-9.4-x86_64-customized.iso .</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，确保命令中 ‘-V’, ‘-volset’ 和 ‘-A’ 选项的值与 ISO 里的引导加载程序配置匹配。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>1、<a class="link"   target="_blank" rel="noopener" href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/anaconda_customization_guide/sect-iso-images#sect-iso-images" >Working with ISO Images<i class="fas fa-external-link-alt"></i></a></p>
+<p>2、<a class="link"   target="_blank" rel="noopener" href="https://blog.k8s.li/rebuild-iso-image.html" >使用 overlay2 或 bind 重新构建 ISO 镜像<i class="fas fa-external-link-alt"></i></a> 适用于 ISO CICD 方案的一种加速方案</p>
 
                 </div>
                 
 
                 <div class="post-bottom-tags-and-share border-box">
                     <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/iso/">iso</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/linux/">linux</a>
+                                    </li>
+                                
+                            </ul>
                         
                     </div>
                     <div>
@@ -318,31 +338,15 @@
                 
                     <div class="post-nav border-box">
                         
-                            <div class="prev-post">
-                                <a class="prev"
-                                   rel="prev"
-                                   href="/customize-linux-boot-iso/"
-                                   title="自定义 Linux ISO"
-                                >
-                                    <span class="left arrow-icon flex-center">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </span>
-                                    <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">自定义 Linux ISO</span>
-                                        <span class="post-nav-item">Prev posts</span>
-                                    </span>
-                                </a>
-                            </div>
-                        
                         
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/xv6-lab5-cow.md/"
-                                   title="xv6 Lab5: COW"
+                                   href="/xv6-lab6-multithreading/"
+                                   title="xv6 Lab6: Multithreading"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">xv6 Lab5: COW</span>
+                                        <span class="post-nav-title-item text-ellipsis">xv6 Lab6: Multithreading</span>
                                         <span class="post-nav-item">Next posts</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">
@@ -452,7 +456,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#uthread"><span class="nav-text">uthread</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AE%9E%E7%8E%B0"><span class="nav-text">关键实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#struct-context-x2F-thread-switch"><span class="nav-text">struct context &#x2F; thread_switch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#thread-schedule"><span class="nav-text">thread_schedule</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#thread-create"><span class="nav-text">thread_create</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code"><span class="nav-text">Show me the code</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-threads"><span class="nav-text">Using threads</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code-1"><span class="nav-text">Show me the code</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Barrier"><span class="nav-text">Barrier</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code-2"><span class="nav-text">Show me the code</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-text">测试结果</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD-ISO"><span class="nav-text">挂载 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E-x2F-%E5%88%A0%E9%99%A4-RPM-%E5%8C%85"><span class="nav-text">新增&#x2F;删除 RPM 包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ISO-%E6%8D%A2%E6%A0%87"><span class="nav-text">ISO 换标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%81%E8%A3%85-ISO"><span class="nav-text">封装 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-text">参考链接</span></a></li></ol>
     </div>
 </div>
 
@@ -624,7 +628,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#uthread"><span class="nav-text">uthread</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AE%9E%E7%8E%B0"><span class="nav-text">关键实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#struct-context-x2F-thread-switch"><span class="nav-text">struct context &#x2F; thread_switch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#thread-schedule"><span class="nav-text">thread_schedule</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#thread-create"><span class="nav-text">thread_create</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code"><span class="nav-text">Show me the code</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-threads"><span class="nav-text">Using threads</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code-1"><span class="nav-text">Show me the code</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Barrier"><span class="nav-text">Barrier</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code-2"><span class="nav-text">Show me the code</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-text">测试结果</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD-ISO"><span class="nav-text">挂载 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E-x2F-%E5%88%A0%E9%99%A4-RPM-%E5%8C%85"><span class="nav-text">新增&#x2F;删除 RPM 包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ISO-%E6%8D%A2%E6%A0%87"><span class="nav-text">ISO 换标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%81%E8%A3%85-ISO"><span class="nav-text">封装 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-text">参考链接</span></a></li></ol>
     </div>
 </div>
 
