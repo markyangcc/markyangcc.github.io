@@ -238,7 +238,7 @@
 
             <span class="meta-info-item post-update-date">
                 <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                <span class="datetime" data-updated="Mon Jun 24 2024 11:48:31 GMT+0800">2024-06-24 11:48:31</span>
+                <span class="datetime" data-updated="Wed Jun 26 2024 17:50:26 GMT+0800">2024-06-26 17:50:26</span>
             </span>
         
 
@@ -261,7 +261,7 @@
         
         
             <span class="meta-info-item post-wordcount">
-                <i class="icon fas fa-file-word"></i>&nbsp;<span>367 Words</span>
+                <i class="icon fas fa-file-word"></i>&nbsp;<span>422 Words</span>
             </span>
         
         
@@ -287,7 +287,11 @@
                 <div class="post-content keep-markdown-body">
                     
 
-                    <p>以 Rocky-9.4-x86_64-dvd.iso 为例，</p>
+                    <blockquote>
+<p>请注意：本文档旨在帮助您根据现有的 ISO 来创建一个 自定义的ISO文件。如果您希望从零开始，可以参考OpenCloudOS ISO镜像构建项目，</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://gitee.com/OpenCloudOS/ocs_lorax_build_image" >https://gitee.com/OpenCloudOS/ocs_lorax_build_image<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<p>以 Rocky-9.4-x86_64-dvd.iso 为例，</p>
 <h2 id="挂载-ISO"><a href="#挂载-ISO" class="headerlink" title="挂载 ISO"></a>挂载 ISO</h2><p>挂载 ISO 到 &#x2F;mnt 目录</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 挂载 iso</span></span><br><span class="line">mount -o loop Rocky-9.4-x86_64-dvd.iso /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将 ISO 文件拷贝到工作目录，本示例使用的工作目录为 /opt/iso</span></span><br><span class="line"><span class="built_in">cp</span> -a /mnt /opt/iso</span><br><span class="line"></span><br><span class="line"><span class="comment"># umount iso</span></span><br><span class="line">umount /mnt</span><br></pre></td></tr></table></figure>
 
