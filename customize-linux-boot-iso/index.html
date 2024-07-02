@@ -9,7 +9,7 @@
     
     <title>
         
-            自定义 Linux ISO |
+            修改重新封装 Linux ISO |
         
         Lapin Gris
     </title>
@@ -205,7 +205,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        自定义 Linux ISO
+                        修改重新封装 Linux ISO
                     </div>
                 
 
@@ -238,7 +238,7 @@
 
             <span class="meta-info-item post-update-date">
                 <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                <span class="datetime" data-updated="Wed Jun 26 2024 17:50:26 GMT+0800">2024-06-26 17:50:26</span>
+                <span class="datetime" data-updated="Tue Jul 02 2024 19:37:45 GMT+0800">2024-07-02 19:37:45</span>
             </span>
         
 
@@ -261,12 +261,12 @@
         
         
             <span class="meta-info-item post-wordcount">
-                <i class="icon fas fa-file-word"></i>&nbsp;<span>422 Words</span>
+                <i class="icon fas fa-file-word"></i>&nbsp;<span>502 Words</span>
             </span>
         
         
             <span class="meta-info-item post-min2read">
-                <i class="icon fas fa-clock"></i>&nbsp;<span>1 Mins</span>
+                <i class="icon fas fa-clock"></i>&nbsp;<span>2 Mins</span>
             </span>
         
         
@@ -292,10 +292,11 @@
 <p><a class="link"   target="_blank" rel="noopener" href="https://gitee.com/OpenCloudOS/ocs_lorax_build_image" >https://gitee.com/OpenCloudOS/ocs_lorax_build_image<i class="fas fa-external-link-alt"></i></a></p>
 </blockquote>
 <p>以 Rocky-9.4-x86_64-dvd.iso 为例，</p>
-<h2 id="挂载-ISO"><a href="#挂载-ISO" class="headerlink" title="挂载 ISO"></a>挂载 ISO</h2><p>挂载 ISO 到 &#x2F;mnt 目录</p>
+<h2 id="挂载-ISO"><a href="#挂载-ISO" class="headerlink" title="挂载 ISO"></a>挂载 ISO</h2><p>挂载 ISO 到 &#x2F;mnt 目录, 因为 ISO 镜像挂载后是只读的，因为我们需要先将 ISO 里的文件复制到新的目录，后续对 ISO 的修改在这个新的目录中进行。</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 挂载 iso</span></span><br><span class="line">mount -o loop Rocky-9.4-x86_64-dvd.iso /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将 ISO 文件拷贝到工作目录，本示例使用的工作目录为 /opt/iso</span></span><br><span class="line"><span class="built_in">cp</span> -a /mnt /opt/iso</span><br><span class="line"></span><br><span class="line"><span class="comment"># umount iso</span></span><br><span class="line">umount /mnt</span><br></pre></td></tr></table></figure>
 
-<h2 id="新增-x2F-删除-RPM-包"><a href="#新增-x2F-删除-RPM-包" class="headerlink" title="新增&#x2F;删除 RPM 包"></a>新增&#x2F;删除 RPM 包</h2><p>Rocky 9.4 ISO RPM 存放目录在 AppStream 和 BaseOS 两个目录下, 与其 yum 源的目录结构相同。</p>
+<h2 id="新增-x2F-删除-RPM-包"><a href="#新增-x2F-删除-RPM-包" class="headerlink" title="新增&#x2F;删除 RPM 包"></a>新增&#x2F;删除 RPM 包</h2><p>大多是时候，修改 ISO 是新增&#x2F;删除 RPM 包，比如更换内核包，添加自定义包等等。</p>
+<p>Rocky 9.4 ISO RPM 存放目录在 AppStream 和 BaseOS 两个目录下, 与其 yum 源的目录结构相同。</p>
 <p>RPM 以及 repodata, 目录结构如下：</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tree -d 1 AppStream/</span></span><br><span class="line">AppStream/</span><br><span class="line">├── Packages</span><br><span class="line">└── repodata</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tree -d 1 BaseOS/</span></span><br><span class="line">BaseOS/</span><br><span class="line">├── Packages</span><br><span class="line">└── repodata</span><br></pre></td></tr></table></figure>
 
@@ -311,7 +312,7 @@
 
 <p>需要注意的是，确保命令中 ‘-V’, ‘-volset’ 和 ‘-A’ 选项的值与 ISO 里的引导加载程序配置匹配。</p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>1、<a class="link"   target="_blank" rel="noopener" href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/anaconda_customization_guide/sect-iso-images#sect-iso-images" >Working with ISO Images<i class="fas fa-external-link-alt"></i></a></p>
-<p>2、<a class="link"   target="_blank" rel="noopener" href="https://blog.k8s.li/rebuild-iso-image.html" >使用 overlay2 或 bind 重新构建 ISO 镜像<i class="fas fa-external-link-alt"></i></a> 适用于 ISO CICD 方案的一种加速方案</p>
+<p>2、<a class="link"   target="_blank" rel="noopener" href="https://blog.k8s.li/rebuild-iso-image.html" >使用 overlay2 或 bind 重新构建 ISO 镜像<i class="fas fa-external-link-alt"></i></a> <strong>适用于 ISO CICD 方案的一种加速方案</strong></p>
 
                 </div>
                 
