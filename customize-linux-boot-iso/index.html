@@ -238,7 +238,7 @@
 
             <span class="meta-info-item post-update-date">
                 <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                <span class="datetime" data-updated="Tue Jul 02 2024 19:37:45 GMT+0800">2024-07-02 19:37:45</span>
+                <span class="datetime" data-updated="Tue Jul 02 2024 19:43:16 GMT+0800">2024-07-02 19:43:16</span>
             </span>
         
 
@@ -310,7 +310,7 @@
 <h2 id="封装-ISO"><a href="#封装-ISO" class="headerlink" title="封装 ISO"></a>封装 ISO</h2><p>完成修改后，重新封装 ISO, 命令如下，</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">genisoimage -U -r -v -J -joliet-long -V &quot;CustomizedRocky-9-4-x86_64-dvd&quot; -volset &quot;CustomizedRocky-9-4-x86_64-dvd&quot; \</span><br><span class="line">	-A &quot;CustomizedRocky-9-4-x86_64-dvd&quot; -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 \</span><br><span class="line">	-boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot \</span><br><span class="line">	-o /Rocky-9.4-x86_64-customized.iso .</span><br></pre></td></tr></table></figure>
 
-<p>需要注意的是，确保命令中 ‘-V’, ‘-volset’ 和 ‘-A’ 选项的值与 ISO 里的引导加载程序配置匹配。</p>
+<p>需要注意的是，确保命令中 -V, -volset 和 -A 选项的值与 ISO 里的引导加载程序配置匹配。</p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>1、<a class="link"   target="_blank" rel="noopener" href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/anaconda_customization_guide/sect-iso-images#sect-iso-images" >Working with ISO Images<i class="fas fa-external-link-alt"></i></a></p>
 <p>2、<a class="link"   target="_blank" rel="noopener" href="https://blog.k8s.li/rebuild-iso-image.html" >使用 overlay2 或 bind 重新构建 ISO 镜像<i class="fas fa-external-link-alt"></i></a> <strong>适用于 ISO CICD 方案的一种加速方案</strong></p>
 
