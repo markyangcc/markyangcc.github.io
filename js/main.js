@@ -1,79 +1,113 @@
-/* global KEEP */
+/**
+ * Sets up Justified Gallery.
+ */
+if (!!$.prototype.justifiedGallery) {
+  var options = {
+    rowHeight: 140,
+    margins: 4,
+    lastRow: "justify"
+  };
+  $(".article-gallery").justifiedGallery(options);
+}
 
-window.addEventListener('DOMContentLoaded', () => {
-  const { version, local_search } = KEEP.theme_config
+$(document).ready(function() {
 
-  KEEP.themeInfo = {
-    theme: `Keep v${version}`,
-    author: 'XPoet',
-    repository: 'https://github.com/XPoet/hexo-theme-keep',
-    localStorageKey: 'KEEP-THEME-STATUS',
-    encryptKey: 'KEEP-ENCRYPT',
-    styleStatus: {
-      isDark: false,
-      fontSizeLevel: 0,
-      isShowToc: true
-    },
-    defaultDatetimeFormat: 'YYYY-MM-DD HH:mm:ss'
-  }
+  /**
+   * Shows the responsive navigation menu on mobile.
+   */
+  $("#header > #nav > ul > .icon").click(function() {
+    $("#header > #nav > ul").toggleClass("responsive");
+  });
 
-  // print theme base info
-  KEEP.printThemeInfo = () => {
-    console.log(
-      `\n %c ${KEEP.themeInfo.theme} %c ${KEEP.themeInfo.repository} \n`,
-      `color: #fadfa3; background: #333; padding: 6px 0;`,
-      `padding: 6px 0;`
-    )
-  }
-  KEEP.printThemeInfo()
 
-  // set version number of footer
-  KEEP.setFooterVersion = () => {
-    const vd = document.querySelector('.footer .keep-version')
-    vd && (vd.innerHTML = KEEP.themeInfo.theme)
-  }
+  /**
+   * Controls the different versions of  the menu in blog post articles 
+   * for Desktop, tablet and mobile.
+   */
+  if ($(".post").length) {
+    var menu = $("#menu");
+    var nav = $("#menu > #nav");
+    var menuIcon = $("#menu-icon, #menu-icon-tablet");
 
-  // set styleStatus to localStorage
-  KEEP.setStyleStatus = () => {
-    localStorage.setItem(KEEP.themeInfo.localStorageKey, JSON.stringify(KEEP.themeInfo.styleStatus))
-  }
+    /**
+     * Display the menu on hi-res laptops and desktops.
+     */
+    if ($(document).width() >= 1440) {
+      menu.show();
+      menuIcon.addClass("active");
+    }
 
-  // get styleStatus from localStorage
-  KEEP.getStyleStatus = () => {
-    let temp = localStorage.getItem(KEEP.themeInfo.localStorageKey)
-    if (temp) {
-      temp = JSON.parse(temp)
-      for (let key in KEEP.themeInfo.styleStatus) {
-        KEEP.themeInfo.styleStatus[key] = temp[key]
+    /**
+     * Display the menu if the menu icon is clicked.
+     */
+    menuIcon.click(function() {
+      if (menu.is(":hidden")) {
+        menu.show();
+        menuIcon.addClass("active");
+      } else {
+        menu.hide();
+        menuIcon.removeClass("active");
       }
-      return temp
-    } else {
-      return null
+      return false;
+    });
+
+    /**
+     * Add a scroll listener to the menu to hide/show the navigation links.
+     */
+    if (menu.length) {
+      $(window).on("scroll", function() {
+        var topDistance = menu.offset().top;
+
+        // hide only the navigation links on desktop
+        if (!nav.is(":visible") && topDistance < 50) {
+          nav.show();
+        } else if (nav.is(":visible") && topDistance > 100) {
+          nav.hide();
+        }
+
+        // on tablet, hide the navigation icon as well and show a "scroll to top
+        // icon" instead
+        if ( ! $( "#menu-icon" ).is(":visible") && topDistance < 50 ) {
+          $("#menu-icon-tablet").show();
+          $("#top-icon-tablet").hide();
+        } else if (! $( "#menu-icon" ).is(":visible") && topDistance > 100) {
+          $("#menu-icon-tablet").hide();
+          $("#top-icon-tablet").show();
+        }
+      });
+    }
+
+    /**
+     * Show mobile navigation menu after scrolling upwards,
+     * hide it again after scrolling downwards.
+     */
+    if ($( "#footer-post").length) {
+      var lastScrollTop = 0;
+      $(window).on("scroll", function() {
+        var topDistance = $(window).scrollTop();
+
+        if (topDistance > lastScrollTop){
+          // downscroll -> show menu
+          $("#footer-post").hide();
+        } else {
+          // upscroll -> hide menu
+          $("#footer-post").show();
+        }
+        lastScrollTop = topDistance;
+
+        // close all submenu"s on scroll
+        $("#nav-footer").hide();
+        $("#toc-footer").hide();
+        $("#share-footer").hide();
+
+        // show a "navigation" icon when close to the top of the page, 
+        // otherwise show a "scroll to the top" icon
+        if (topDistance < 50) {
+          $("#actions-footer > #top").hide();
+        } else if (topDistance > 100) {
+          $("#actions-footer > #top").show();
+        }
+      });
     }
   }
-
-  // init prototype function
-  KEEP.initPrototype = () => {
-    HTMLElement.prototype.wrap = function (wrapper) {
-      this.parentNode.insertBefore(wrapper, this)
-      this.parentNode.removeChild(this)
-      wrapper.appendChild(this)
-    }
-  }
-  KEEP.initPrototype()
-
-  KEEP.initExecute = () => {
-    KEEP.initUtils()
-    KEEP.initHeaderShrink()
-    KEEP.initModeToggle()
-    KEEP.initBack2Top()
-    KEEP.initCodeBlock()
-    KEEP.setFooterVersion()
-    KEEP.initLazyLoad()
-
-    if (local_search?.enable === true) {
-      KEEP.initLocalSearch()
-    }
-  }
-  KEEP.initExecute()
-})
+});

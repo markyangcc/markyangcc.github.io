@@ -1,346 +1,184 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang=en>
 <head>
+    <!-- so meta -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="keywords" content="Hexo Theme Keep">
-    <meta name="description" content="Hexo Theme Keep">
-    <meta name="author" content="Lapin Gris">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="一、图片配置hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。 修改引入图片路径即可解决， 我们只需要在 _posts 的同级目录下新建一个 img 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式 ..&#x2F;img&#x2F;gris.png (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo-Next主题配置">
+<meta property="og:url" content="http://example.com/hexo-next-theme-configuration-picture-configuration/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一、图片配置hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。 修改引入图片路径即可解决， 我们只需要在 _posts 的同级目录下新建一个 img 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式 ..&#x2F;img&#x2F;gris.png (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/gris.png">
+<meta property="og:image" content="http://example.com/img/dict_tree.png">
+<meta property="og:image" content="http://example.com/img/Next_dos_advanced.png">
+<meta property="article:published_time" content="2022-01-01T20:40:37.000Z">
+<meta property="article:modified_time" content="2023-01-22T08:05:42.182Z">
+<meta property="article:author" content="Sya">
+<meta property="article:tag" content="hexo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/gris.png">
     
-    <title>
+    
+      
         
-            Hexo-Next主题配置 |
+          <link rel="shortcut icon" href="/images/favicon.ico">
         
-        Lapin Gris
-    </title>
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Hexo-Next主题配置</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
 
+    <!-- persian styles -->
     
-        <link rel="shortcut icon" href="/images/logo.svg">
+    <!-- rss -->
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/font/css/fontawesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/font/css/regular.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/font/css/solid.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/font/css/brands.min.css">
     
-    <script class="keep-theme-configurations">
-    const KEEP = window.KEEP || {}
-    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.xml"}
-    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"Lapin Gris","author":"Lapin Gris","avatar":"/images/avatar_folklore.png","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":false,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":false},"social_contact":{"enable":true,"links":{"github":"https://github.com/markyangcc","weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":"travelsu97@163.com"}},"scroll":{"progress_bar":true,"percent":true,"hide_header":true},"home":{"announcement":null,"category":false,"tag":false,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":false,"share":false,"reward":{"enable":false,"img_link":null,"text":null,"icon":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":false,"site_pv":false,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":true,"use":"valine","valine":{"appid":"qRv6si8r4jUsBpjFlotXQBmP-gzGzoHsz","appkey":"upvGfvF70Sd2tCMoFM1ehslV","server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.36"},"waline":{"server_url":null,"reaction":false,"version":"3.2.1"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":true},"cdn":{"enable":true,"provider":"cdnjs"},"pjax":{"enable":true},"footer":{"since":2020,"word_count":false,"site_deploy":{"enable":false,"provider":"github","url":null},"record":{"enable":false,"list":[{"code":null,"link":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.2.1"}
-    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
-    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
-    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
-  </script>
+	<!-- mathjax -->
+	
 <meta name="generator" content="Hexo 6.3.0"></head>
 
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/markyangcc">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/how-to-sign-rpm-package/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/hexo-next-theme-configuration-picture-configuration/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&text=Hexo-Next主题配置"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&title=Hexo-Next主题配置"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&is_video=false&description=Hexo-Next主题配置"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Hexo-Next主题配置&body=Check out this article: http://example.com/hexo-next-theme-configuration-picture-configuration/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&title=Hexo-Next主题配置"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&title=Hexo-Next主题配置"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&title=Hexo-Next主题配置"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&title=Hexo-Next主题配置"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&name=Hexo-Next主题配置&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/hexo-next-theme-configuration-picture-configuration/&t=Hexo-Next主题配置"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
 
-<body>
-<div class="progress-bar-container">
+    </div>
     
-        <span class="scroll-progress-bar"></span>
     
-
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%9B%BE%E7%89%87%E9%85%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">一、图片配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%8F%92%E4%BB%B6"><span class="toc-number">2.</span> <span class="toc-text">二、插件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E7%9A%84%E6%8F%92%E4%BB%B6"><span class="toc-number">2.1.</span> <span class="toc-text">安装的插件</span></a></li></ol></li></ol>
+      </div>
     
-        <span class="pjax-progress-bar"></span>
-        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
-    
+  </span>
 </div>
 
-
-
-<main class="page-container border-box">
-    <!-- home first screen  -->
     
-
-    <!-- page content -->
-    <div class="page-main-content border-box">
-        <div class="page-main-content-top">
-            
-<header class="header-wrapper">
-
-    <div class="border-box header-content">
-        <div class="left flex-start border-box">
-            
-                <a class="logo-image border-box" href="/">
-                    <img src="/images/logo.svg">
-                </a>
-            
-            <a class="site-name border-box" href="/">
-               Lapin Gris
-            </a>
-        </div>
-
-        <div class="right border-box">
-            <div class="pc border-box">
-                <ul class="menu-list border-box">
-                    
-                        
-                        <li class="menu-item flex-start border-box">
-                            <a class="menu-text-color border-box" href="/">
-                                
-                                HOME
-                                
-                            </a>
-                            
-                        </li>
-                    
-                        
-                        <li class="menu-item flex-start border-box">
-                            <a class="menu-text-color border-box" href="/archives">
-                                
-                                ARCHIVES
-                                
-                            </a>
-                            
-                        </li>
-                    
-                        
-                        <li class="menu-item flex-start border-box">
-                            <a class="menu-text-color border-box" href="/tags">
-                                
-                                TAGS
-                                
-                            </a>
-                            
-                        </li>
-                    
-                        
-                        <li class="menu-item flex-start border-box">
-                            <a class="menu-text-color border-box" href="/categories">
-                                
-                                CATEGORIES
-                                
-                            </a>
-                            
-                        </li>
-                    
-                        
-                        <li class="menu-item flex-start border-box">
-                            <a class="menu-text-color border-box" href="/about">
-                                
-                                ABOUT
-                                
-                            </a>
-                            
-                        </li>
-                    
-                    
-                        <li class="menu-item search search-popup-trigger">
-                            <i class="menu-text-color fas search fa-search"></i>
-                        </li>
-                    
-                </ul>
-            </div>
-            <div class="mobile border-box flex-start">
-                
-                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
-                
-                <div class="icon-item menu-bar">
-                    <div class="menu-bar-middle"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="header-drawer">
-        <ul class="drawer-menu-list border-box">
-            
-                
-                <li class="drawer-menu-item border-box not-sub-menu">
-                    <label class="drawer-menu-label border-box">
-                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
-                            
-                            HOME
-                        </a>
-                        
-                    </label>
-                    
-                </li>
-            
-                
-                <li class="drawer-menu-item border-box not-sub-menu">
-                    <label class="drawer-menu-label border-box">
-                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
-                            
-                            ARCHIVES
-                        </a>
-                        
-                    </label>
-                    
-                </li>
-            
-                
-                <li class="drawer-menu-item border-box not-sub-menu">
-                    <label class="drawer-menu-label border-box">
-                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
-                            
-                            TAGS
-                        </a>
-                        
-                    </label>
-                    
-                </li>
-            
-                
-                <li class="drawer-menu-item border-box not-sub-menu">
-                    <label class="drawer-menu-label border-box">
-                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
-                            
-                            CATEGORIES
-                        </a>
-                        
-                    </label>
-                    
-                </li>
-            
-                
-                <li class="drawer-menu-item border-box not-sub-menu">
-                    <label class="drawer-menu-label border-box">
-                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
-                            
-                            ABOUT
-                        </a>
-                        
-                    </label>
-                    
-                </li>
-            
-        </ul>
-    </div>
-
-    <div class="window-mask"></div>
-
-</header>
-
-
-        </div>
-
-        <div class="page-main-content-middle border-box">
-
-            <div class="main-content border-box">
-                
-
-                    
-<div class="fade-in-down-animation">
-    <div class="post-page-container border-box">
-        <div class="post-content-container border-box">
-            
-
-            <div class="post-content-bottom border-box">
-                
-                    <div class="post-title">
-                        Hexo-Next主题配置
-                    </div>
-                
-
-                
-                    <div class="post-header border-box">
-                        
-                            <div class="avatar-box border-box">
-                                <img src="/images/avatar_folklore.png">
-                            </div>
-                        
-                        <div class="info-box">
-                            <div class="author border-box">
-                                <span class="name">Lapin Gris</span>
-                                
-                                    <span class="author-badge">Lv3</span>
-                                
-                            </div>
-                            <div class="meta-info border-box">
-                                
-
-<div class="post-meta-info-container border-box post">
-    <div class="post-meta-info border-box">
+    <div class="content index py4 ">
         
-
-        
-            <span class="meta-info-item post-create-date">
-                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2022-01-02 04:40:37</span>
-            </span>
-
-            <span class="meta-info-item post-update-date">
-                <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                <span class="datetime" data-updated="Sun Jan 22 2023 16:05:42 GMT+0800">2023-01-22 16:05:42</span>
-            </span>
-        
-
-        
-            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
-                <ul class="post-category-ul">
-                    
-                            <li class="category-item"><a href="/categories/hexo/">hexo</a></li>
-                        
-                    
-                </ul>
-            </span>
-        
-
-        
-            <span class="post-tag meta-info-item border-box">
-                <ul class="post-tag-ul">
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/hexo/">hexo</a></li>
-                        
-                    
-                </ul>
-            </span>
-        
-
-        
-        
-            <span class="meta-info-item post-wordcount">
-                <i class="icon fas fa-file-word"></i>&nbsp;<span>371 Words</span>
-            </span>
-        
-        
-            <span class="meta-info-item post-min2read">
-                <i class="icon fas fa-clock"></i>&nbsp;<span>1 Mins</span>
-            </span>
-        
-        
-            <span class="meta-info-item post-pv">
-                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
-            </span>
-        
-    </div>
-
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
     
-</div>
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Hexo-Next主题配置
+    </h1>
 
-                            </div>
-                        </div>
-                    </div>
-                
 
-                <div class="post-content keep-markdown-body ">
-                    
 
-                    
-                         <h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Sya</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-01-01T20:40:37.000Z" class="dt-published" itemprop="datePublished">2022-01-02</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/hexo/">hexo</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/hexo/" rel="tag">hexo</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
 <p><strong>修改引入图片路径即可解决，</strong></p>
 <p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
 <p><code>../img/gris.png</code> (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常预览&#x2F;显示图片，<strong>但是文件名不要有空格</strong>，有空格云端显示不出来。</p>
-<p><img  
-                       lazyload
-                       alt="image"
-                       data-src="/../img/gris.png"
-                        alt="Gris"
-                 ></p>
+<p><img src="/../img/gris.png" alt="Gris"></p>
 <p><strong>结构展示</strong></p>
 <p>如果没有理解的话，看看这张结构图</p>
-<p><img  
-                       lazyload
-                       alt="image"
-                       data-src="/../img/dict_tree.png"
-                       
-                 ></p>
+<p><img src="/../img/dict_tree.png"></p>
 <h1 id="二、插件"><a href="#二、插件" class="headerlink" title="二、插件"></a>二、插件</h1><p>安装插件的时候要多搜索，寻找最近的文章看，如果你也是使用Next 主题，尽量找Hexo Next 官方最近更新的文档看，因为随着<code>Hexo/Next</code>的版本更新，很多功能都被开发者集成进去了，只需要修改一下主题配置文件即可，<strong>简而言之，找最新的文章&#x2F;文档参考。</strong></p>
 <blockquote>
 <p>Hexo-Next 文档地址</p>
-<p>Hexo-Next: <a class="link"   target="_blank" rel="noopener" href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
+<p>Hexo-Next: <a target="_blank" rel="noopener" href="https://hexo-next.readthedocs.io/zh_CN/latest">https://hexo-next.readthedocs.io/zh_CN/latest</a></p>
 </blockquote>
 <h2 id="安装的插件"><a href="#安装的插件" class="headerlink" title="安装的插件"></a>安装的插件</h2><p>安装的插件并不多，主要是够用即可</p>
 <p>hexo-symbols-count-time</p>
@@ -348,426 +186,147 @@
 <p>hexo-generator-searchdb——站内搜索</p>
 <p>大家都喜欢的插件，Next 文档都已经列出来了，去找就行了🤣</p>
 <blockquote>
-<p>Hexo-Next: <a class="link"   target="_blank" rel="noopener" href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
+<p>Hexo-Next: <a target="_blank" rel="noopener" href="https://hexo-next.readthedocs.io/zh_CN/latest">https://hexo-next.readthedocs.io/zh_CN/latest</a></p>
 </blockquote>
-<p><img  
-                       lazyload
-                       alt="image"
-                       data-src="/../img/Next_dos_advanced.png"
-                       
-                 ></p>
+<p><img src="/../img/Next_dos_advanced.png"></p>
 
-                    
-                </div>
+  </div>
+</article>
 
-                
-
-                <div class="post-bottom-tags-and-share border-box">
-                    <div>
-                        
-                            <ul class="post-tags-box border-box">
-                                
-                                    <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/hexo/">hexo</a>
-                                    </li>
-                                
-                            </ul>
-                        
-                    </div>
-                    <div>
-                        
-                    </div>
-                </div>
-
-                
-
-                
-                    <div class="post-nav border-box">
-                        
-                            <div class="prev-post">
-                                <a class="prev"
-                                   rel="prev"
-                                   href="/how-to-sign-rpm-package/"
-                                   title="如何为 RPM 包签名"
-                                >
-                                    <span class="left arrow-icon flex-center">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </span>
-                                    <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">如何为 RPM 包签名</span>
-                                        <span class="post-nav-item">Prev posts</span>
-                                    </span>
-                                </a>
-                            </div>
-                        
-                        
-                    </div>
-                
-
-                
-                    
-
-
-    <div class="comments-container border-box">
-        <div id="comments-anchor" class="comment-area-title border-box">
-            <i class="fas fa-comments"></i>&nbsp;Comments
-        </div>
-        <div class="comment-plugin-fail border-box">
-    <span class="fail-tip">Comment plugin failed to load</span>
-    <button class="reload keep-button">Click to reload</button>
-</div>
-<div class="comment-plugin-loading flex-center border-box">
-    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
-    <span class="load-tip">Loading comment plugin</span>
-</div>
-<script data-pjax>
-  window.KeepCommentPlugin = {}
-  window.KeepCommentPlugin.hideLoading = () => {
-    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
-    cplDom.style.display = 'none'
-  }
-  window.KeepCommentPlugin.loadFailHandle = () => {
-    window.KeepCommentPlugin.hideLoading()
-    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
-    cpfDom.style.display = 'flex'
-    cpfDom.querySelector('.reload').addEventListener('click', () => {
-      window.location.reload()
-    })
-  }
-</script>
-
-        
-            
-
-    <div class="valine-container">
-        <div id="vcomments"></div>
-        <script data-pjax
-                src="//cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"
-                async
-                onerror="window.KeepCommentPlugin.loadFailHandle()"
-        ></script>
-        <script data-pjax
-                async
-                onerror="window.KeepCommentPlugin.loadFailHandle()"
-        >
-          window.KeepCommentPlugin.initValine = () => {
-            const config = {
-              el: '#vcomments',
-              appId: 'qRv6si8r4jUsBpjFlotXQBmP-gzGzoHsz',
-              appKey: 'upvGfvF70Sd2tCMoFM1ehslV',
-              meta: ['nick', 'mail', 'link'],
-              avatar: 'wavatar',
-              enableQQ: true,
-              placeholder: '',
-              lang: 'en'.toLowerCase()
-            }
-
-            if ('') {
-              config.serverURLs = ''
-            }
-
-            if (window?.Valine) {
-              new Valine(config)
-              window.KeepCommentPlugin.hideLoading()
-            } else {
-              setTimeout(() => {
-                window.KeepCommentPlugin.initValine()
-              }, 1000)
-            }
-          }
-
-          if ('true' === 'true') {
-            setTimeout(() => {
-              window.KeepCommentPlugin.initValine()
-            }, 1200)
-          } else {
-            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initValine)
-          }
-        </script>
-    </div>
 
 
         
-    </div>
+          <div id="footer-post-container">
+  <div id="footer-post">
 
-
-
-
-
-                
-            </div>
-        </div>
-
+    <div id="nav-footer" style="display: none">
+      <ul>
         
-            <div class="pc-post-toc right-toc">
-                <div class="post-toc-wrap border-box">
-    <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9B%BE%E7%89%87%E9%85%8D%E7%BD%AE"><span class="nav-text">一、图片配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8F%92%E4%BB%B6"><span class="nav-text">二、插件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%9A%84%E6%8F%92%E4%BB%B6"><span class="nav-text">安装的插件</span></a></li></ol></li></ol>
-    </div>
-</div>
-
-            </div>
+          <li><a href="/">Home</a></li>
         
-    </div>
-</div>
-
-
-                
-            </div>
-        </div>
-
-        <div class="page-main-content-bottom border-box">
-            
-<footer class="footer border-box">
-    <div class="copyright-info info-item">
-        &copy;&nbsp;<span>2020</span>&nbsp;-&nbsp;2024
+          <li><a href="/about/">About</a></li>
         
-            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">Lapin Gris</a>
+          <li><a href="/archives/">Writing</a></li>
         
-    </div>
-
-    <div class="theme-info info-item">
-        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+          <li><a target="_blank" rel="noopener" href="https://github.com/markyangcc">Projects</a></li>
+        
+      </ul>
     </div>
 
     
-
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%9B%BE%E7%89%87%E9%85%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">一、图片配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%8F%92%E4%BB%B6"><span class="toc-number">2.</span> <span class="toc-text">二、插件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E7%9A%84%E6%8F%92%E4%BB%B6"><span class="toc-number">2.1.</span> <span class="toc-text">安装的插件</span></a></li></ol></li></ol>
+      </div>
     
 
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/hexo-next-theme-configuration-picture-configuration/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&text=Hexo-Next主题配置"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&title=Hexo-Next主题配置"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&is_video=false&description=Hexo-Next主题配置"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Hexo-Next主题配置&body=Check out this article: http://example.com/hexo-next-theme-configuration-picture-configuration/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&title=Hexo-Next主题配置"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&title=Hexo-Next主题配置"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&title=Hexo-Next主题配置"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&title=Hexo-Next主题配置"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/hexo-next-theme-configuration-picture-configuration/&name=Hexo-Next主题配置&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/hexo-next-theme-configuration-picture-configuration/&t=Hexo-Next主题配置"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
     
+    
+    2016-2024
+    Sya
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/markyangcc">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
 </footer>
 
-        </div>
     </div>
-
-    <!-- post tools -->
-    
-        <div class="post-tools right-toc">
-            <div class="post-tools-container border-box">
-    <ul class="post-tools-list border-box">
-        <!-- PC encrypt again -->
-        
-
-        <!-- PC TOC show toggle -->
-        
-            <li class="tools-item flex-center toggle-show-toc">
-                <i class="fas fa-list"></i>
-            </li>
-        
-
-        <!-- PC go comment -->
-        
-            <li class="tools-item flex-center go-to-comments">
-                <i class="fas fa-comment"></i>
-                <span class="post-comments-count"></span>
-            </li>
-        
-
-        <!-- PC full screen -->
-        <li class="tools-item flex-center full-screen">
-            <i class="fa-solid fa-expand"></i>
-        </li>
-    </ul>
-</div>
-
-        </div>
-    
-
-    <!-- side tools -->
-    <div class="side-tools">
-        <div class="side-tools-container border-box ">
-    <ul class="side-tools-list side-tools-show-handle border-box">
-        <li class="tools-item tool-font-adjust-plus flex-center">
-            <i class="fas fa-search-plus"></i>
-        </li>
-
-        <li class="tools-item tool-font-adjust-minus flex-center">
-            <i class="fas fa-search-minus"></i>
-        </li>
-
-        <!-- toggle mode -->
-        
-            <li class="tools-item tool-toggle-theme-mode flex-center">
-                <i class="fas fa-moon"></i>
-            </li>
-        
-
-        <!-- rss -->
-        
-
-        <!-- to bottom -->
-        <li class="tools-item tool-scroll-to-bottom flex-center">
-            <i class="fas fa-arrow-down"></i>
-        </li>
-    </ul>
-
-    <ul class="exposed-tools-list border-box">
-        
-            <li class="tools-item toggle-show-toc-tablet flex-center">
-                <i class="fas fa-list"></i>
-            </li>
-        
-
-        
-            <li class="tools-item go-to-comments-tablet flex-center">
-                <i class="fas fa-comment"></i>
-            </li>
-        
-
-        <li class="tools-item tool-toggle-show flex-center">
-            <i class="fas fa-cog fa-spin"></i>
-        </li>
-
-        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
-            <i class="arrow fas fa-arrow-up"></i>
-            <span class="percent"></span>
-        </li>
-    </ul>
-</div>
-
-    </div>
-
-    <!-- image mask -->
-    <div class="zoom-in-image-mask">
-    <img class="zoom-in-image">
-</div>
+    <!-- styles -->
 
 
-    <!-- local search -->
-    
-        <div class="search-pop-overlay">
-    <div class="popup search-popup">
-        <div class="search-header">
-          <span class="search-input-field-pre">
-            <i class="fas fa-keyboard"></i>
-          </span>
-            <div class="search-input-container">
-                <input autocomplete="off"
-                       autocorrect="off"
-                       autocapitalize="off"
-                       placeholder="Search..."
-                       spellcheck="false"
-                       type="search"
-                       class="search-input"
-                >
-            </div>
-            <span class="close-popup-btn">
-                <i class="fas fa-times"></i>
-            </span>
-        </div>
-        <div id="search-result">
-            <div id="no-result">
-                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
-            </div>
-        </div>
-    </div>
-</div>
 
-    
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
 
-    <!-- tablet toc -->
-    
-        <div class="tablet-post-toc-mask">
-            <div class="tablet-post-toc">
-                <div class="post-toc-wrap border-box">
-    <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9B%BE%E7%89%87%E9%85%8D%E7%BD%AE"><span class="nav-text">一、图片配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8F%92%E4%BB%B6"><span class="nav-text">二、插件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%9A%84%E6%8F%92%E4%BB%B6"><span class="nav-text">安装的插件</span></a></li></ol></li></ol>
-    </div>
-</div>
 
-            </div>
-        </div>
-    
-</main>
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
 
 
 
 
+<!-- clipboard -->
 
-<!-- common js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/js/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/js/header-shrink.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/js/back2top.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/js/toggle-theme.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/js/code-block.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/js/main.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/js/libs/anime.min.js"></script>
-
-<!-- local search -->
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/js/local-search.min.js"></script>
-
-
-<!-- lazyload -->
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/js/lazyload.min.js"></script>
-
-
-<div class="pjax">
-    <!-- home page -->
-    
-
-    <!-- post page -->
-    
-        <!-- post-helper -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/js/post/post-helper.min.js"></script>
-
-        <!-- toc -->
-        
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/js/post/toc.min.js"></script>
-        
-
-        <!-- copyright-info -->
-        
-
-        <!-- share -->
-        
-    
-
-    <!-- categories page -->
-    
-
-    <!-- links page -->
-    
-
-    <!-- photos page -->
-    
-
-    <!-- tools page -->
-    
-</div>
-
-<!-- mermaid -->
-
-
-<!-- pjax -->
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.1/js/libs/pjax.min.js"></script>
-<script>
-    window.addEventListener('DOMContentLoaded', () => {
-        window.pjax = new Pjax({
-            selectors: [
-                'head title',
-                '.page-container',
-                '.pjax'
-            ],
-            history: true,
-            debug: false,
-            cacheBust: false,
-            timeout: 0,
-            analytics: false,
-            currentUrlFullReload: false,
-            scrollRestoration: false,
-        });
-
-        document.addEventListener('pjax:send', () => {
-            KEEP.utils.pjaxProgressBarStart()
-        });
-
-        document.addEventListener('pjax:complete', () => {
-            KEEP.utils.pjaxProgressBarEnd()
-            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
-            KEEP.initExecute()
-        });
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
     });
-</script>
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
 
 
+<script src="/js/main.js"></script>
 
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
 
 </body>
 </html>
