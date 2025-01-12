@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="Lapin Gris">
+    
+    <title>
+        
+            CMU 15-445 Fall 2022 Project1: Buffer Pool |
+        
+        Lapin Gris
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/regular.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/solid.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/brands.min.css">
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"Lapin Gris","author":"Lapin Gris","avatar":"/images/Folklore.png","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":true,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":false},"social_contact":{"enable":false,"links":{"github":"https://github.com/markyangcc","weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":true,"percent":true,"hide_header":true},"home":{"announcement":null,"category":false,"tag":false,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":false,"min2read":false},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":false,"share":false,"reward":{"enable":false,"img_link":null,"text":null,"icon":null}},"code_block":{"tools":{"enable":false,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":false,"site_uv":false,"site_pv":false,"page_pv":false}},"local_search":{"enable":true,"preload":true},"comment":{"enable":true,"use":"gitalk","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":"markyangcc","github_admins":null,"repository":"markyangcc.github.io","client_id":"Ov23limODCqt0en2mPRD","client_secret":"6c276a6c1847f1f4663f172bc809e31d0cab1410","proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":false},"cdn":{"enable":true,"provider":"cdnjs"},"pjax":{"enable":true},"footer":{"since":2022,"word_count":false,"site_deploy":{"enable":false,"provider":"github","url":null},"record":{"enable":false,"list":[{"code":null,"link":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               Lapin Gris
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                HOME
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                ARCHIVES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                TAGS
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                CATEGORIES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                ABOUT
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                            HOME
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                            ARCHIVES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                            TAGS
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                            CATEGORIES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                            ABOUT
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        CMU 15-445 Fall 2022 Project1: Buffer Pool
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/Folklore.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">Lapin Gris</span>
+                                
+                                    <span class="author-badge">Lv3</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2023-07-22 17:29:21</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Sun Jan 12 2025 18:38:32 GMT+0800">2025-01-12 18:38:32</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/cmu15445/">cmu15445</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/cmu15445/">cmu15445</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/buffer-pool/">buffer pool</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/extendible-hash/">extendible hash</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/LRU-K/">LRU-K</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body ">
+                    
+
+                    
+                         <p>这个项目是实现 bpm，简而言之是实现一个磁盘缓冲区，用于加速数据库应用的 IO 操作。</p>
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>众所周知，磁盘（SSD&#x2F;HDD）的访问速度是很慢的，内存 DRAM 访问相比较很快了。我们希望为磁盘经常访问的数据在内存建立对应的缓存来加速数据库应用的访问延迟。</p>
+<p>那我们把所有的数据都搬到内存里不就行了？</p>
+<p>说的有道理，但我们不能这样做，一个原因是我们不是内存数据库(e.g. redis)，我们是类似 <a class="link"   target="_blank" rel="noopener" href="https://www.mysql.com/" >MySQL<i class="fas fa-external-link-alt"></i></a> &#x2F; <a class="link"   target="_blank" rel="noopener" href="https://www.postgresql.org/" >PostgreSQL<i class="fas fa-external-link-alt"></i></a> 的 disk-based 磁盘数据库，主要解决数据的持久化存储问题，因此数据是存储在磁盘上的。同时因为数据量会很大，如果将持久性数据库的所有数据全部搬到内存里对内存需求会很大，需要购买更多的更大的内存才能满足需求。（注：<strong>内存比磁盘贵，贵很多</strong>。。。会有经济压力）</p>
+<p>另外一个原因是，数据访问是具有局部性特点的，并不是所有数据都是热点数据，我们只需要在内存里缓存热点数据，保证绝大多数磁盘访问请求可以得到加速即可。</p>
+<p>所以我们不能把所有磁盘的数据都搬到内存里来加速，我们请求一个固定大小的一块内存区域作为的 buffer pool，把最常用的页在内存里建立缓存。</p>
+<p><img   src="/../img/1690016109627-ecdbf8d8-0857-4d21-9377-f7fac1cd53b2.png"  alt="image.png"></p>
+<p>图：不同存储介质的访问延迟</p>
+<p>回到项目，项目将实现 buffer pool manager 分为 3 个子任务，</p>
+<ul>
+<li>可扩展哈希，是一种增强型哈希。解决最简单取余 hash 的缺点。</li>
+<li>LRU-K 置换，是一种增强型 LRU。解决单队列 LRU 不能应对突发访问的，导致缓存被冲掉的问题。</li>
+<li>实现 bpm，利用前两个实现的数据结构。集合在一起实现 bpm 的逻辑。</li>
+</ul>
+<p>这个项目本身不难，主要时间在实现数据结构（雾），所以需要我们能够理解项目的设计，画出草图。是在画不出来边 debug 边画也是可以的。同时因为可以使用 STL 库，数据结构的增删查改操作显得很轻易。</p>
+<h1 id="Task-1-Extendible-Hash-Table"><a href="#Task-1-Extendible-Hash-Table" class="headerlink" title="Task 1 Extendible Hash Table"></a>Task 1 Extendible Hash Table</h1><p>Task 1 是需要实现一个 Extendible Hashtable，原理很好懂，难点在于实现，有不少细节需要注意。<br>实现步骤：首先实现  Bucket 增删查改，然后实现 ExtendibleHashTable 增删查改。</p>
+<h2 id="Bucket"><a href="#Bucket" class="headerlink" title="Bucket"></a>Bucket</h2><h3 id="Find-Remove-Insert"><a href="#Find-Remove-Insert" class="headerlink" title="Find &amp; Remove &amp; Insert"></a>Find &amp; Remove &amp; Insert</h3><p>属于 <code>std:list</code> 数据结构的增删查改的一部分。<br>值得欣喜的是可以使用 C++17 的结构化绑定语法了，会比写 first、second 优雅很多。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Find</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> K, <span class="keyword">typename</span> V&gt;</span><br><span class="line"><span class="keyword">auto</span> ExtendibleHashTable&lt;K, V&gt;::Bucket::<span class="built_in">Find</span>(<span class="type">const</span> K &amp;key, V &amp;value) -&gt; <span class="type">bool</span> &#123;</span><br><span class="line">  <span class="comment">// Structured Binding make code looks pretty</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> &amp;[k, v] : list_) &#123;</span><br><span class="line">    <span class="keyword">if</span> (k == key) &#123;</span><br><span class="line">      value = v;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Remove</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> K, <span class="keyword">typename</span> V&gt;</span><br><span class="line"><span class="keyword">auto</span> ExtendibleHashTable&lt;K, V&gt;::Bucket::<span class="built_in">Remove</span>(<span class="type">const</span> K &amp;key) -&gt; <span class="type">bool</span> &#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> it = list_.<span class="built_in">begin</span>(); it != list_.<span class="built_in">end</span>(); it++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (it-&gt;first == key) &#123;</span><br><span class="line">      list_.<span class="built_in">erase</span>(it);</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Insert</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> K, <span class="keyword">typename</span> V&gt;</span><br><span class="line"><span class="keyword">auto</span> ExtendibleHashTable&lt;K, V&gt;::Bucket::<span class="built_in">Insert</span>(<span class="type">const</span> K &amp;key, <span class="type">const</span> V &amp;value) -&gt; <span class="type">bool</span> &#123;</span><br><span class="line">  <span class="comment">// Check if a key already exists in the bucket.</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> &amp;[k, v] : list_) &#123;</span><br><span class="line">    <span class="keyword">if</span> (k == key) &#123;</span><br><span class="line">      <span class="comment">// Key already exists, update the value and return true.</span></span><br><span class="line">      v = value;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Key doesn&#x27;t exist, add a new pair if the bucket isn&#x27;t full.</span></span><br><span class="line">  <span class="keyword">if</span> (list_.<span class="built_in">size</span>() &lt; size_) &#123;</span><br><span class="line">    list_.<span class="built_in">emplace_back</span>(key, value);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Bucket is full, return false.</span></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ExtendibleHashTable"><a href="#ExtendibleHashTable" class="headerlink" title="ExtendibleHashTable"></a>ExtendibleHashTable</h2><p>有了前面对 Bucket 增删查改的支持后，现在我们可以实现对 ExtendibleHashTable 的增删查改了。</p>
+<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><p>需要实现 ExtendibleHashTable 的构造函数，使用<code>emplace_back</code> 代替 <code>push_back</code>获得更好的性能。<code>push_back</code> 会将对象复制一遍。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> K, <span class="keyword">typename</span> V&gt;</span><br><span class="line">ExtendibleHashTable&lt;K, V&gt;::<span class="built_in">ExtendibleHashTable</span>(<span class="type">size_t</span> bucket_size)</span><br><span class="line">: <span class="built_in">global_depth_</span>(<span class="number">0</span>), <span class="built_in">bucket_size_</span>(bucket_size), <span class="built_in">num_buckets_</span>(<span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">auto</span> b = std::<span class="built_in">make_shared</span>&lt;Bucket&gt;(bucket_size_, <span class="number">0</span>);</span><br><span class="line">    dir_.<span class="built_in">emplace_back</span>(b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Find"><a href="#Find" class="headerlink" title="Find"></a>Find</h3><p>查找到 key 对应的bucket，然后到对应的 bucket 里面找，这里可以调用 Bucket 实现的 Find。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> K, <span class="keyword">typename</span> V&gt;</span><br><span class="line"><span class="keyword">auto</span> ExtendibleHashTable&lt;K, V&gt;::<span class="built_in">Find</span>(<span class="type">const</span> K &amp;key, V &amp;value) -&gt; <span class="type">bool</span> &#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="type">size_t</span> index = <span class="built_in">IndexOf</span>(key);</span><br><span class="line">  <span class="keyword">auto</span> bucket = dir_[index];</span><br><span class="line">  <span class="keyword">return</span> bucket-&gt;<span class="built_in">Find</span>(key, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Remove"><a href="#Remove" class="headerlink" title="Remove"></a>Remove</h3><p>查找到 key 对应的bucket，然后到对应的 bucket 里面删除，这里可以调用 Bucket 实现的  Remove。我记得15445 往年的删除操作是要求实现 shink 的，现在不要求实现 shink （缩容）操作了，会更加简单一些，调用实现的 Bucket 的 api 就好了。如果要求实现 shink 操作，那么代码变得像 Insert 那样长了，不会像这样简单的几行。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> K, <span class="keyword">typename</span> V&gt;</span><br><span class="line"><span class="keyword">auto</span> ExtendibleHashTable&lt;K, V&gt;::<span class="built_in">Remove</span>(<span class="type">const</span> K &amp;key) -&gt; <span class="type">bool</span> &#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="type">size_t</span> index = <span class="built_in">IndexOf</span>(key);</span><br><span class="line">  <span class="keyword">auto</span> bucket = dir_[index];</span><br><span class="line">  <span class="keyword">return</span> bucket-&gt;<span class="built_in">Remove</span>(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Insert"><a href="#Insert" class="headerlink" title="Insert"></a>Insert</h3><p>Insert 操作是整个 hashtable 操作的核心。<br>这里有几个部分需要介绍一下，当 <code>local_depth == global_depth_</code> 时候的 <code>dir_</code> 扩容是使用 <code>std::copy_n</code>，这段代码这是为了维护扩容后，每个新扩的 <code>dir_</code> 的索引项都会指向原先的 bucket。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> K, <span class="keyword">typename</span> V&gt;</span><br><span class="line"><span class="type">void</span> ExtendibleHashTable&lt;K, V&gt;::<span class="built_in">Insert</span>(<span class="type">const</span> K &amp;key, <span class="type">const</span> V &amp;value) &#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="type">size_t</span> index = <span class="built_in">IndexOf</span>(key);</span><br><span class="line">  <span class="keyword">auto</span> bucket = dir_[index];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!bucket-&gt;<span class="built_in">IsFull</span>()) &#123;</span><br><span class="line">    bucket-&gt;<span class="built_in">Insert</span>(key, value);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (bucket-&gt;<span class="built_in">IsFull</span>()) &#123;</span><br><span class="line">    <span class="comment">// If the bucket is full, split it</span></span><br><span class="line">    <span class="type">int</span> local_depth = bucket-&gt;<span class="built_in">GetDepth</span>();</span><br><span class="line">    <span class="keyword">if</span> (local_depth == global_depth_) &#123;</span><br><span class="line">      <span class="type">size_t</span> dir_size = dir_.<span class="built_in">size</span>();</span><br><span class="line">      dir_.<span class="built_in">reserve</span>(dir_size * <span class="number">2</span>);</span><br><span class="line">      std::<span class="built_in">copy_n</span>(dir_.<span class="built_in">begin</span>(), dir_size, std::<span class="built_in">back_inserter</span>(dir_));</span><br><span class="line">      global_depth_++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> b0 = std::<span class="built_in">make_shared</span>&lt;Bucket&gt;(bucket_size_, local_depth + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">auto</span> b1 = std::<span class="built_in">make_shared</span>&lt;Bucket&gt;(bucket_size_, local_depth + <span class="number">1</span>);</span><br><span class="line">    num_buckets_++;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> local_mask = <span class="number">1</span> &lt;&lt; local_depth;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// redistribute old bucket</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">const</span> <span class="keyword">auto</span> &amp;[k, v] : bucket-&gt;<span class="built_in">GetItems</span>()) &#123;</span><br><span class="line">      <span class="keyword">auto</span> new_index_of = std::<span class="built_in">hash</span>&lt;K&gt;()(k) &amp; local_mask;</span><br><span class="line">      <span class="comment">// new_index_of = &#123;0, 1&#125;</span></span><br><span class="line">      <span class="keyword">if</span> (new_index_of) &#123;</span><br><span class="line">        b1-&gt;<span class="built_in">Insert</span>(k, v);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        b0-&gt;<span class="built_in">Insert</span>(k, v);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// update hashtable</span></span><br><span class="line">    <span class="type">size_t</span> start_index = std::<span class="built_in">hash</span>&lt;K&gt;()(key) &amp; (local_mask - <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">size_t</span> i = start_index; i &lt; dir_.<span class="built_in">size</span>(); i += local_mask) &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="built_in">static_cast</span>&lt;<span class="type">bool</span>&gt;(i &amp; local_mask)) &#123;</span><br><span class="line">        dir_[i] = b1;</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        dir_[i] = b0;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    index = <span class="built_in">IndexOf</span>(key);</span><br><span class="line">    bucket = dir_[index];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// now we have enough space to insert into</span></span><br><span class="line">  dir_[index]-&gt;<span class="built_in">Insert</span>(key, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="DEBUG"><a href="#DEBUG" class="headerlink" title="DEBUG"></a>DEBUG</h2><h3 id="how-to-debug-on-M1"><a href="#how-to-debug-on-M1" class="headerlink" title="how to debug on M1?"></a>how to debug on M1?</h3><p>m1 上可以用 lldb 来进行 debug。</p>
+<ul>
+<li>f 当前栈帧，等价 gdb 中的 frame。用于查看当前执行到哪里了</li>
+<li>n 下一步，等价 gdb 中的 n。执行下一步。</li>
+<li>p 打印，等价 gdb 中的 p。打印变量。</li>
+</ul>
+<p>举一个当时做项目 debug 的例子，看图，<br><img   src="/../img/1687340563374-349c877d-1bc0-48f6-8171-16b681066f11.png"  alt="image.png"></p>
+<p><img   src="/../img/1687340791159-3ce16ec2-205b-49f4-9291-53d5259948df.png"  alt="image.png"></p>
+<p>debug 时候会发现， lldb 打印了结构体类型就打印了很长很长，，，，这是因为 C++ STL 标准库后面隐藏了很多细节，但这些细节在 debug 时候会暴露出来了，图中可以看到 debug 时候会 lldb 输出的一个对象结构体是一层套一层。。。<br><strong>Don’t panic</strong>，不熟悉的同学可以去看看侯捷的《STL源码剖析》这本书，这本书是每一位 C++er 必看的一本书了。书中介绍了STL 标准库如何实现这些 <code>vector</code>, <code>string</code> 等高级数据结构的。b 站也有对应的视频，搭配食用，效果更好哈。</p>
+<h3 id="为什么我通过不了InsertMultipleSplit-？"><a href="#为什么我通过不了InsertMultipleSplit-？" class="headerlink" title="为什么我通过不了InsertMultipleSplit ？"></a>为什么我通过不了InsertMultipleSplit ？</h3><p>InsertMultipleSplit，测试检测的是，某一次插入会造成 <code>dir_</code> 不止一次的 split。<br>通常没通过的原因是判断 <code>bucket-&gt;IsFull()</code>只判断了一次，实际需要使用 while 循环持续判断 bucket 是否满了，直到知道找到适合的位置。<br>下面解释为什么，<br>首先，这是两个测试用例，</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 测试用例 1</span></span><br><span class="line">table-&gt;Insert(<span class="number">0</span>, <span class="string">&quot;0&quot;</span>);</span><br><span class="line">table-&gt;Insert(<span class="number">1024</span>, <span class="string">&quot;1024&quot;</span>);</span><br><span class="line">table-&gt;Insert(<span class="number">4</span>, <span class="string">&quot;4&quot;</span>);  <span class="comment">// this causes 3 splits</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 测试用例 2</span></span><br><span class="line">table-&gt;Insert(<span class="number">0</span>, <span class="string">&quot;0&quot;</span>);</span><br><span class="line">table-&gt;Insert(<span class="number">1024</span>, <span class="string">&quot;1024&quot;</span>);</span><br><span class="line">table-&gt;Insert(<span class="number">16</span>, <span class="string">&quot;16&quot;</span>);  <span class="comment">// this causes 5 splits</span></span><br></pre></td></tr></table></figure>
+<p>这是测试用例每个 key 的二进制表示，</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">python3</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; bin(0)</span></span><br><span class="line">&#x27;0b0&#x27;</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; bin(1024)</span></span><br><span class="line">&#x27;0b10000000000&#x27;</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; bin(4)</span></span><br><span class="line">&#x27;0b100&#x27;</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; bin(16)</span></span><br><span class="line">&#x27;0b10000&#x27;</span><br></pre></td></tr></table></figure>
+<p>插入导致的 split 次数和我们 <code>Indexof</code> 函数有关系的，<code>Indexof</code> 函数是判断当前的 key 应该放到那个 bucket 里面的，如果 这个 bucket 满了需要继续 split 至少找到一个可以放下 key 的 bucket。<br>那 Indexof 是如何判断应该放到那个 bucket 里的？ 比如说，现在我们有 <code>dir_</code> 表项的长度是 8，代表有 8 个 bucket ，现在有一个 key 需要被放到 8 个 bucket 中的一个，那么应该选择哪一个 bucket，用最简单的 hash 函数即可，取余 <code>index = key % 8</code>，取余之后 key 会自然落到想要的范围内。这也是项目里 <code>Indexof</code> 的实现原理，项目里取余的数不是一个固定的数 8 而是 <code>global_depth</code> 。另外项目没有采用 % 运算，而是用位运算来实现。</p>
+<p>那么，我什么构造 <code>0,1024,4</code> 就能让 bucket 分裂三次？这个 <code>global_depth</code> 有关系，<code>global_depth</code> 代表需要使用多少位才能区分出所有的  bucket 。区分的方式是通过 key 对应的二进制数低位，通过增加低位的个数，直至区分出来。看上面 <code>0,1024,4</code> 三个数的二进制的低位（这里只写了 3 位）分别是 [000,000,100]，当进行插入的时候，bucket 大小是 2，只通过低位可以区别这两个数，那么 0,1024 会被放到第一个 bucket 里。插入 4 的时候，4 的低位第一位是 0，可以插入第一个 bucket 里的，但是 bucket 只能放 2 个 key，已经满了，这时候发生 split，需要通过更多的 bit 来区分两个 bucket，因为 4 的低位 bit 是[100]，0,1024 的 低位 bit 是[000] ，能区分两个 bucket 最小都要到低位第三个 bit。这也是为什么要 split 三次的原因。<br>另，测试用例 2 插入 16 也是同理，至少需要到第 5 位 bit才能区分出两个 bucket，如果插入的数字不是 16 而是 512，那么需要 split 10 次才能区分出两个 bucket。（512 的二进制表示是 <code>1000000000</code>）</p>
+<h1 id="Task-2-LRU-K-Replacement-Policy"><a href="#Task-2-LRU-K-Replacement-Policy" class="headerlink" title="Task 2 LRU-K Replacement Policy"></a>Task 2 LRU-K Replacement Policy</h1><p>LRU-K 是 LRU 算法的变种，LRU 置换算法的通常用于磁盘缓存（从内核角度讲，更准确的是文件系统的缓存，文件系统有页的概念，磁盘属于块设备，没有页的概念，当然这无关精要）。<br>回到正题，通常磁盘缓存的形态是有一个队列，存放缓存的页，有对磁盘某一页的访问，就会将这个页加入缓存。缓存都会设置一定的大小，如果缓存满了，就会将最近没有访问过的页从磁盘缓存里踢掉，但是 LRU 有一个队列，比较难以应对突发访问，称为 burst。突发访问的特点是，量很大，但是只会访问一次，因为 burst 将之前的所有缓存都刷了，确实是一个问题，可以改进。<br>这时候引入两个队列（LRU-K 的K通常取 2）就可以解决这个问题，一个不活跃队列，一个活跃队列（其他叫法：历史队列&#x2F;缓存队列，冷队列&#x2F;热队列），访问页会记录访问次数，次数达到 n 次，从不活跃队列加入活跃队列。<br>这样，就能解决前面提到的 burst 的问题了。<br>这两个队列，完全是可以采用完全不同的替换策略，各自独立。比如项目里，不活跃队列要求采用 FIFO，活跃队列采用 LRU 算法。这种实现又有另一个名字叫做 2Q 策略。</p>
+<p>注：不活跃使用 FIFO 队列，活跃队列采用 LRU 置换策略可能是 Task 2 最大的坑点了，理清楚 LRU 是干啥的，编码不难。项目注释说的不是很清楚，很容易两个队列都使用 LRU 置换策略。</p>
+<h2 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LRUKReplacer::<span class="built_in">LRUKReplacer</span>(<span class="type">size_t</span> num_frames, <span class="type">size_t</span> k) : <span class="built_in">replacer_size_</span>(num_frames), <span class="built_in">k_</span>(k) &#123;&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="RecordAccess"><a href="#RecordAccess" class="headerlink" title="RecordAccess"></a>RecordAccess</h2><p>记录当前页被访问了，LRU-K 需要通过访问记录来控制缓存停留在不活跃队列，还是移入活跃队列。<br>LRU 算法的队列可以取队头防止最频繁访问的缓存，取队尾是新加入的缓存。也可以反过来，我采用的是队尾存放最经常访问的缓存。目的为了方便遍历的时候从队首开始，而不是从队尾开始。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">LRUKReplacer::RecordAccess</span><span class="params">(<span class="type">frame_id_t</span> frame_id)</span> </span>&#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">BUSTUB_ASSERT</span>(frame_id &lt; <span class="built_in">static_cast</span>&lt;<span class="type">frame_id_t</span>&gt;(replacer_size_), <span class="string">&quot;Invalid frame_id, this shouldn&#x27;t happen&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">auto</span> it = table_.<span class="built_in">find</span>(frame_id);</span><br><span class="line">  <span class="comment">// new, should append to inactive list and update LRU-K metadata</span></span><br><span class="line">  <span class="keyword">if</span> (it == table_.<span class="built_in">end</span>()) &#123;</span><br><span class="line">    inactive_list_.<span class="built_in">emplace_back</span>(frame_id);</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">FrameItem</span> f_item = &#123;inactive_list_.<span class="built_in">end</span>()--, <span class="number">1</span>, <span class="literal">false</span>&#125;;</span><br><span class="line">    table_.<span class="built_in">insert</span>(&#123;frame_id, f_item&#125;);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// already in table</span></span><br><span class="line">  <span class="type">size_t</span> accs_cnt = it-&gt;second.nr_accessed_ + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (accs_cnt &lt; k_) &#123;</span><br><span class="line">    <span class="comment">// should still stay in inactive list</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">FrameItem</span> *f_item = &amp;(it-&gt;second);</span><br><span class="line">    f_item-&gt;nr_accessed_ = accs_cnt;</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (accs_cnt == k_) &#123;</span><br><span class="line">    <span class="comment">// Promote from inactive to active</span></span><br><span class="line">    inactive_list_.<span class="built_in">remove</span>(frame_id);</span><br><span class="line">    active_list_.<span class="built_in">emplace_back</span>(frame_id);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">FrameItem</span> *f_item = &amp;(it-&gt;second);</span><br><span class="line">    f_item-&gt;iter_ = active_list_.<span class="built_in">end</span>()--;</span><br><span class="line">    f_item-&gt;nr_accessed_ = accs_cnt;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// Already active, move to the active side</span></span><br><span class="line">    active_list_.<span class="built_in">remove</span>(frame_id);</span><br><span class="line">    active_list_.<span class="built_in">emplace_back</span>(frame_id);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">FrameItem</span> *f_item = &amp;(it-&gt;second);</span><br><span class="line">    f_item-&gt;iter_ = active_list_.<span class="built_in">end</span>()--;</span><br><span class="line">    f_item-&gt;nr_accessed_ = accs_cnt;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="SetEvictable"><a href="#SetEvictable" class="headerlink" title="SetEvictable"></a>SetEvictable</h2><p>将一个页标记为是否可以被 Evict 掉，2019 去年这个函数分为两个函数，叫做 pin&#x2F;unpin。感觉，还是 pin&#x2F;unpin 更容易理解一些。对 <code>nr_evictable</code> 的更新这里用了两个三元表达式简化 if 嵌套判断。不得不说，三元表达式真好用，嘿嘿。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">LRUKReplacer::SetEvictable</span><span class="params">(<span class="type">frame_id_t</span> frame_id, <span class="type">bool</span> set_evictable)</span> </span>&#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">auto</span> it = table_.<span class="built_in">find</span>(frame_id);</span><br><span class="line">  <span class="keyword">if</span> (it == table_.<span class="built_in">end</span>()) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">bool</span> prev_status = it-&gt;second.evictable_;</span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">   * Update evictable count based on status change</span></span><br><span class="line"><span class="comment">   * status changed ?  --&gt; (yes) update evictable count  --&gt; (false -&gt; true) increase count</span></span><br><span class="line"><span class="comment">   *                                                     --&gt; (true -&gt; false) decrease count</span></span><br><span class="line"><span class="comment">   *                   --&gt; (no) doesn&#x27;t need change</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  nr_evictable_ += (prev_status != set_evictable) ? (set_evictable ? <span class="number">1</span> : <span class="number">-1</span>) : <span class="number">0</span>;</span><br><span class="line">  it-&gt;second.evictable_ = set_evictable;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="Evict"><a href="#Evict" class="headerlink" title="Evict"></a>Evict</h2><p>驱逐，当缓存满了的时候，就要驱逐一些缓存页了。先从不活跃队列驱逐，如果不活跃队列里的缓存队列不满足驱逐条件，就从活跃队列驱逐。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">LRUKReplacer::Evict</span><span class="params">(<span class="type">frame_id_t</span> *frame_id)</span> -&gt; <span class="type">bool</span> </span>&#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// FIFO, evict should start from head</span></span><br><span class="line">  <span class="keyword">if</span> (std::<span class="built_in">any_of</span>(inactive_list_.<span class="built_in">begin</span>(), inactive_list_.<span class="built_in">end</span>(), [&amp;](<span class="keyword">auto</span> f) &#123;</span><br><span class="line">        <span class="type">bool</span> evictable = table_[f].evictable_;</span><br><span class="line">        <span class="keyword">if</span> (evictable) &#123;</span><br><span class="line">          inactive_list_.<span class="built_in">remove</span>(f);</span><br><span class="line">          nr_evictable_--;</span><br><span class="line">          table_.<span class="built_in">erase</span>(f);</span><br><span class="line">          *frame_id = f;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> evictable;</span><br><span class="line">      &#125;)) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// LRU, stores the most recently used items at the tail(my solution),</span></span><br><span class="line">  <span class="comment">// so evict should start from head</span></span><br><span class="line">  <span class="keyword">if</span> (std::<span class="built_in">any_of</span>(active_list_.<span class="built_in">begin</span>(), active_list_.<span class="built_in">end</span>(), [&amp;](<span class="keyword">auto</span> f) &#123;</span><br><span class="line">        <span class="type">bool</span> evictable = table_[f].evictable_;</span><br><span class="line">        <span class="keyword">if</span> (evictable) &#123;</span><br><span class="line">          active_list_.<span class="built_in">remove</span>(f);</span><br><span class="line">          nr_evictable_--;</span><br><span class="line">          table_.<span class="built_in">erase</span>(f);</span><br><span class="line">          *frame_id = f;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> evictable;</span><br><span class="line">      &#125;)) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意看，这里使用了 <code>std::anyof </code> 代替了 for 循环，这是 <code>clang-tidy </code>要求的，<code>Clang-Tidy: Replace loop by &#39;std::any_of()&#39;</code>，原先我使用 for 循环写的，目的是可以用C++17 的结构体，另外我把 LRU 活跃缓存放在队尾也是为了能在这里使用结构化绑定，多简洁。<br>后来还是换成 std::anyof 了，因为不给换项目不给过。。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">LRUKReplacer::Evict</span><span class="params">(<span class="type">frame_id_t</span> *frame_id)</span> -&gt; <span class="type">bool</span> </span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> f : inactive_list_) &#123;</span><br><span class="line">    <span class="type">bool</span> evictable = table_[f].evictable_;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (evictable) &#123;</span><br><span class="line">      inactive_list_.<span class="built_in">remove</span>(f);</span><br><span class="line">      nr_evictable_--;</span><br><span class="line">      table_.<span class="built_in">erase</span>(f);</span><br><span class="line"></span><br><span class="line">      *frame_id = f;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">auto</span> f : active_list_) &#123;</span><br><span class="line">    <span class="type">bool</span> evictable = table_[f].evictable_;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (evictable) &#123;</span><br><span class="line">      active_list_.<span class="built_in">remove</span>(f);</span><br><span class="line">      nr_evictable_--;</span><br><span class="line">      table_.<span class="built_in">erase</span>(f);</span><br><span class="line"></span><br><span class="line">      *frame_id = f;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Remove-1"><a href="#Remove-1" class="headerlink" title="Remove"></a>Remove</h2><p>将一个缓存移除。需要注意的是因为，我们引入了两个队列，所以从两个队列都要扫一遍。但是是有加速方案的，就是判断访问次数，根据次数可以判断在哪个队列，避免无脑扫两次链表。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">LRUKReplacer::Remove</span><span class="params">(<span class="type">frame_id_t</span> frame_id)</span> </span>&#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">auto</span> it = table_.<span class="built_in">find</span>(frame_id);</span><br><span class="line">  <span class="keyword">if</span> (it == table_.<span class="built_in">end</span>()) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (it-&gt;second.nr_accessed_ &lt; k_) &#123;</span><br><span class="line">    inactive_list_.<span class="built_in">remove</span>(frame_id);</span><br><span class="line">    nr_evictable_--;</span><br><span class="line">    table_.<span class="built_in">erase</span>(frame_id);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    active_list_.<span class="built_in">remove</span>(frame_id);</span><br><span class="line">    nr_evictable_--;</span><br><span class="line">    table_.<span class="built_in">erase</span>(frame_id);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Size"><a href="#Size" class="headerlink" title="Size"></a>Size</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">LRUKReplacer::Size</span><span class="params">()</span> -&gt; <span class="type">size_t</span> </span>&#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line">  <span class="keyword">return</span> nr_evictable_;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="DEBUG-1"><a href="#DEBUG-1" class="headerlink" title="DEBUG"></a>DEBUG</h2><p>遇到过项目要求理解错了导致测试用例 failed 的情况，<br><img   src="/../img/1689524734379-14876210-a882-4ad0-b730-bc18c50ef606.png"  alt="image.png"></p>
+<p>修改成这样可以过了，项目的意思是 inactive list 用 FIFO 换出策略。active list 才采用 classic LRU 换出策略。inactive list 也采用 LRU 换出策略，会导致此测试用例 failed。</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># git diff</span><br><span class="line"><span class="comment">diff --git a/src/buffer/lru_k_replacer.cpp b/src/buffer/lru_k_replacer.cpp</span></span><br><span class="line"><span class="comment">index d2f0eea..8b41fa0 100644</span></span><br><span class="line"><span class="comment">--- a/src/buffer/lru_k_replacer.cpp</span></span><br><span class="line"><span class="comment">+++ b/src/buffer/lru_k_replacer.cpp</span></span><br><span class="line"><span class="meta">@@ -67,8 +67,6 @@</span> void LRUKReplacer::RecordAccess(frame_id_t frame_id) &#123;</span><br><span class="line"></span><br><span class="line">if (accs_cnt &lt; k_) &#123;</span><br><span class="line">// should still stay in inactive list</span><br><span class="line"><span class="deletion">-    inactive_list_.remove(frame_id);</span></span><br><span class="line"><span class="deletion">-    inactive_list_.emplace_back(frame_id);</span></span><br><span class="line"></span><br><span class="line">struct FrameItem *f_item = &amp;(it-&gt;second);</span><br><span class="line">f_item-&gt;nr_accessed_ = accs_cnt;</span><br></pre></td></tr></table></figure>
+<h1 id="Task-3-Buffer-Pool-Manager-Instance"><a href="#Task-3-Buffer-Pool-Manager-Instance" class="headerlink" title="Task #3 - Buffer Pool Manager Instance"></a>Task #3 - Buffer Pool Manager Instance</h1><p>实现 bpm，bpm 负责管理磁盘的页缓存。</p>
+<h2 id="理解构造函数"><a href="#理解构造函数" class="headerlink" title="理解构造函数"></a>理解构造函数</h2><p>无需实现，已经实现好了。<strong>理解构造函数，对于理解 bpm 的设计具有重要意义</strong>。理解了，后面实现也会轻松很多。<br>bpm 负责管理磁盘缓存，自然会涉及磁盘页的读取和写入操作。这部分已经被逻辑实现了，无需实现，只要记得调用 <code>disk_manager_</code> 的逻辑写和读接口即可。</p>
+<p>观察构造函数，我们可以发现，bpm 的成员主要是这四个，</p>
+<ul>
+<li>disk_manager    	负责磁盘页的读写操作</li>
+<li>page_table 	记录磁盘页(page)在内存帧(frame)的映射关系，同一个东西的不同角度表示</li>
+<li>replacer		缓存空间有限，缓存管理者</li>
+<li>free_list		bpm 的缓存空闲链表，用完了就找 replacer 要了，让他踢掉几个不常用的页</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 构造函数</span></span><br><span class="line">BufferPoolManagerInstance::<span class="built_in">BufferPoolManagerInstance</span>(<span class="type">size_t</span> pool_size, DiskManager *disk_manager, <span class="type">size_t</span> replacer_k, LogManager *log_manager)</span><br><span class="line">    : <span class="built_in">pool_size_</span>(pool_size), <span class="built_in">disk_manager_</span>(disk_manager), <span class="built_in">log_manager_</span>(log_manager) &#123;</span><br><span class="line">  <span class="comment">// we allocate a consecutive memory space for the buffer pool</span></span><br><span class="line">  pages_ = <span class="keyword">new</span> Page[pool_size_];</span><br><span class="line">  page_table_ = <span class="keyword">new</span> <span class="built_in">ExtendibleHashTable</span>&lt;<span class="type">page_id_t</span>, <span class="type">frame_id_t</span>&gt;(bucket_size_);</span><br><span class="line">  replacer_ = <span class="keyword">new</span> <span class="built_in">LRUKReplacer</span>(pool_size, replacer_k);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Initially, every page is in the free list.</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; pool_size_; ++i) &#123;</span><br><span class="line">    free_list_.<span class="built_in">emplace_back</span>(<span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(i));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="新增一个-helper-函数"><a href="#新增一个-helper-函数" class="headerlink" title="新增一个 helper 函数"></a>新增一个 helper 函数</h2><p>将寻找一个新的 frame 的操作抽象到一个函数 <code>TryToFindAvailFrame</code> 中。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/include/buffer/buffer_pool_manager_instance.cpp</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * @brief Try to find usable frame in buffer pool</span></span><br><span class="line"><span class="comment">  * @param[out] frame_id id of the page to deallocate</span></span><br><span class="line"><span class="comment">  * @return true if found, false if all frames are pined</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">TryToFindAvailFrame</span><span class="params">(<span class="type">frame_id_t</span> *frame_id)</span> -&gt; <span class="type">bool</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// src/buffer/buffer_pool_manager_instance.cpp</span></span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">BufferPoolManagerInstance::TryToFindAvailFrame</span><span class="params">(<span class="type">frame_id_t</span> *frame_id)</span> -&gt; <span class="type">bool</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!free_list_.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">    *frame_id = free_list_.<span class="built_in">back</span>();</span><br><span class="line">    free_list_.<span class="built_in">pop_back</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (replacer_-&gt;<span class="built_in">Evict</span>(frame_id)) &#123;</span><br><span class="line">    <span class="keyword">if</span> (pages_[*frame_id].<span class="built_in">IsDirty</span>()) &#123;</span><br><span class="line">      disk_manager_-&gt;<span class="built_in">WritePage</span>(pages_[*frame_id].page_id_, pages_[*frame_id].data_);</span><br><span class="line">      pages_[*frame_id].is_dirty_ = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    page_table_-&gt;<span class="built_in">Remove</span>(pages_[*frame_id].page_id_);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="NewPgImp"><a href="#NewPgImp" class="headerlink" title="NewPgImp"></a>NewPgImp</h2><p>在 bpm 里新申请一个 page，会通过 Page 结构的构造函数分配一个页出来（实现代码：<code>src/include/storage/page/page.h</code>），返回是一个指向页的指针。拿到指向页的指针，应用程序可以往页里写数据了，页的大小是固定的，是通过宏定义的，不用担心只有指针却没有大小。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">BufferPoolManagerInstance::NewPgImp</span><span class="params">(<span class="type">page_id_t</span> *page_id)</span> -&gt; Page * </span>&#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="type">frame_id_t</span> frame_id;</span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">TryToFindAvailFrame</span>(&amp;frame_id)) &#123;</span><br><span class="line">    *page_id = <span class="built_in">AllocatePage</span>();</span><br><span class="line">    pages_[frame_id].page_id_ = *page_id;</span><br><span class="line">    pages_[frame_id].pin_count_ = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    page_table_-&gt;<span class="built_in">Insert</span>(*page_id, frame_id);</span><br><span class="line">    replacer_-&gt;<span class="built_in">RecordAccess</span>(frame_id);</span><br><span class="line">    replacer_-&gt;<span class="built_in">SetEvictable</span>(frame_id, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &amp;pages_[frame_id];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="FetchPgImp"><a href="#FetchPgImp" class="headerlink" title="FetchPgImp"></a>FetchPgImp</h2><p>fetch 操作代表我要从磁盘将一个页取到内存中，我知道这个页的 id，我需要得到这个页在内存里的地址，因为待会应用程序需要读写这个页。<br>这里有两种情况了，如果这个页本身就在内存中，那么直接返回它的地址即可。如果不在内存，而是被换出到磁盘上了，就需要重新将磁盘的页读到内存中，然后返回页的内存地址。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">BufferPoolManagerInstance::FetchPgImp</span><span class="params">(<span class="type">page_id_t</span> page_id)</span> -&gt; Page * </span>&#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="type">frame_id_t</span> frame_id;</span><br><span class="line">  <span class="keyword">if</span> (page_table_-&gt;<span class="built_in">Find</span>(page_id, frame_id)) &#123;</span><br><span class="line">    pages_[frame_id].pin_count_++;</span><br><span class="line">    replacer_-&gt;<span class="built_in">RecordAccess</span>(frame_id);</span><br><span class="line">    replacer_-&gt;<span class="built_in">SetEvictable</span>(frame_id, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &amp;pages_[frame_id];</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (<span class="built_in">TryToFindAvailFrame</span>(&amp;frame_id)) &#123;</span><br><span class="line">    pages_[frame_id].page_id_ = page_id;</span><br><span class="line">    pages_[frame_id].pin_count_ = <span class="number">1</span>;</span><br><span class="line">    pages_[frame_id].is_dirty_ = <span class="literal">false</span>;</span><br><span class="line">    disk_manager_-&gt;<span class="built_in">ReadPage</span>(page_id, pages_[frame_id].data_);</span><br><span class="line"></span><br><span class="line">    page_table_-&gt;<span class="built_in">Insert</span>(page_id, frame_id);</span><br><span class="line">    replacer_-&gt;<span class="built_in">RecordAccess</span>(frame_id);</span><br><span class="line">    replacer_-&gt;<span class="built_in">SetEvictable</span>(frame_id, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &amp;pages_[frame_id];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="UnpinPgImp"><a href="#UnpinPgImp" class="headerlink" title="UnpinPgImp"></a>UnpinPgImp</h2><p>对页 unpin，代表应用程序暂时不会用到这个页，指示这个页不必一直停留到内存里，可以被 bpm 换出到磁盘上，毕竟内存资源不是无限的</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">BufferPoolManagerInstance::UnpinPgImp</span><span class="params">(<span class="type">page_id_t</span> page_id, <span class="type">bool</span> is_dirty)</span> -&gt; <span class="type">bool</span> </span>&#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="type">frame_id_t</span> frame_id;</span><br><span class="line">  <span class="keyword">if</span> (page_table_-&gt;<span class="built_in">Find</span>(page_id, frame_id)) &#123;</span><br><span class="line">    pages_[frame_id].pin_count_--;</span><br><span class="line">    <span class="keyword">if</span> (pages_[frame_id].pin_count_ == <span class="number">0</span>) &#123;</span><br><span class="line">      replacer_-&gt;<span class="built_in">SetEvictable</span>(frame_id, <span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    pages_[frame_id].is_dirty_ = is_dirty || pages_[frame_id].is_dirty_;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="FlushPgImp"><a href="#FlushPgImp" class="headerlink" title="FlushPgImp"></a>FlushPgImp</h2><p>刷页，指示 bpm 将页的内存刷回到磁盘上。通常数据库应用为了防止断掉带来的 DRAM 内存里的数据丢失，会定期刷盘，将内存数据写回磁盘。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">BufferPoolManagerInstance::FlushPgImp</span><span class="params">(<span class="type">page_id_t</span> page_id)</span> -&gt; <span class="type">bool</span> </span>&#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="type">frame_id_t</span> frame_id;</span><br><span class="line">  <span class="keyword">if</span> (page_table_-&gt;<span class="built_in">Find</span>(page_id, frame_id)) &#123;</span><br><span class="line">    <span class="keyword">if</span> (pages_[frame_id].is_dirty_) &#123;</span><br><span class="line">      disk_manager_-&gt;<span class="built_in">WritePage</span>(page_id, pages_[frame_id].data_);</span><br><span class="line">      pages_[frame_id].is_dirty_ = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="FlushAllPgsImp"><a href="#FlushAllPgsImp" class="headerlink" title="FlushAllPgsImp"></a>FlushAllPgsImp</h2><p>所有页刷回磁盘。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">BufferPoolManagerInstance::FlushAllPgsImp</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="function">std::scoped_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(latch_)</span></span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; pool_size_; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (pages_[i].is_dirty_) &#123;</span><br><span class="line">      disk_manager_-&gt;<span class="built_in">WritePage</span>(pages_[i].page_id_, pages_[i].data_);</span><br><span class="line">      pages_[i].is_dirty_ = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Gradescope"><a href="#Gradescope" class="headerlink" title="Gradescope"></a>Gradescope</h1><p><img   src="/../img/1690008398782-42d06603-c39a-43e3-a4f5-db350ec06d78.png"  alt="image.png"></p>
+
+                    
+                </div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/cmu15445/">cmu15445</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/buffer-pool/">buffer pool</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/extendible-hash/">extendible hash</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/LRU-K/">LRU-K</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/2023/08/24/reboot_is_link_to_systemctl/"
+                                   title="Reboot 命令实际是 systemctl ？"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">Reboot 命令实际是 systemctl ？</span>
+                                        <span class="post-nav-item">Prev posts</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/2023/06/04/cmu-15-445-fall-2022-project0-cpp-primer/"
+                                   title="CMU 15-445 Fall 2022 Project0: C++ Primer"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">CMU 15-445 Fall 2022 Project0: C++ Primer</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+    <div class="comments-container border-box">
+        <div id="comments-anchor" class="comment-area-title border-box">
+            <i class="fas fa-comments"></i>&nbsp;Comments
+        </div>
+        <div class="comment-plugin-fail border-box">
+    <span class="fail-tip">Comment plugin failed to load</span>
+    <button class="reload keep-button">Click to reload</button>
+</div>
+<div class="comment-plugin-loading flex-center border-box">
+    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
+    <span class="load-tip">Loading comment plugin</span>
+</div>
+<script data-pjax>
+  window.KeepCommentPlugin = {}
+  window.KeepCommentPlugin.hideLoading = () => {
+    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
+    cplDom.style.display = 'none'
+  }
+  window.KeepCommentPlugin.loadFailHandle = () => {
+    window.KeepCommentPlugin.hideLoading()
+    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
+    cpfDom.style.display = 'flex'
+    cpfDom.querySelector('.reload').addEventListener('click', () => {
+      window.location.reload()
+    })
+  }
+</script>
+
+        
+            
+
+    <div class="gitalk-comment-container">
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.css">
+        <script data-pjax
+                src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        ></script>
+        <script data-pjax
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        >
+          window.KeepCommentPlugin.initGitalk = () => {
+            let gitalkPathname = decodeURI(location.pathname)
+            const gitalkPathnameLength = gitalkPathname.length
+            const gitalkPathnameMaxLength = 50
+            if (gitalkPathnameLength > gitalkPathnameMaxLength) {
+              gitalkPathname = gitalkPathname.substring(0, gitalkPathnameMaxLength - 3) + '...'
+            }
+
+            if (window?.Gitalk) {
+              new Gitalk({
+                clientID: 'Ov23limODCqt0en2mPRD',
+                clientSecret: '6c276a6c1847f1f4663f172bc809e31d0cab1410',
+                repo: 'markyangcc.github.io',
+                owner: 'markyangcc',
+                admin: 'markyangcc',
+                id: gitalkPathname,
+                proxy: '',
+                language: 'en'
+              }).render('gitalk-container')
+              window.KeepCommentPlugin.hideLoading()
+            } else {
+              setTimeout(() => {
+                window.KeepCommentPlugin.initGitalk()
+              }, 1000)
+            }
+          }
+
+          if ('true' === 'true') {
+            setTimeout(() => {
+              window.KeepCommentPlugin.initGitalk()
+            }, 1200)
+          } else {
+            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initGitalk)
+          }
+        </script>
+    </div>
+
+
+        
+    </div>
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-1-Extendible-Hash-Table"><span class="nav-text">Task 1 Extendible Hash Table</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Bucket"><span class="nav-text">Bucket</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Find-Remove-Insert"><span class="nav-text">Find &amp; Remove &amp; Insert</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ExtendibleHashTable"><span class="nav-text">ExtendibleHashTable</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Find"><span class="nav-text">Find</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Remove"><span class="nav-text">Remove</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Insert"><span class="nav-text">Insert</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DEBUG"><span class="nav-text">DEBUG</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#how-to-debug-on-M1"><span class="nav-text">how to debug on M1?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E9%80%9A%E8%BF%87%E4%B8%8D%E4%BA%86InsertMultipleSplit-%EF%BC%9F"><span class="nav-text">为什么我通过不了InsertMultipleSplit ？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-2-LRU-K-Replacement-Policy"><span class="nav-text">Task 2 LRU-K Replacement Policy</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0-1"><span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RecordAccess"><span class="nav-text">RecordAccess</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SetEvictable"><span class="nav-text">SetEvictable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Evict"><span class="nav-text">Evict</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Remove-1"><span class="nav-text">Remove</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Size"><span class="nav-text">Size</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DEBUG-1"><span class="nav-text">DEBUG</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-3-Buffer-Pool-Manager-Instance"><span class="nav-text">Task #3 - Buffer Pool Manager Instance</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%90%86%E8%A7%A3%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">理解构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E%E4%B8%80%E4%B8%AA-helper-%E5%87%BD%E6%95%B0"><span class="nav-text">新增一个 helper 函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NewPgImp"><span class="nav-text">NewPgImp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FetchPgImp"><span class="nav-text">FetchPgImp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UnpinPgImp"><span class="nav-text">UnpinPgImp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FlushPgImp"><span class="nav-text">FlushPgImp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FlushAllPgsImp"><span class="nav-text">FlushAllPgsImp</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradescope"><span class="nav-text">Gradescope</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;<span>2022</span>&nbsp;-&nbsp;2025
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">Lapin Gris</a>
+        
+    </div>
+
+    <div class="theme-info info-item">
+        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div>
+
+    
+
+    
+
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+            <li class="tools-item go-to-comments-tablet flex-center">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-1-Extendible-Hash-Table"><span class="nav-text">Task 1 Extendible Hash Table</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Bucket"><span class="nav-text">Bucket</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Find-Remove-Insert"><span class="nav-text">Find &amp; Remove &amp; Insert</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ExtendibleHashTable"><span class="nav-text">ExtendibleHashTable</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Find"><span class="nav-text">Find</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Remove"><span class="nav-text">Remove</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Insert"><span class="nav-text">Insert</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DEBUG"><span class="nav-text">DEBUG</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#how-to-debug-on-M1"><span class="nav-text">how to debug on M1?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E9%80%9A%E8%BF%87%E4%B8%8D%E4%BA%86InsertMultipleSplit-%EF%BC%9F"><span class="nav-text">为什么我通过不了InsertMultipleSplit ？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-2-LRU-K-Replacement-Policy"><span class="nav-text">Task 2 LRU-K Replacement Policy</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0-1"><span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RecordAccess"><span class="nav-text">RecordAccess</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SetEvictable"><span class="nav-text">SetEvictable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Evict"><span class="nav-text">Evict</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Remove-1"><span class="nav-text">Remove</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Size"><span class="nav-text">Size</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DEBUG-1"><span class="nav-text">DEBUG</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Task-3-Buffer-Pool-Manager-Instance"><span class="nav-text">Task #3 - Buffer Pool Manager Instance</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%90%86%E8%A7%A3%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">理解构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E%E4%B8%80%E4%B8%AA-helper-%E5%87%BD%E6%95%B0"><span class="nav-text">新增一个 helper 函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NewPgImp"><span class="nav-text">NewPgImp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FetchPgImp"><span class="nav-text">FetchPgImp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UnpinPgImp"><span class="nav-text">UnpinPgImp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FlushPgImp"><span class="nav-text">FlushPgImp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FlushAllPgsImp"><span class="nav-text">FlushAllPgsImp</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradescope"><span class="nav-text">Gradescope</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/header-shrink.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/back2top.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/toggle-theme.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/code-block.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/main.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/libs/anime.min.js"></script>
+
+<!-- local search -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/local-search.min.js"></script>
+
+
+<!-- lazyload -->
+
+
+<div class="pjax">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/post/post-helper.min.js"></script>
+
+        <!-- toc -->
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/post/toc.min.js"></script>
+        
+
+        <!-- copyright-info -->
+        
+
+        <!-- share -->
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+</body>
+</html>
