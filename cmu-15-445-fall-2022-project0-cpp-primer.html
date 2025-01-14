@@ -9,7 +9,7 @@
     
     <title>
         
-            PARSEC 3.0 编译报错 |
+            CMU 15-445 Fall 2022 Project0: C++ Primer |
         
         Lapin Gris
     </title>
@@ -227,7 +227,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        PARSEC 3.0 编译报错
+                        CMU 15-445 Fall 2022 Project0: C++ Primer
                     </div>
                 
 
@@ -255,7 +255,7 @@
         
             <span class="meta-info-item post-create-date">
                 <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2023-05-05 01:52:23</span>
+                <span class="datetime">2023-06-04 03:08:21</span>
             </span>
 
             
@@ -270,7 +270,7 @@
             <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
                 <ul class="post-category-ul">
                     
-                            <li class="category-item"><a href="/categories/parsec/">parsec</a></li>
+                            <li class="category-item"><a href="/categories/cmu15445/">cmu15445</a></li>
                         
                     
                 </ul>
@@ -281,10 +281,13 @@
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/parsec/">parsec</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/cmu15445/">cmu15445</a></li>
                         
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/RHEL-9/">RHEL 9</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/c-Primer/">c++ Primer</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/Trie/">Trie</a></li>
                         
                     
                 </ul>
@@ -309,37 +312,20 @@
                     
 
                     
-                         <p>PARSEC 3.0(Parallel Applications Research for System Efficiency Collectio)是一个基准测试套件，用于评估多核处理器和系统的性能，也就是跑分软件。</p>
-<p>工作中需要使用到这个软件作为基准测试软件，因为 PARSEC 从官网下载下来是不能直接运行的，所以有了下面适配 RHEL 9 操作系统的内容。<br>文章末尾有所有修改的 patches 文件，里面记录详细的修改地方。</p>
-<h1 id="安装-PARSEC-3-0"><a href="#安装-PARSEC-3-0" class="headerlink" title="安装 PARSEC 3.0"></a>安装 PARSEC 3.0</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Full PARSEC 3.0 tarball</span></span><br><span class="line">wget http://parsec.cs.princeton.edu/download/3.0/parsec-3.0.tar.gz</span><br><span class="line"></span><br><span class="line">tar xvf parsec-3.0.tar.gz</span><br><span class="line">cd parsec-3.0</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">编译</span></span><br><span class="line">source env.sh</span><br><span class="line">parsecmgmt -a build</span><br></pre></td></tr></table></figure>
-
-<h1 id="编译错误合集"><a href="#编译错误合集" class="headerlink" title="编译错误合集"></a>编译错误合集</h1><h2 id="error-ISO-C-17-does-not-allow-dynamic-exception-specifications"><a href="#error-ISO-C-17-does-not-allow-dynamic-exception-specifications" class="headerlink" title="error: ISO C++17 does not allow dynamic exception specifications"></a>error: ISO C++17 does not allow dynamic exception specifications</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Thread.h:62:24: error: ISO C++17 does not allow dynamic exception specifications</span><br><span class="line">   62 |     Thread(Runnable &amp;) throw(ThreadCreationException);</span><br></pre></td></tr></table></figure>
-<p>在 C++17 标准中，将动态异常规范（Dynamic Exception Specification）声明为废弃（deprecated），也就是不推荐使用。在 RHEL 9 操作系统上默认的 C++ 标准是 17。所以会遇到这个编译报错，我们只需要使用老版本的 C++ 标准来编译代码可以规避这个问题。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">config/gcc.bldconf</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Arguments to use</span></span><br><span class="line">export CFLAGS=&quot; -O3 -g -funroll-loops -fprefetch-loop-arrays -std=gnu11 $&#123;PORTABILITY_FLAGS&#125;&quot;</span><br><span class="line">export CXXFLAGS=&quot;-O3 -g -funroll-loops -fprefetch-loop-arrays -fpermissive -fno-exceptions -std=gnu++11 $&#123;PORTABILITY_FLAGS&#125;&quot;</span><br></pre></td></tr></table></figure>
-<p>在 gcc.bldconf 里指明让 gcc 使用 gnu11&#x2F;gnu++11 标准编译代码。</p>
-<p>这里没有使用 c11、c++11 标准而是使用 gnu 版本实现的 C、C++  标准。<br>如果使用 c11&#x2F;c++11 标准，会遇到这个报错 <code>warning: implicit declaration of function &#39;strdup&#39;</code> gcc 编译器会申明 这个宏—— “<strong>STRICT_ANSI</strong>“，代表只使用 c11、 spec 里的标准 C 库。这会导致我们经常使用的一些像 strdup 这些库函数不能使用（parsec3 用到了这些库函数）</p>
-<h2 id="error-looser-exception-specification-on-overriding-virtual-function"><a href="#error-looser-exception-specification-on-overriding-virtual-function" class="headerlink" title="error: looser exception specification on overriding virtual function"></a>error: looser exception specification on overriding virtual function</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">WorkerGroup.h:88:5: error: looser exception specification on overriding virtual function &#x27;virtual threads::WorkerGroup::~WorkerGroup() throw (threads::CondException, threads::MutexException)&#x27;</span><br><span class="line">   88 |     ~WorkerGroup();</span><br></pre></td></tr></table></figure>
-<p>这个错误意思是子类 override 父类的虚函数时候，子类的异常规范比父类更宽松（looser），也就是说子类的异常规范允许抛出更多类型的异常，这与 C++ 的异常规范要求相违背。所以，我们要让子类的异常更严格，而不是更宽容。</p>
-<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// WorkerGroup.h</span><br><span class="line"><span class="deletion">-    ~WorkerGroup();</span></span><br><span class="line"><span class="addition">+    ~WorkerGroup() throw();</span></span><br></pre></td></tr></table></figure>
-<p>显式指示不抛出异常即可。或者用 noexcept 也行。</p>
-<h2 id="multiple-definition"><a href="#multiple-definition" class="headerlink" title="multiple definition"></a>multiple definition</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/ld: encoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/encoder.c:65: multiple definition of `conf&#x27;; dedup.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/dedup.c:25: first defined here</span><br><span class="line">/usr/bin/ld: decoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/decoder.c:39: multiple definition of `conf&#x27;; dedup.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/dedup.c:25: first defined here</span><br><span class="line">/usr/bin/ld: decoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/decoder.c:42: multiple definition of `cache&#x27;; encoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/encoder.c:68: first defined here</span><br></pre></td></tr></table></figure>
-<p>gcc 10 后，默认使能了  -fno-common  选项，编译器检查更加严格了 <a class="link"   target="_blank" rel="noopener" href="https://gcc.gnu.org/gcc-10/porting_to.html" >https://gcc.gnu.org/gcc-10/porting_to.html<i class="fas fa-external-link-alt"></i></a>。最简单的办法是，rollback(指定使用 -fcommon 编译代码即可)</p>
-<h2 id="mismatched-comparison-between-std-ifstream-and-int"><a href="#mismatched-comparison-between-std-ifstream-and-int" class="headerlink" title="mismatched comparison between std::ifstream and int"></a>mismatched comparison between std::ifstream and int</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">FILE_UTILITIES.h:83:49: error: no match for ‘operator!=’ (operand types are ‘std::ofstream’ &#123;aka ‘std::basic_ofstream&lt;char&gt;’&#125; and ‘int’)</span><br><span class="line">   83 |         return std::ofstream (filename.c_str()) != 0;</span><br><span class="line">      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~ ~</span><br><span class="line">      |                     |                              |</span><br><span class="line">      |                     |                              int</span><br><span class="line">      |                     std::ofstream &#123;aka std::basic_ofstream&lt;char&gt;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>std::ofstream 和 int 之间无法直接比较，需要强转，举个栗子，</p>
-<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// FILE_UTILITIES.h</span><br><span class="line"></span><br><span class="line"><span class="deletion">-	return std::ifstream (filename.c_str()) != 0;</span></span><br><span class="line"><span class="addition">+	return (bool)std::ifstream (filename.c_str()) != 0;</span></span><br></pre></td></tr></table></figure>
-
-
-<h2 id="error-‘HUGE’-undeclared"><a href="#error-‘HUGE’-undeclared" class="headerlink" title="error: ‘HUGE’ undeclared"></a>error: ‘HUGE’ undeclared</h2><figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LSH_query.c:361:34: error: ‘HUGE’ undeclared (first use in this function)</span><br><span class="line">  361 |         TOPK_INIT(topk, dist, K, HUGE);</span><br></pre></td></tr></table></figure>
-<p>没有定义 <code>HUGE</code> 宏。我们将 C 数学库里的 HUGE_VAL 定义为 HUGE即可，<code>#define HUGE HUGE_VAL</code></p>
-<h2 id="conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib"><a href="#conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib" class="headerlink" title="conflicting type __mbstate_t, both provided by glibc and parsec lib"></a>conflicting type __mbstate_t, both provided by glibc and parsec lib</h2><figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/include/bits/types/__mbstate_t.h:21:3: error: conflicting types for ‘__mbstate_t’; have ‘struct &lt;anonymous&gt;’</span><br><span class="line">   21 | &#125; __mbstate_t;</span><br></pre></td></tr></table></figure>
-<p>C 库和 parsec 库同时提供了 __mbstate_t 的定义，二者冲突了，将 parsec 库提供的定义重命名。</p>
-<h2 id="POD-document-had-syntax-errors"><a href="#POD-document-had-syntax-errors" class="headerlink" title="POD document had syntax errors"></a>POD document had syntax errors</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">smime.pod around line 272: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 276: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 280: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 285: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 289: Expected text after =item, not a number</span><br><span class="line">POD document had syntax errors at /usr/bin/pod2man line 69.</span><br><span class="line">make: *** [Makefile:681: install_docs] Error 255</span><br></pre></td></tr></table></figure>
-<p>提示POD doc 有语法错误，应该是软件升级，语法变了导致的。使用下面的脚本一键修正过来就好了，</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#! /bin/bash</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> 0 1 2 3 4 5 6 7 8 9</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">&quot;Replacing &#x27;=item <span class="variable">$i</span>&#x27; to &#x27;=item C&lt;<span class="variable">$i</span>&gt;&#x27;&quot;</span></span><br><span class="line">	grep -rl <span class="string">&quot;=item <span class="variable">$i</span>&quot;</span> * | xargs sed -i <span class="string">&quot;s/=item <span class="variable">$i</span>/=item C&lt;<span class="variable">$i</span>&gt;/g&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
-
-
-<h1 id="PATCHES"><a href="#PATCHES" class="headerlink" title="PATCHES"></a>PATCHES</h1><p>1、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0002-fix-error-looser-exception-specification-on-overridi.patch" >fix-error-looser-exception-specification-on-overridi.patch<i class="fas fa-external-link-alt"></i></a><br>2、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0001-use-gnu11-gnu-11-std-to-build-parsec.patch" >use-gnu11-gnu-11-std-to-build-parsec.patch<i class="fas fa-external-link-alt"></i></a><br>3、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0007-fix-multiple-definition-when-build-with-gcc-10-or-ab.patch" >fix-multiple-definition-when-build-with-gcc-10-or-ab.patch<i class="fas fa-external-link-alt"></i></a><br>4、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0004-fix-A-mismatched-comparison-between-std-ifstream-and.patch" >fix-A-mismatched-comparison-between-std-ifstream-and.patch<i class="fas fa-external-link-alt"></i></a><br>5、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0005-fix-HUGE-macro-undeclared-error.patch" >fix-HUGE-macro-undeclared-error.patch<i class="fas fa-external-link-alt"></i></a><br>6、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0006-fix-conflicting-type-__mbstate_t-both-provided-by-gl.patch" >fix-conflicting-type-__mbstate_t-both-provided-by-gl.patch<i class="fas fa-external-link-alt"></i></a><br>7、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0003-fix-POD-document-had-syntax-errors.patch" >fix-POD-document-had-syntax-errors.patch<i class="fas fa-external-link-alt"></i></a></p>
+                         <p>这个项目是使用 Modern C++ 17 实现一个 字典树（<code>Trie</code>）<br>项目难点在于理解项目里如何使用 TrieNode 和 TrieTerminalNode 来组合实现一个 Trie Tree。另外一个难点是对 unique_ptr 的理解。理解 unique_ptr 智能指针对生命周期的管理。</p>
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>项目提供了图对 Trie Tree 介绍的，理解这两张图，基本理解了这个项目里我们需要实现什么了。<br>下面这张图是我们最终实现的 Trie Tree。图中红色的格子是要实现的 Terminal Node（TrieNodeWithValue），<br>图中包含字母的格子是要实现的 Trie Node。其中 Terminal Node 算是 Trie Node 的一个特殊情况。</p>
+<p>回来继续介绍 TrieNode，他有三个成员</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> key_char_;</span><br><span class="line"><span class="type">bool</span> is_end_&#123;<span class="literal">false</span>&#125;;</span><br><span class="line">std::unordered_map&lt;<span class="type">char</span>, std::unique_ptr&lt;TrieNode&gt;&gt; children_;</span><br></pre></td></tr></table></figure>
+<p><code>key_char_</code> 是路径的字符，比如 H，A，E<br><code>is_end_</code> 是表示当前 Node 是否是 Terminal Node，默认初始化为 false<br><code>children_</code> 是一个 hashmap，key 是当前节点的 <code>key_char_</code> ，value 是一个指向下一个节点的独占指针 unique_ptr 。图中代表 <code>children_</code> 是 T 和 V 的那一部分。T 和 V 都是 A 节点的子节点。<br><img   src="/../img/1685814840719-8f6f1d8e-6e09-4030-bdb3-d65e14f17057.png"  alt="image.png"></p>
+<p>为什么说 Terminal Node 是 Trie Node 的特殊情况，因为项目中TrieNodeWithValue 是从 TrieNode 继承过来的，算是子类了。<br>比如，我们现在要用 Trie Tree 存储N个键值对，其中两个键值对是 (ab, 1) (ac, “val”) 。那么他们存放在书上就是下图展示的样子，因为我们要实现的 TrieNodeWithValue 的 value 被设计成支持任意类型的 value 存储，所以 TrieNodeWithValue 是一个模板类。<br><img   src="/../img/1685814852620-97e656e5-5d1b-4825-8b3c-580e59a63b3b.png"  alt="image.png"></p>
+<h1 id="实现-TrieNode"><a href="#实现-TrieNode" class="headerlink" title="实现 TrieNode"></a>实现 TrieNode</h1><h2 id="InsertChildNode-GetChildNode-RemoveChildNode"><a href="#InsertChildNode-GetChildNode-RemoveChildNode" class="headerlink" title="InsertChildNode &amp; GetChildNode &amp; RemoveChildNode"></a>InsertChildNode &amp; GetChildNode &amp; RemoveChildNode</h2><p>实现 ChildNode 相关操作就是玩 unordered_map 。C++ 里面是 unordered_map 就是通常所说的 hashmap。<br><img   src="/../img/1685814082740-b9cc70ec-2a11-498f-9230-af89469726ac.png"  alt="image.png"><br><img   src="/../img/1685814148701-eb8add28-1474-4ec5-b18e-718690c95809.png"  alt="image.png"><br><img   src="/../img/1685814178989-21743ecf-471d-4df5-8854-540ff1b1a2cf.png"  alt="image.png"></p>
+<h1 id="实现-TrieNodeWithValue"><a href="#实现-TrieNodeWithValue" class="headerlink" title="实现 TrieNodeWithValue"></a>实现 TrieNodeWithValue</h1><h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p>第一次碰到这个函数，有一点懵，没明白子类怎么移动构造，现在想想其实很简单，利用初始化列表将父类 move，然后在大括号里最定制化修改。果然， C++ 好久不用就容易忘。<br><img   src="/../img/1685814224952-0f2eb4d9-6b50-44f5-a46e-2de2d6a803d6.png"  alt="image.png"></p>
+<h1 id="实现-Trie"><a href="#实现-Trie" class="headerlink" title="实现 Trie"></a>实现 Trie</h1><h2 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h2><p>我们 <code>root_</code> Node 是一个空节点，而且要是一个由 unique_ptr 管理的 TrieNode。最初时候没想到使用 make_unique 来构造一个，想了挺久的（蠢哭了……）<br><img   src="/../img/1685814249460-e7710c91-d861-4e26-8ba2-33394a92c6ba.png"  alt="image.png"></p>
+<h2 id="Insert"><a href="#Insert" class="headerlink" title="Insert"></a>Insert</h2><p>项目要求要支持并发访问，加锁是必须的了。当然在实现的视线可以先实现不加锁版本的 Insert 保证代码没有逻辑错误，然后再为代码加锁。<br>其实我的最初版本，我的逻辑代码和加锁是混合在一起的，各种 for loop 中间 return，有了 return 就需要在 return 之前把之前加的锁释放掉。。。就挺混乱的，另外因为多个 return 位置，容易忘记解锁。<br>后来，我参考内核调度器那块代码，把解锁放到函数末尾做，当代码中需要 return 的时候，用 goto 跳转到 out label，这样也就统一了解锁的位置，代码看起来舒服多了。<br>其实更好的办法是像 DPDK 那样实现一个 unsafe 版本的函数，在实现一个 safe 版本的，锁加在 safe 版本的函数里，在 safe 调用 unsafe 函数，这样实现了逻辑代码和加锁代码分离。唯一的缺点可能是锁的粒度大，不容易优化锁的粒度吧。</p>
+<p>首先从 <code>root_</code> 的指针，开始遍历 Tree，执行插入操作<br>我们选择是遍历整个 string，我们把 string 分成两部分，[0, key.size()-1) 和 [key.size()-1] 两部分来实现。这样写的代码更加简单，感觉项目里的注释描述稍微有点引导学生将字符串分成两部分处理。其实完全没有必要，这样作为一个整体处理逻辑也更简单。<br>遍历整个 string 会把整个路径所有节点类型设置为 TrieNode，所以最后需要将 Terminal Node move 一下，转为  TrieNodeWithValue 类型。然后让 unique_ptr 指针指向 TrieNodeWithValue即可。<br><img   src="/../img/1685814266393-3af38181-5068-4c7c-9de9-5d61d4539944.png"  alt="image.png"></p>
+<h2 id="Remove"><a href="#Remove" class="headerlink" title="Remove"></a>Remove</h2><p>删除要求如果需要中间节点没有 child 节点，这个节点也需要被 remove 掉。这就说明在遍历的时候我们要记录父节点的指针，但是指针一旦调到下一个节点，就回不去了，我们用的也不是双向版本的指针。所有，我们要记录我们的遍历的路径，我们用 vector 存，其实用 stack 也没问题。<br>最终，我们先遍历一遍 string，走到底部。然后开始反向遍历，检查节点有没有子节点，没有就将节点删除。<br><img   src="/../img/1685814387701-325c9397-b39d-4577-8dc8-1abf27a9dd2c.png"  alt="image.png"></p>
+<h2 id="GetValue"><a href="#GetValue" class="headerlink" title="GetValue"></a>GetValue</h2><p>从 <code>root_</code> 开始遍历,项目要求检查存储在 Terminal Node 的 value 类型。这里借助 <code>dynamic_cast</code>  来判断。<br><img   src="/../img/1685814364319-80f212cb-0856-424b-b227-1a8582a6fb66.png"  alt="image.png"></p>
+<h1 id="Gradescope"><a href="#Gradescope" class="headerlink" title="Gradescope"></a>Gradescope</h1><p><img   src="/../img/1685818990987-6e025706-9621-4ca9-b691-6b4a81f141aa.png"  alt="image.png"></p>
 
                     
                 </div>
@@ -352,11 +338,15 @@
                             <ul class="post-tags-box border-box">
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/parsec/">parsec</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/cmu15445/">cmu15445</a>
                                     </li>
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/RHEL-9/">RHEL 9</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/c-Primer/">c++ Primer</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/Trie/">Trie</a>
                                     </li>
                                 
                             </ul>
@@ -375,14 +365,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/cmu-15-445-fall-2022-project0-cpp-primer/"
-                                   title="CMU 15-445 Fall 2022 Project0: C++ Primer"
+                                   href="/cmu-15-445-fall-2022-project1-buffer-pool"
+                                   title="CMU 15-445 Fall 2022 Project1: Buffer Pool"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">CMU 15-445 Fall 2022 Project0: C++ Primer</span>
+                                        <span class="post-nav-title-item text-ellipsis">CMU 15-445 Fall 2022 Project1: Buffer Pool</span>
                                         <span class="post-nav-item">Prev posts</span>
                                     </span>
                                 </a>
@@ -392,11 +382,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/extend-system-ram-using-pmem/"
-                                   title="PMEM 扩展系统内存用法介绍"
+                                   href="/parsec3.0-compile-error"
+                                   title="PARSEC 3.0 编译报错"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">PMEM 扩展系统内存用法介绍</span>
+                                        <span class="post-nav-title-item text-ellipsis">PARSEC 3.0 编译报错</span>
                                         <span class="post-nav-item">Next posts</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">
@@ -424,7 +414,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-PARSEC-3-0"><span class="nav-text">安装 PARSEC 3.0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AF%E5%90%88%E9%9B%86"><span class="nav-text">编译错误合集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#error-ISO-C-17-does-not-allow-dynamic-exception-specifications"><span class="nav-text">error: ISO C++17 does not allow dynamic exception specifications</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-looser-exception-specification-on-overriding-virtual-function"><span class="nav-text">error: looser exception specification on overriding virtual function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#multiple-definition"><span class="nav-text">multiple definition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mismatched-comparison-between-std-ifstream-and-int"><span class="nav-text">mismatched comparison between std::ifstream and int</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-%E2%80%98HUGE%E2%80%99-undeclared"><span class="nav-text">error: ‘HUGE’ undeclared</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib"><span class="nav-text">conflicting type __mbstate_t, both provided by glibc and parsec lib</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#POD-document-had-syntax-errors"><span class="nav-text">POD document had syntax errors</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PATCHES"><span class="nav-text">PATCHES</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-TrieNode"><span class="nav-text">实现 TrieNode</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InsertChildNode-GetChildNode-RemoveChildNode"><span class="nav-text">InsertChildNode &amp; GetChildNode &amp; RemoveChildNode</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-TrieNodeWithValue"><span class="nav-text">实现 TrieNodeWithValue</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">构造函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-Trie"><span class="nav-text">实现 Trie</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0-1"><span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Insert"><span class="nav-text">Insert</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Remove"><span class="nav-text">Remove</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GetValue"><span class="nav-text">GetValue</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradescope"><span class="nav-text">Gradescope</span></a></li></ol>
     </div>
 </div>
 
@@ -584,7 +574,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-PARSEC-3-0"><span class="nav-text">安装 PARSEC 3.0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AF%E5%90%88%E9%9B%86"><span class="nav-text">编译错误合集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#error-ISO-C-17-does-not-allow-dynamic-exception-specifications"><span class="nav-text">error: ISO C++17 does not allow dynamic exception specifications</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-looser-exception-specification-on-overriding-virtual-function"><span class="nav-text">error: looser exception specification on overriding virtual function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#multiple-definition"><span class="nav-text">multiple definition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mismatched-comparison-between-std-ifstream-and-int"><span class="nav-text">mismatched comparison between std::ifstream and int</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-%E2%80%98HUGE%E2%80%99-undeclared"><span class="nav-text">error: ‘HUGE’ undeclared</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib"><span class="nav-text">conflicting type __mbstate_t, both provided by glibc and parsec lib</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#POD-document-had-syntax-errors"><span class="nav-text">POD document had syntax errors</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PATCHES"><span class="nav-text">PATCHES</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-TrieNode"><span class="nav-text">实现 TrieNode</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InsertChildNode-GetChildNode-RemoveChildNode"><span class="nav-text">InsertChildNode &amp; GetChildNode &amp; RemoveChildNode</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-TrieNodeWithValue"><span class="nav-text">实现 TrieNodeWithValue</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">构造函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-Trie"><span class="nav-text">实现 Trie</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0-1"><span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Insert"><span class="nav-text">Insert</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Remove"><span class="nav-text">Remove</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GetValue"><span class="nav-text">GetValue</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradescope"><span class="nav-text">Gradescope</span></a></li></ol>
     </div>
 </div>
 

@@ -9,7 +9,7 @@
     
     <title>
         
-            Reboot 命令实际是 systemctl ？ |
+            Hexo-Next主题配置 |
         
         Lapin Gris
     </title>
@@ -227,7 +227,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        Reboot 命令实际是 systemctl ？
+                        Hexo-Next主题配置
                     </div>
                 
 
@@ -255,7 +255,7 @@
         
             <span class="meta-info-item post-create-date">
                 <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2023-08-24 12:31:00</span>
+                <span class="datetime">2022-01-02 04:40:37</span>
             </span>
 
             
@@ -270,7 +270,7 @@
             <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
                 <ul class="post-category-ul">
                     
-                            <li class="category-item"><a href="/categories/linux/">linux</a></li>
+                            <li class="category-item"><a href="/categories/hexo/">hexo</a></li>
                         
                     
                 </ul>
@@ -281,16 +281,7 @@
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/reboot/">reboot</a></li>
-                        
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/systemd/">systemd</a></li>
-                        
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/sbin/">sbin</a></li>
-                        
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/link/">link</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/hexo/">hexo</a></li>
                         
                     
                 </ul>
@@ -315,26 +306,28 @@
                     
 
                     
-                         <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在一次查问题的过程中，偶然发现 reboot 命令是<strong>直接链接</strong>到 systemctl 的（划重点：直接链接到），看下面的演示，</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># which reboot</span></span><br><span class="line">/sbin/reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># file /sbin/reboot</span></span><br><span class="line">/sbin/reboot: symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
-
-<p>第一直觉就是这是不是不合理，直接把 reboot 软链到 systemctl ，不就相当于直接执行 systemctl 命令，这怎么会起到 reboot 的作用的呢？</p>
-<p>继续看，</p>
-<p>发现 <code>/sbin</code> 目录下很多命令都是直接软链到 <code>systemctl</code>，没有参数来区分，而且这些命令是 100% 工作的，当数量多起来的时候，事情逐渐合理起来了。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># file /sbin/* | grep symbolic | grep systemctl</span></span><br><span class="line">/sbin/halt:                  symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/poweroff:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/reboot:                symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/runlevel:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/shutdown:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/telinit:               symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
-
-<p>那 systemctl 是如何区分出这些命令的？</p>
-<p>熟悉 C 编程的同学大概率可以猜到了，systemctl 可能是通过进程名来区分的，也就是 <code>argv[0]</code> 这个参数，C 语言里 <code>argv[0]</code> 保存的是程序的名称（其他语言也有类似的参数）。</p>
-<h2 id="那拿-systemctl-测试一下？"><a href="#那拿-systemctl-测试一下？" class="headerlink" title="那拿 systemctl 测试一下？"></a>那拿 systemctl 测试一下？</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@cs8 ~]# <span class="built_in">ln</span> -sf /usr/bin/systemctl testcmd</span><br><span class="line">[root@cs8 ~]# ./testcmd</span><br><span class="line">UNIT                                                                                LOAD   ACTIVE SUB       DESCRIPTION</span><br><span class="line">proc-sys-fs-binfmt_misc.automount                                                   loaded active waiting   Arbitrary Executable File Formats File System Automount Point</span><br><span class="line">sys-devices-pci0000:00-0000:00:05.0-virtio0-net-eth0.device                         loaded active plugged   Virtio network device</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda-vda1.device                   loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda/vda1</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda.device                        loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda</span><br></pre></td></tr></table></figure>
-
-<p>可以看到 systemctl 并不识别 testcmd 命令，而是打印了所有 uints，等价 <code>systemctl</code> 直接执行。</p>
-<h2 id="看代码"><a href="#看代码" class="headerlink" title="看代码"></a>看代码</h2><p>和我们预想的一样，systemctl 内部通过 argv 来判断由谁调用的</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// systemd/src/systemctl/systemctl.c</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">systemctl_dispatch_parse_argv</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">        assert(argc &gt;= <span class="number">0</span>);</span><br><span class="line">        assert(argv);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;halt&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_HALT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;poweroff&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;reboot&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (kexec_loaded())</span><br><span class="line">                        arg_action = ACTION_KEXEC;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                        arg_action = ACTION_REBOOT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;shutdown&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> shutdown_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;init&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (sd_booted() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        arg_action = _ACTION_INVALID;</span><br><span class="line">                        <span class="keyword">return</span> telinit_parse_argv(argc, argv);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        arg_action = ACTION_TELINIT;</span><br><span class="line">                        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;runlevel&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_RUNLEVEL;</span><br><span class="line">                <span class="keyword">return</span> runlevel_parse_argv(argc, argv);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        arg_action = ACTION_SYSTEMCTL;</span><br><span class="line">        <span class="keyword">return</span> systemctl_parse_argv(argc, argv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="自己实现一个"><a href="#自己实现一个" class="headerlink" title="自己实现一个"></a>自己实现一个</h2><p>实现也很简单，几行代码就行。只需要实现通过 argv[0] 识别调用方是谁，然后根据不同的调用方执行不同的逻辑即可。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;string.h&gt;</span></span><br><span class="line"></span><br><span class="line">int main(int argc, char *argv[]) &#123;</span><br><span class="line">    // 提取程序名（最后一个斜杠后的内容）</span><br><span class="line">    char *programName = strrchr(argv[0], <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">    <span class="keyword">if</span> (programName != NULL) &#123;</span><br><span class="line">        programName++; // 移动到斜杠后的第一个字符</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        programName = argv[0]; // 如果没有斜杠，直接使用整个参数</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 根据程序名执行不同的逻辑</span><br><span class="line">    <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programA&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 A 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programB&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 B 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;未知程序，执行默认逻辑\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">return</span> 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>完结撒花</p>
+                         <h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
+<p><strong>修改引入图片路径即可解决，</strong></p>
+<p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
+<p><code>../img/gris.png</code> (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常预览&#x2F;显示图片，<strong>但是文件名不要有空格</strong>，有空格云端显示不出来。</p>
+<p><img   src="/../img/gris.png"  alt="Gris"></p>
+<p><strong>结构展示</strong></p>
+<p>如果没有理解的话，看看这张结构图</p>
+<p><img   src="/../img/dict_tree.png" ></p>
+<h1 id="二、插件"><a href="#二、插件" class="headerlink" title="二、插件"></a>二、插件</h1><p>安装插件的时候要多搜索，寻找最近的文章看，如果你也是使用Next 主题，尽量找Hexo Next 官方最近更新的文档看，因为随着<code>Hexo/Next</code>的版本更新，很多功能都被开发者集成进去了，只需要修改一下主题配置文件即可，<strong>简而言之，找最新的文章&#x2F;文档参考。</strong></p>
+<blockquote>
+<p>Hexo-Next 文档地址</p>
+<p>Hexo-Next: <a class="link"   target="_blank" rel="noopener" href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<h2 id="安装的插件"><a href="#安装的插件" class="headerlink" title="安装的插件"></a>安装的插件</h2><p>安装的插件并不多，主要是够用即可</p>
+<p>hexo-symbols-count-time</p>
+<p>hexo-excerpt —— Because, auto_excerpt not working</p>
+<p>hexo-generator-searchdb——站内搜索</p>
+<p>大家都喜欢的插件，Next 文档都已经列出来了，去找就行了🤣</p>
+<blockquote>
+<p>Hexo-Next: <a class="link"   target="_blank" rel="noopener" href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<p><img   src="/../img/Next_dos_advanced.png" ></p>
 
                     
                 </div>
@@ -347,19 +340,7 @@
                             <ul class="post-tags-box border-box">
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/reboot/">reboot</a>
-                                    </li>
-                                
-                                    <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/systemd/">systemd</a>
-                                    </li>
-                                
-                                    <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/sbin/">sbin</a>
-                                    </li>
-                                
-                                    <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/link/">link</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/hexo/">hexo</a>
                                     </li>
                                 
                             </ul>
@@ -378,35 +359,19 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/intel-cpu-cve/"
-                                   title="查询 Intel 处理器安全漏洞"
+                                   href="/how-to-sign-rpm-package"
+                                   title="如何为 RPM 包签名"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">查询 Intel 处理器安全漏洞</span>
+                                        <span class="post-nav-title-item text-ellipsis">如何为 RPM 包签名</span>
                                         <span class="post-nav-item">Prev posts</span>
                                     </span>
                                 </a>
                             </div>
                         
-                        
-                            <div class="next-post">
-                                <a class="next"
-                                   rel="next"
-                                   href="/cmu-15-445-fall-2022-project1-buffer-pool/"
-                                   title="CMU 15-445 Fall 2022 Project1: Buffer Pool"
-                                >
-                                    <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">CMU 15-445 Fall 2022 Project1: Buffer Pool</span>
-                                        <span class="post-nav-item">Next posts</span>
-                                    </span>
-                                    <span class="right arrow-icon flex-center">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </span>
-                                </a>
-                            </div>
                         
                     </div>
                 
@@ -427,7 +392,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%82%A3%E6%8B%BF-systemctl-%E6%B5%8B%E8%AF%95%E4%B8%80%E4%B8%8B%EF%BC%9F"><span class="nav-text">那拿 systemctl 测试一下？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%8B%E4%BB%A3%E7%A0%81"><span class="nav-text">看代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%B7%B1%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA"><span class="nav-text">自己实现一个</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9B%BE%E7%89%87%E9%85%8D%E7%BD%AE"><span class="nav-text">一、图片配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8F%92%E4%BB%B6"><span class="nav-text">二、插件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%9A%84%E6%8F%92%E4%BB%B6"><span class="nav-text">安装的插件</span></a></li></ol></li></ol>
     </div>
 </div>
 
@@ -587,7 +552,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%82%A3%E6%8B%BF-systemctl-%E6%B5%8B%E8%AF%95%E4%B8%80%E4%B8%8B%EF%BC%9F"><span class="nav-text">那拿 systemctl 测试一下？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%8B%E4%BB%A3%E7%A0%81"><span class="nav-text">看代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%B7%B1%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA"><span class="nav-text">自己实现一个</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9B%BE%E7%89%87%E9%85%8D%E7%BD%AE"><span class="nav-text">一、图片配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8F%92%E4%BB%B6"><span class="nav-text">二、插件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%9A%84%E6%8F%92%E4%BB%B6"><span class="nav-text">安装的插件</span></a></li></ol></li></ol>
     </div>
 </div>
 

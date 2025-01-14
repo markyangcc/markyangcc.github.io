@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>Intel &amp; AMD 指令集之间的差异</title>
-    <url>/Intel_AMD_ISA_difference/</url>
+    <url>/Intel_AMD_ISA_difference.html</url>
     <content><![CDATA[<p>促进我写这篇文章的起因是，线上机器会使用基于 SPDK 的云盘存储方案，需要编译一个 RPM 包。<br>这个包在 Intel 机器是运行正常的，在 AMD 的机器上无法运行报不支持 AVX512 指令。</p>
 <p>这个问题很常见，是指令集不兼容造成的。AMD 虽然是 x86 厂商，即使是同一代其生产的 CPU 也不是和 Intel 的 CPU 是指令集完全兼容的。两家厂商的 CPU 会有一些对方不支持的指令集。</p>
 <p>出现问题的原因也很简单，这个 RPM 包是在一台编译机器上编译的，这台编译机器是 Intel 机器，正好支持部分 AVX512 指令集。但线上的 AMD 机器是不支持 AVX512 指令集的。解决这个问题很简单，只要使用 I 家 和 A 家 这两款 CPU 共同支持的指令集即可。实际上，是不需要我们手动对比指令集的差异，寻找交集。因为 CPU 指令集之间的差异会对软件的移植性造成重大影响，所以业界早早就有了对应的指令集基线(baseline)。</p>
@@ -478,7 +478,7 @@
   </entry>
   <entry>
     <title>CMU 15-445 Fall 2022 Project0: C++ Primer</title>
-    <url>/cmu-15-445-fall-2022-project0-cpp-primer/</url>
+    <url>/cmu-15-445-fall-2022-project0-cpp-primer.html</url>
     <content><![CDATA[<p>这个项目是使用 Modern C++ 17 实现一个 字典树（<code>Trie</code>）<br>项目难点在于理解项目里如何使用 TrieNode 和 TrieTerminalNode 来组合实现一个 Trie Tree。另外一个难点是对 unique_ptr 的理解。理解 unique_ptr 智能指针对生命周期的管理。</p>
 <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>项目提供了图对 Trie Tree 介绍的，理解这两张图，基本理解了这个项目里我们需要实现什么了。<br>下面这张图是我们最终实现的 Trie Tree。图中红色的格子是要实现的 Terminal Node（TrieNodeWithValue），<br>图中包含字母的格子是要实现的 Trie Node。其中 Terminal Node 算是 Trie Node 的一个特殊情况。</p>
 <p>回来继续介绍 TrieNode，他有三个成员</p>
@@ -505,7 +505,7 @@
   </entry>
   <entry>
     <title>CMU 15-445 Fall 2022 Project1: Buffer Pool</title>
-    <url>/cmu-15-445-fall-2022-project1-buffer-pool/</url>
+    <url>/cmu-15-445-fall-2022-project1-buffer-pool.html</url>
     <content><![CDATA[<p>这个项目是实现 bpm，简而言之是实现一个磁盘缓冲区，用于加速数据库应用的 IO 操作。</p>
 <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>众所周知，磁盘（SSD&#x2F;HDD）的访问速度是很慢的，内存 DRAM 访问相比较很快了。我们希望为磁盘经常访问的数据在内存建立对应的缓存来加速数据库应用的访问延迟。</p>
 <p>那我们把所有的数据都搬到内存里不就行了？</p>
@@ -602,7 +602,7 @@
   </entry>
   <entry>
     <title>修改重新封装 Linux ISO</title>
-    <url>/customize-linux-boot-iso/</url>
+    <url>/customize-linux-boot-iso.html</url>
     <content><![CDATA[<blockquote>
 <p>请注意：本文档旨在帮助您根据现有的 ISO 来创建一个 自定义的ISO文件。如果您希望从零开始，可以参考OpenCloudOS ISO镜像构建项目，</p>
 <p><a class="link"   href="https://gitee.com/OpenCloudOS/ocs_lorax_build_image" >https://gitee.com/OpenCloudOS/ocs_lorax_build_image<i class="fas fa-external-link-alt"></i></a></p>
@@ -637,7 +637,7 @@
   </entry>
   <entry>
     <title>调试 libvirt 启动的 VM</title>
-    <url>/debug-the-linux-kernel-libvirt/</url>
+    <url>/debug-the-linux-kernel-libvirt.html</url>
     <content><![CDATA[<p>上篇，我们介绍了如何使用 qemu 启动内核并对其进行 debug。如今，很多云服务器都是通过 libvirt&#x2F;qemu 启动的。<br>本文就着手介绍，如何调试由 libvirt 启动的 linux 内核。</p>
 <h2 id="xml-添加-s-参数"><a href="#xml-添加-s-参数" class="headerlink" title="xml 添加 -s 参数"></a>xml 添加 -s 参数</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">&lt;domain type=&#x27;kvm&#x27; xmlns:qemu=&#x27;http://libvirt.org/schemas/domain/qemu/1.0&#x27;&gt;</span><br><span class="line">  &lt;qemu:commandline&gt;</span><br><span class="line">    &lt;qemu:arg value=&#x27;-s&#x27;/&gt;</span><br><span class="line">  &lt;/qemu:commandline&gt;</span><br><span class="line">&lt;/domain&gt;</span><br></pre></td></tr></table></figure>
 <p>添加 -s 参数后，qemu 会启动 1234 端口用来监听来自 gdb 的连接。</p>
@@ -672,7 +672,7 @@
   </entry>
   <entry>
     <title>PMEM 扩展系统内存用法介绍</title>
-    <url>/extend-system-ram-using-pmem/</url>
+    <url>/extend-system-ram-using-pmem.html</url>
     <content><![CDATA[<p>在介绍 pmem 的几种用法之前，我们先来介绍 pmem 的几种模式，因为后面介绍的用法与 pmem 的这几种模式是分不开的。</p>
 <h1 id="PMEM-的三种模式"><a href="#PMEM-的三种模式" class="headerlink" title="PMEM 的三种模式"></a>PMEM 的三种模式</h1><h2 id="1、Memory-Mode"><a href="#1、Memory-Mode" class="headerlink" title="1、Memory Mode"></a>1、Memory Mode</h2><p>pmem 配置为内存模式时，pmem 作为系统内存（system ram），原有的系统内存作为 cache。pmem 本身是比 DRAM 慢的，这种情况下，应用的访存延迟也会上升。内存模式屏蔽了本身的系统内存，针对虚拟化场景下一台物理机插了好几个内存的情况 几百G 的内存相当于被浪费了。</p>
 <h2 id="2、App-Direct-Mode"><a href="#2、App-Direct-Mode" class="headerlink" title="2、App Direct Mode"></a>2、App Direct Mode</h2><p>pmem 配置为 AD 模式时，这种模式，pmem 作为一个额外的内存资源暴露给 OS。通常情况下，我们也是采用 AD 模式，然后将 pmem 配置为 system-ram ，这样针对 redis 这种大内存的场景提供了大内存的适中的解决方案，因为 pmem 比 DRAM 便宜不少，完全采用 DRAM 比较贵。</p>
@@ -710,7 +710,7 @@
   </entry>
   <entry>
     <title>Hexo-Next主题配置</title>
-    <url>/hexo-next-theme-configuration-picture-configuration/</url>
+    <url>/hexo-next-theme-configuration-picture-configuration.html</url>
     <content><![CDATA[<h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
 <p><strong>修改引入图片路径即可解决，</strong></p>
 <p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
@@ -743,7 +743,7 @@
   </entry>
   <entry>
     <title>如何为 RPM 包签名</title>
-    <url>/how-to-sign-rpm-package/</url>
+    <url>/how-to-sign-rpm-package.html</url>
     <content><![CDATA[<h2 id="Generate-GPG-keyring"><a href="#Generate-GPG-keyring" class="headerlink" title="Generate GPG keyring"></a>Generate GPG keyring</h2><p>使用下面的命令生成 GPG keyring。输入 Name 和 Email 。输入 o 确认后，passphrase 可以不输入（保留为空即可），passphrase 保留为空代表不需要密码保护（公钥和私钥需要确认两次）。</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gpg --gen-key</span><br></pre></td></tr></table></figure>
 
@@ -804,7 +804,7 @@
   </entry>
   <entry>
     <title>查询 Intel 处理器安全漏洞</title>
-    <url>/intel-cpu-cve/</url>
+    <url>/intel-cpu-cve.html</url>
     <content><![CDATA[<h2 id="Intel-处理器安全漏洞表"><a href="#Intel-处理器安全漏洞表" class="headerlink" title="Intel 处理器安全漏洞表"></a>Intel 处理器安全漏洞表</h2><p><a class="link"   href="https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html" >https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html<i class="fas fa-external-link-alt"></i></a></p>
 <p><img   src="/../img/1701078889956-2908e693-214c-4762-9897-53c5924ec88c.png"  alt="image.png"></p>
 <h2 id="处理器安全漏洞只需要关注这两个方面"><a href="#处理器安全漏洞只需要关注这两个方面" class="headerlink" title="处理器安全漏洞只需要关注这两个方面"></a>处理器安全漏洞只需要关注这两个方面</h2><p>Intel 处理器的漏洞表，包含了所有漏洞，每个漏洞一列（图中右上角），漏洞描述包含 CVE 名称，编号以及 Intel 的编号。新披露的漏洞靠左，老披露的靠右。</p>
@@ -828,7 +828,7 @@
   </entry>
   <entry>
     <title>PARSEC 3.0 编译报错</title>
-    <url>/parsec3.0-compile-error/</url>
+    <url>/parsec3.0-compile-error.html</url>
     <content><![CDATA[<p>PARSEC 3.0(Parallel Applications Research for System Efficiency Collectio)是一个基准测试套件，用于评估多核处理器和系统的性能，也就是跑分软件。</p>
 <p>工作中需要使用到这个软件作为基准测试软件，因为 PARSEC 从官网下载下来是不能直接运行的，所以有了下面适配 RHEL 9 操作系统的内容。<br>文章末尾有所有修改的 patches 文件，里面记录详细的修改地方。</p>
 <h1 id="安装-PARSEC-3-0"><a href="#安装-PARSEC-3-0" class="headerlink" title="安装 PARSEC 3.0"></a>安装 PARSEC 3.0</h1><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Full PARSEC 3.0 tarball</span></span><br><span class="line">wget http://parsec.cs.princeton.edu/download/3.0/parsec-3.0.tar.gz</span><br><span class="line"></span><br><span class="line">tar xvf parsec-3.0.tar.gz</span><br><span class="line">cd parsec-3.0</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">编译</span></span><br><span class="line">source env.sh</span><br><span class="line">parsecmgmt -a build</span><br></pre></td></tr></table></figure>
@@ -871,7 +871,7 @@
   </entry>
   <entry>
     <title>Reboot 命令实际是 systemctl ？</title>
-    <url>/reboot_is_link_to_systemctl/</url>
+    <url>/reboot_is_link_to_systemctl.html</url>
     <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在一次查问题的过程中，偶然发现 reboot 命令是<strong>直接链接</strong>到 systemctl 的（划重点：直接链接到），看下面的演示，</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># which reboot</span></span><br><span class="line">/sbin/reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># file /sbin/reboot</span></span><br><span class="line">/sbin/reboot: symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
 
@@ -905,7 +905,7 @@
   </entry>
   <entry>
     <title>使用 ebpf USDT 追踪用户态程序</title>
-    <url>/tracing-userspace-process-ebpf-usdt/</url>
+    <url>/tracing-userspace-process-ebpf-usdt.html</url>
     <content><![CDATA[<p>USDT 是一种探针技术，让用户态程序也支持使用 perf&#x2F;ebpf 性能分析工具进行 tracing&#x2F;profiling。做性能分析通常听过 perf&#x2F;ebpf 这些工具，这些工具通常用在内核上，用于分析内核的一些性能问题，如果是用户态程序也遇到性能问题了，我们希望用户态程序也能使用 perf&#x2F;ebpf 工具进行 tracing&#x2F;profiling。那么就需要 USDT 技术了。</p>
 <p>简单来说，USDT 就是探针技术，我们在源码里插入一个固定的探针。当我们 tracing 这个探针的时候，就获取我们埋点的数据了。</p>
 <h2 id="USDT-如何插入探针？"><a href="#USDT-如何插入探针？" class="headerlink" title="USDT  如何插入探针？"></a>USDT  如何插入探针？</h2><p>插入探针，有时候也叫做埋点。只需要包含 &lt;sys&#x2F;sdt.h&gt; 头文件，然后利用 DTRACE_PROBE 系列函数埋点即可。</p>
@@ -945,7 +945,7 @@
   </entry>
   <entry>
     <title>Run Your Own OBS 编译系统</title>
-    <url>/run-your-own-obs-open-build-service/</url>
+    <url>/run-your-own-obs-open-build-service.html</url>
     <content><![CDATA[<p>OBS（Open Build Service）是一个由 SUSE 开源的操作系统发行版的构建系统，可以用来创建和分发软件包。OBS支持几乎所有的主流发行版的包，比如说 SUSE系，RedHat系，Debian系，Arch系等等。</p>
 <h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p>安装 OBS 最简单的方式就是使用 <a class="link"   href="https://openbuildservice.org/download/" >openbuildservice<i class="fas fa-external-link-alt"></i></a> 网站提供的镜像（iso&#x2F;qcow2&#x2F;vmdk&#x2F;vdi），将镜像部署机器上就获得一个 OBS 实例。</p>
 <p>通常情况下，使用 SUSE 制作好的虚拟机镜像是最省时间的，比如,</p>
@@ -1054,7 +1054,7 @@
   </entry>
   <entry>
     <title>xv6 Lab0: Prepare for the Lab</title>
-    <url>/xv6-lab0-prepare-workspace/</url>
+    <url>/xv6-lab0-prepare-workspace.html</url>
     <content><![CDATA[<p>再开始 lab 之前，我们先进行环境配置。</p>
 <h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>看 xv6 网站上的教程，安装依赖软件包<br><a class="link"   href="https://pdos.csail.mit.edu/6.828/2023/tools.html" >https://pdos.csail.mit.edu/6.828/2023/tools.html<i class="fas fa-external-link-alt"></i></a></p>
 <p>使用 Debina&#x2F;Ubuntu 系统, </p>
@@ -1083,7 +1083,7 @@
   </entry>
   <entry>
     <title>xv6 Lab2: system calls</title>
-    <url>/xv6-lab2-system-calls/</url>
+    <url>/xv6-lab2-system-calls.html</url>
     <content><![CDATA[<p>Lab2 实现 2 个 syscall。</p>
 <h2 id="Using-gdb"><a href="#Using-gdb" class="headerlink" title="Using gdb"></a>Using gdb</h2><p>第一部分是了解使用 gdb 调试 xv6（我使用的是 Debian）</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">其中一个窗口启动 qemu-gdb</span></span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">make qemu-gdb</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新开另一个窗口，连接 gdb</span></span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">gdb-multiarch</span><br></pre></td></tr></table></figure>
@@ -1156,7 +1156,7 @@
   </entry>
   <entry>
     <title>xv6 Lab3: page tables</title>
-    <url>/xv6-lab3-page-tables/</url>
+    <url>/xv6-lab3-page-tables.html</url>
     <content><![CDATA[<p>Page table 使用用来映射进程虚拟地址到物理地址。有了 pagetable 进程看到的是虚拟地址，对操作系统来说，有了 pagetable，可以实现更多的管理面的控制，Isolating，Guarding and etc.</p>
 <h2 id="Speed-up-system-calls"><a href="#Speed-up-system-calls" class="headerlink" title="Speed up system calls"></a>Speed up system calls</h2><p>加速  <code>sys_getpid</code> 这个系统调用。资源抽象有很多维度，我们内核对外提供服务的抽象就是 proc (process 的缩写）。而 proc 是 xv6 内核提供的抽象，其标识符就是 pid。也就是说 pid 是内核能看到的，用户态向获取自身的 pid 只能通过 syscall 来实现。proc 的 pid 是放在内核页里的，用户态看不到，我们加速 getpid syscall 的思路很简单，将 pid 保存到用户态页就行了。</p>
 <p>Linux 内核获取时间的系统调用 <code>gettimeofday()</code> 也是这个思路，在用户态映射一个只读的页，里面存储时间。在 Linux 上这种优化手段叫做 vsyscall&#x2F;vdso,</p>
@@ -1189,7 +1189,7 @@
   </entry>
   <entry>
     <title>xv6 Lab1: Xv6 and Unix utilities</title>
-    <url>/xv6-lab1-xv6-and-unix-utilities/</url>
+    <url>/xv6-lab1-xv6-and-unix-utilities.html</url>
     <content><![CDATA[<p>Lab1 为 xv6 实现用户态程序。</p>
 <h2 id="sleep"><a href="#sleep" class="headerlink" title="sleep"></a>sleep</h2><p>写第一个程序，主要的体会就是懵。不知道从哪下手，在看了内核态的对应实现，看了用户态 kill.c 的实现后，理清思路后，才发现 sleep 其实很简单。</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;kernel/types.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;user/user.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span> &#123;</span><br><span class="line">    <span class="type">int</span> ticks;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="number">2</span>, <span class="string">&quot;usage: sleep ticks...\n&quot;</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ticks = atoi(argv[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    sleep(ticks);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
@@ -1215,7 +1215,7 @@
   </entry>
   <entry>
     <title>xv6 Lab4: Traps</title>
-    <url>/xv6-lab4-traps/</url>
+    <url>/xv6-lab4-traps.html</url>
     <content><![CDATA[<p>Lab4 实现用户态 trap 处理，集中在返回用户态的中断上下文保存，很类似 signal 处理。</p>
 <h2 id="RISC-V-assembly"><a href="#RISC-V-assembly" class="headerlink" title="RISC-V assembly"></a>RISC-V assembly</h2><p>主要是一些基础知识。</p>
 <blockquote>
@@ -1297,7 +1297,7 @@
   </entry>
   <entry>
     <title>xv6 Lab6: Multithreading</title>
-    <url>/xv6-lab6-multithreading/</url>
+    <url>/xv6-lab6-multithreading.html</url>
     <content><![CDATA[<p>这个实验是熟悉多线程。需要实现在一个用户态的线程切换，使用多个线程来加速程序，并实现一个屏障。</p>
 <h2 id="uthread"><a href="#uthread" class="headerlink" title="uthread"></a>uthread</h2><p>打开 user&#x2F;uthread.c 文件，观察 uthread 的数据结构以及部分函数实现能帮我们快速理清思路。</p>
 <h3 id="关键实现"><a href="#关键实现" class="headerlink" title="关键实现"></a>关键实现</h3><h4 id="struct-context-thread-switch"><a href="#struct-context-thread-switch" class="headerlink" title="struct context &#x2F; thread_switch"></a>struct context &#x2F; thread_switch</h4><p>一个是上下文，一个是线程切换对应的底层汇编。如介绍所言，从内核部分复制过来就行了。</p>
@@ -1321,7 +1321,7 @@
   </entry>
   <entry>
     <title>xv6 Lab5: COW</title>
-    <url>/xv6-lab5-cow.md/</url>
+    <url>/xv6-lab5-cow.md.html</url>
     <content><![CDATA[<p>Lab5 的任务是在 xv6 内核中实现 COW fork。叫做 lazy fork 也行。</p>
 <h2 id="Implement-copy-on-write-fork"><a href="#Implement-copy-on-write-fork" class="headerlink" title="Implement copy-on-write fork"></a>Implement copy-on-write fork</h2><h2 id="关键实现"><a href="#关键实现" class="headerlink" title="关键实现"></a>关键实现</h2><h3 id="struct-kmem"><a href="#struct-kmem" class="headerlink" title="struct kmem"></a>struct kmem</h3><p>在 struct kmem 结构体中引入引用计数成员。</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">spinlock</span> <span class="title">lock</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">freelist</span>;</span></span><br><span class="line">    <span class="type">int</span> ref_count[PHYSTOP / PGSIZE];</span><br><span class="line">&#125; kmem;</span><br></pre></td></tr></table></figure>

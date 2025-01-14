@@ -9,7 +9,7 @@
     
     <title>
         
-            查询 Intel 处理器安全漏洞 |
+            调试 libvirt 启动的 VM |
         
         Lapin Gris
     </title>
@@ -227,7 +227,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        查询 Intel 处理器安全漏洞
+                        调试 libvirt 启动的 VM
                     </div>
                 
 
@@ -255,7 +255,7 @@
         
             <span class="meta-info-item post-create-date">
                 <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2023-11-27 19:24:00</span>
+                <span class="datetime">2024-07-29 17:46:46</span>
             </span>
 
             
@@ -270,7 +270,7 @@
             <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
                 <ul class="post-category-ul">
                     
-                            <li class="category-item"><a href="/categories/Intel/">Intel</a></li>
+                            <li class="category-item"><a href="/categories/debug/">debug</a></li>
                         
                     
                 </ul>
@@ -281,13 +281,13 @@
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/CVE/">CVE</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/debug/">debug</a></li>
                         
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/processor/">processor</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/kernel/">kernel</a></li>
                         
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/lscpu/">lscpu</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/libvirt/">libvirt</a></li>
                         
                     
                 </ul>
@@ -312,17 +312,28 @@
                     
 
                     
-                         <h2 id="Intel-处理器安全漏洞表"><a href="#Intel-处理器安全漏洞表" class="headerlink" title="Intel 处理器安全漏洞表"></a>Intel 处理器安全漏洞表</h2><p><a class="link"   target="_blank" rel="noopener" href="https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html" >https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html<i class="fas fa-external-link-alt"></i></a></p>
-<p><img   src="/../img/1701078889956-2908e693-214c-4762-9897-53c5924ec88c.png"  alt="image.png"></p>
-<h2 id="处理器安全漏洞只需要关注这两个方面"><a href="#处理器安全漏洞只需要关注这两个方面" class="headerlink" title="处理器安全漏洞只需要关注这两个方面"></a>处理器安全漏洞只需要关注这两个方面</h2><p>Intel 处理器的漏洞表，包含了所有漏洞，每个漏洞一列（图中右上角），漏洞描述包含 CVE 名称，编号以及 Intel 的编号。新披露的漏洞靠左，老披露的靠右。</p>
-<p>1、我用的是哪一款 CPU？<br>通过 <code>Family</code>、<code>Model</code> 、<code>Stepping</code> 三项就可以定位到列表中的特定型号所在行（<strong>图中左上角</strong>），查看 CPU 型号通过 lscpu 命令。<br>2、我是否受到此次 CVE 的影响？<br>观察<strong>图中右下角</strong>的字段，</p>
-<ul>
-<li>Not Affected: 代表不受影响</li>
-<li>MCU：代表需要更新微码</li>
-<li>Software：代表需要升级软件</li>
-</ul>
-<h2 id="如何查看我的-CPU-的型号？"><a href="#如何查看我的-CPU-的型号？" class="headerlink" title="如何查看我的 CPU 的型号？"></a>如何查看我的 CPU 的型号？</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">lscpu | grep -E <span class="string">&quot;CPU family:|Model:|Stepping:&quot;</span></span></span><br><span class="line">CPU family:          6</span><br><span class="line">Model:               85</span><br><span class="line">Stepping:            4</span><br></pre></td></tr></table></figure>
-<p>其中 Model 输出结果都是 10 进制，Intel 处理器漏洞表面里使用的是 16 进制（后缀是 H，代表是 16 进制），85 的 16 进制表示 55H，所以这款 CPU 的 Family_Model 是 06_55H, Steeping 是 4。</p>
+                         <p>上篇，我们介绍了如何使用 qemu 启动内核并对其进行 debug。如今，很多云服务器都是通过 libvirt&#x2F;qemu 启动的。<br>本文就着手介绍，如何调试由 libvirt 启动的 linux 内核。</p>
+<h2 id="xml-添加-s-参数"><a href="#xml-添加-s-参数" class="headerlink" title="xml 添加 -s 参数"></a>xml 添加 -s 参数</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;domain type=&#x27;kvm&#x27; xmlns:qemu=&#x27;http://libvirt.org/schemas/domain/qemu/1.0&#x27;&gt;</span><br><span class="line">  &lt;qemu:commandline&gt;</span><br><span class="line">    &lt;qemu:arg value=&#x27;-s&#x27;/&gt;</span><br><span class="line">  &lt;/qemu:commandline&gt;</span><br><span class="line">&lt;/domain&gt;</span><br></pre></td></tr></table></figure>
+<p>添加 -s 参数后，qemu 会启动 1234 端口用来监听来自 gdb 的连接。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ss -nltp | grep 1234</span></span><br><span class="line">LISTEN 0      1            0.0.0.0:1234       0.0.0.0:*    users:((&quot;qemu-kvm&quot;,pid=1273698,fd=107))</span><br><span class="line">LISTEN 0      1               [::]:1234          [::]:*    users:((&quot;qemu-kvm&quot;,pid=1273698,fd=108))</span><br></pre></td></tr></table></figure>
+
+<h2 id="关闭内核地址空间随机化"><a href="#关闭内核地址空间随机化" class="headerlink" title="关闭内核地址空间随机化"></a>关闭内核地址空间随机化</h2><p>ASLR 是一个安全相关的特性，默认情况下，ASLR 是打开的。但是打开 ASLR 会导致我们 debug 过程中 gdb 无法命中断点。</p>
+<p>因此，我们需要登录到 Guest 里通过向内核命令行添加 nokaslr 参数来关闭内核地址空间随机化。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grubby --update-kernel=ALL --args=&quot;nokaslr&quot;</span><br></pre></td></tr></table></figure>
+
+<p>修改完成后，重启机器(<code>reboot</code>)，重启后通过如下命令确认关闭成功，</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /proc/cmdline | grep nokaslr</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装-debuginfo"><a href="#安装-debuginfo" class="headerlink" title="安装 debuginfo"></a>安装 debuginfo</h2><blockquote>
+<p>假设我们的 guest 内核版本是 4.18.0-553.8.1.el8_10</p>
+</blockquote>
+<p>下载对应的 kernel-debuginfo 和 kernel-debuginfo-common 包, 并安装,</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum localinstall kernel-debuginfo-4.18.0-553.8.1.el8_10.x86_64.rpm kernel-debuginfo-common-x86_64-4.18.0-553.8.1.el8_10.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<h2 id="连接到-Guest"><a href="#连接到-Guest" class="headerlink" title="连接到 Guest"></a>连接到 Guest</h2><p>安装完 debuginfo 后，通过 gdb 连接到 Guest 即可开始 debug,</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">gdb /usr/lib/debug/lib/modules/4.18.0-553.8.1.el8_10.x86_64/vmlinux</span></span><br><span class="line"></span><br><span class="line">(gdb) target remote :1234</span><br><span class="line">(gdb) hbreak pick_next_task_fair</span><br><span class="line">(gdb) c</span><br></pre></td></tr></table></figure>
+
+<p><img   src="/../img/gdb-libvirt-pick-next-task-fair.png"  alt="set breakpoint at pick_next_task_fair"></p>
 
                     
                 </div>
@@ -335,15 +346,15 @@
                             <ul class="post-tags-box border-box">
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/CVE/">CVE</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/debug/">debug</a>
                                     </li>
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/processor/">processor</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/kernel/">kernel</a>
                                     </li>
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/lscpu/">lscpu</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/libvirt/">libvirt</a>
                                     </li>
                                 
                             </ul>
@@ -359,31 +370,15 @@
                 
                     <div class="post-nav border-box">
                         
-                            <div class="prev-post">
-                                <a class="prev"
-                                   rel="prev"
-                                   href="/tracing-userspace-process-ebpf-usdt/"
-                                   title="使用 ebpf USDT 追踪用户态程序"
-                                >
-                                    <span class="left arrow-icon flex-center">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </span>
-                                    <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">使用 ebpf USDT 追踪用户态程序</span>
-                                        <span class="post-nav-item">Prev posts</span>
-                                    </span>
-                                </a>
-                            </div>
-                        
                         
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/reboot_is_link_to_systemctl/"
-                                   title="Reboot 命令实际是 systemctl ？"
+                                   href="/customize-linux-boot-iso"
+                                   title="修改重新封装 Linux ISO"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">Reboot 命令实际是 systemctl ？</span>
+                                        <span class="post-nav-title-item text-ellipsis">修改重新封装 Linux ISO</span>
                                         <span class="post-nav-item">Next posts</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">
@@ -411,7 +406,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Intel-%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E8%A1%A8"><span class="nav-text">Intel 处理器安全漏洞表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E5%8F%AA%E9%9C%80%E8%A6%81%E5%85%B3%E6%B3%A8%E8%BF%99%E4%B8%A4%E4%B8%AA%E6%96%B9%E9%9D%A2"><span class="nav-text">处理器安全漏洞只需要关注这两个方面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%9F%A5%E7%9C%8B%E6%88%91%E7%9A%84-CPU-%E7%9A%84%E5%9E%8B%E5%8F%B7%EF%BC%9F"><span class="nav-text">如何查看我的 CPU 的型号？</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#xml-%E6%B7%BB%E5%8A%A0-s-%E5%8F%82%E6%95%B0"><span class="nav-text">xml 添加 -s 参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E9%97%AD%E5%86%85%E6%A0%B8%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4%E9%9A%8F%E6%9C%BA%E5%8C%96"><span class="nav-text">关闭内核地址空间随机化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-debuginfo"><span class="nav-text">安装 debuginfo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E5%88%B0-Guest"><span class="nav-text">连接到 Guest</span></a></li></ol>
     </div>
 </div>
 
@@ -571,7 +566,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Intel-%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E8%A1%A8"><span class="nav-text">Intel 处理器安全漏洞表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E5%8F%AA%E9%9C%80%E8%A6%81%E5%85%B3%E6%B3%A8%E8%BF%99%E4%B8%A4%E4%B8%AA%E6%96%B9%E9%9D%A2"><span class="nav-text">处理器安全漏洞只需要关注这两个方面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%9F%A5%E7%9C%8B%E6%88%91%E7%9A%84-CPU-%E7%9A%84%E5%9E%8B%E5%8F%B7%EF%BC%9F"><span class="nav-text">如何查看我的 CPU 的型号？</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#xml-%E6%B7%BB%E5%8A%A0-s-%E5%8F%82%E6%95%B0"><span class="nav-text">xml 添加 -s 参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E9%97%AD%E5%86%85%E6%A0%B8%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4%E9%9A%8F%E6%9C%BA%E5%8C%96"><span class="nav-text">关闭内核地址空间随机化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-debuginfo"><span class="nav-text">安装 debuginfo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E5%88%B0-Guest"><span class="nav-text">连接到 Guest</span></a></li></ol>
     </div>
 </div>
 

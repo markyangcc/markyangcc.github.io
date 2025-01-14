@@ -9,7 +9,7 @@
     
     <title>
         
-            Hexo-Next主题配置 |
+            如何为 RPM 包签名 |
         
         Lapin Gris
     </title>
@@ -227,7 +227,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        Hexo-Next主题配置
+                        如何为 RPM 包签名
                     </div>
                 
 
@@ -255,7 +255,7 @@
         
             <span class="meta-info-item post-create-date">
                 <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2022-01-02 04:40:37</span>
+                <span class="datetime">2022-11-03 11:08:45</span>
             </span>
 
             
@@ -270,7 +270,7 @@
             <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
                 <ul class="post-category-ul">
                     
-                            <li class="category-item"><a href="/categories/hexo/">hexo</a></li>
+                            <li class="category-item"><a href="/categories/rpm/">rpm</a></li>
                         
                     
                 </ul>
@@ -281,7 +281,7 @@
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/hexo/">hexo</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/rpm/">rpm</a></li>
                         
                     
                 </ul>
@@ -306,28 +306,56 @@
                     
 
                     
-                         <h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
-<p><strong>修改引入图片路径即可解决，</strong></p>
-<p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
-<p><code>../img/gris.png</code> (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常预览&#x2F;显示图片，<strong>但是文件名不要有空格</strong>，有空格云端显示不出来。</p>
-<p><img   src="/../img/gris.png"  alt="Gris"></p>
-<p><strong>结构展示</strong></p>
-<p>如果没有理解的话，看看这张结构图</p>
-<p><img   src="/../img/dict_tree.png" ></p>
-<h1 id="二、插件"><a href="#二、插件" class="headerlink" title="二、插件"></a>二、插件</h1><p>安装插件的时候要多搜索，寻找最近的文章看，如果你也是使用Next 主题，尽量找Hexo Next 官方最近更新的文档看，因为随着<code>Hexo/Next</code>的版本更新，很多功能都被开发者集成进去了，只需要修改一下主题配置文件即可，<strong>简而言之，找最新的文章&#x2F;文档参考。</strong></p>
-<blockquote>
-<p>Hexo-Next 文档地址</p>
-<p>Hexo-Next: <a class="link"   target="_blank" rel="noopener" href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
-</blockquote>
-<h2 id="安装的插件"><a href="#安装的插件" class="headerlink" title="安装的插件"></a>安装的插件</h2><p>安装的插件并不多，主要是够用即可</p>
-<p>hexo-symbols-count-time</p>
-<p>hexo-excerpt —— Because, auto_excerpt not working</p>
-<p>hexo-generator-searchdb——站内搜索</p>
-<p>大家都喜欢的插件，Next 文档都已经列出来了，去找就行了🤣</p>
-<blockquote>
-<p>Hexo-Next: <a class="link"   target="_blank" rel="noopener" href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
-</blockquote>
-<p><img   src="/../img/Next_dos_advanced.png" ></p>
+                         <h2 id="Generate-GPG-keyring"><a href="#Generate-GPG-keyring" class="headerlink" title="Generate GPG keyring"></a>Generate GPG keyring</h2><p>使用下面的命令生成 GPG keyring。输入 Name 和 Email 。输入 o 确认后，passphrase 可以不输入（保留为空即可），passphrase 保留为空代表不需要密码保护（公钥和私钥需要确认两次）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gpg --gen-key</span><br></pre></td></tr></table></figure>
+
+<p>查看生成的 GPG key</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gpg -K</span><br></pre></td></tr></table></figure>
+
+<h2 id="rpmsign"><a href="#rpmsign" class="headerlink" title="rpmsign"></a>rpmsign</h2><p>导出公钥，生成一个公钥文件，此公钥文件通常根据用途不同放到 repo 源中，或者直接导入系统用于安装 RPM 时进行 GPG 验证。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gpg --armor --<span class="built_in">export</span> &gt; RPM-GPG-KEY-EXAMPLE</span><br></pre></td></tr></table></figure>
+
+<p>将所有的 RPM 包进行签名</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpmsign --define <span class="string">&quot;_gpg_name security@example.com&quot;</span> --addsign *.rpm</span><br></pre></td></tr></table></figure>
+
+<h2 id="migrate-GPG-keyring"><a href="#migrate-GPG-keyring" class="headerlink" title="migrate GPG keyring"></a>migrate GPG keyring</h2><p>1、export GPG keyring</p>
+<p>-a, –armor, 以 ascii 方式导出</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># export public key</span></span><br><span class="line">gpg -a --<span class="built_in">export</span> &gt;mypubkeys.asc</span><br><span class="line"><span class="comment"># export private key</span></span><br><span class="line">gpg -a --export-secret-keys &gt;myprivatekeys.asc</span><br></pre></td></tr></table></figure>
+
+<p>2、export GPG trustdb (Optionally)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># export gpg&#x27;s trustdb (Optionally)</span></span><br><span class="line">gpg --export-ownertrust &gt;mytrustdb.txt</span><br></pre></td></tr></table></figure>
+
+<p>3、import GPG keyring</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">gpg --import myprivatekeys.asc</span><br><span class="line">gpg --import mypubkeys.asc</span><br><span class="line"></span><br><span class="line"><span class="comment"># list public &amp; secret keys</span></span><br><span class="line">gpg -K</span><br><span class="line">gpg -k</span><br></pre></td></tr></table></figure>
+
+<p>4、import trustdb</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gpg --import-ownertrust mytrustdb.txt</span><br></pre></td></tr></table></figure>
+
+<p>当我们导入 GPG keyrings 时，GPG 并不信任 keyrings，需要导入 trustdb 后，并更新下 trustdb</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gpg --update-trustdb</span><br></pre></td></tr></table></figure>
+
+<p>5、force trust GPG keyring</p>
+<p>如果没有导入 trustdb，GPG 认为 keys 不可信。可以使用下面的命令信任所有的 GPG keyrings。</p>
+<p>注意，只信任自己创建的 keyring，不要信任互联网的其他 keyring。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gpg --list-keys --fingerprint |grep pub -A 1|egrep -Ev <span class="string">&quot;pub|--&quot;</span>|<span class="built_in">tr</span> -d <span class="string">&#x27; &#x27;</span> \</span><br><span class="line"> | awk <span class="string">&#x27;BEGIN &#123; FS = &quot;\n&quot; &#125; ; &#123; print $1&quot;:6:&quot; &#125; &#x27;</span> | gpg --import-ownertrust</span><br></pre></td></tr></table></figure>
+
+<h2 id="搭配-OBS-使用"><a href="#搭配-OBS-使用" class="headerlink" title="搭配 OBS 使用"></a>搭配 OBS 使用</h2><p>OBS(Open Build Service) 是一个可以用于为各个发行版打包的编译系统。OBS 系统默认会使用自己生成的签名，但是如果能让 OBS 系统使用我们自己的签名不是很好，接下来就介绍如何让 OBS 使用我们的 GPG Keyring 为 RPM 包进行签名。</p>
+<p>平时我们使用 rpmbuild 命令在虚拟机或者 docker 中打包的时候签名的公钥都是存放在 <code>~/.gnupg</code> 目录下，这也是 gpg -k 等命令的默认搜索路径，但是 OBS 是一个单独的系统，他的配置都放在单独的 <code>/srv</code> 目录下。rpmsign 使用的公钥的存放目录是 <code>/srv/obs/gnupg</code>。</p>
+<p>因此，只需要在导入 GPG Keyring 时候，通过 <code>--homedir</code> 指定目录即可，</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gpg --import  my-publickey.asc</span><br><span class="line">gpg --import my-privatekey.asc</span><br><span class="line">gpg --import-ownertrust my-gpgtrustdb.txt</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h2><h3 id="为什么需要迁移-GPG-keyring"><a href="#为什么需要迁移-GPG-keyring" class="headerlink" title="为什么需要迁移 GPG keyring"></a>为什么需要迁移 GPG keyring</h3><p>进行 RPM 打包的时候，都会给 RPM 包签名。同一个发行商都会给 RPM 包签名，不同的 build system，比如 OBS（open build service），Koji 等都可以实现自动签名。我们可以导入 GPG keyring，而不是让构建系统自己生成一个。</p>
+<h3 id="为什么需要导入-trustdb？"><a href="#为什么需要导入-trustdb？" class="headerlink" title="为什么需要导入 trustdb？"></a>为什么需要导入 trustdb？</h3><p>如果不导入 trustdb，当导入迁移后的 GPG keyring 时，GPG keyring 状态变为 unknown。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# gpg -K</span><br><span class="line">/root/.gnupg/pubring.kbx</span><br><span class="line">------------------------</span><br><span class="line">sec   rsa3072 2022-11-02 [SC] [expires: 2024-11-01]</span><br><span class="line">      024B8C9501E35519D203B3B6DCD37021E3793FD6</span><br><span class="line">uid           [ultimate] security &lt;@example.com&gt;</span><br><span class="line">ssb   rsa3072 2022-11-02 [E] [expires: 2024-11-01]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# gpg -K</span><br><span class="line">/root/.gnupg/pubring.kbx</span><br><span class="line">------------------------</span><br><span class="line">sec   rsa3072 2022-11-02 [SC] [expires: 2024-11-01]</span><br><span class="line">      024B8C9501E35519D203B3B6DCD37021E3793FD6</span><br><span class="line">uid           [unknown] security &lt;@example.com&gt;</span><br><span class="line">ssb   rsa3072 2022-11-02 [E] [expires: 2024-11-01]</span><br></pre></td></tr></table></figure>
+
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>1、<a class="link"   target="_blank" rel="noopener" href="https://access.redhat.com/solutions/2115511" >https://access.redhat.com/solutions/2115511<i class="fas fa-external-link-alt"></i></a></p>
+<p>2、<a class="link"   target="_blank" rel="noopener" href="https://docs.pagure.org/koji/signing/" >https://docs.pagure.org/koji/signing/<i class="fas fa-external-link-alt"></i></a></p>
+<p>3、<a class="link"   target="_blank" rel="noopener" href="https://unix.stackexchange.com/questions/639514/unknown-validity-despite-having-signed-the-key-myself" >https://unix.stackexchange.com/questions/639514/unknown-validity-despite-having-signed-the-key-myself<i class="fas fa-external-link-alt"></i></a></p>
+<p>4、<a class="link"   target="_blank" rel="noopener" href="https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually" >https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually<i class="fas fa-external-link-alt"></i></a></p>
+<p>5、<a class="link"   target="_blank" rel="noopener" href="https://www.gnupg.org/documentation/manuals/gnupg/GPG-Configuration.html" >https://www.gnupg.org/documentation/manuals/gnupg/GPG-Configuration.html<i class="fas fa-external-link-alt"></i></a></p>
 
                     
                 </div>
@@ -340,7 +368,7 @@
                             <ul class="post-tags-box border-box">
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/hexo/">hexo</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/rpm/">rpm</a>
                                     </li>
                                 
                             </ul>
@@ -359,19 +387,35 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/how-to-sign-rpm-package/"
-                                   title="如何为 RPM 包签名"
+                                   href="/run-your-own-obs-open-build-service"
+                                   title="Run Your Own OBS 编译系统"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">如何为 RPM 包签名</span>
+                                        <span class="post-nav-title-item text-ellipsis">Run Your Own OBS 编译系统</span>
                                         <span class="post-nav-item">Prev posts</span>
                                     </span>
                                 </a>
                             </div>
                         
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/hexo-next-theme-configuration-picture-configuration"
+                                   title="Hexo-Next主题配置"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">Hexo-Next主题配置</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
                         
                     </div>
                 
@@ -392,7 +436,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9B%BE%E7%89%87%E9%85%8D%E7%BD%AE"><span class="nav-text">一、图片配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8F%92%E4%BB%B6"><span class="nav-text">二、插件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%9A%84%E6%8F%92%E4%BB%B6"><span class="nav-text">安装的插件</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Generate-GPG-keyring"><span class="nav-text">Generate GPG keyring</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rpmsign"><span class="nav-text">rpmsign</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#migrate-GPG-keyring"><span class="nav-text">migrate GPG keyring</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%AD%E9%85%8D-OBS-%E4%BD%BF%E7%94%A8"><span class="nav-text">搭配 OBS 使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FAQ"><span class="nav-text">FAQ</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E8%BF%81%E7%A7%BB-GPG-keyring"><span class="nav-text">为什么需要迁移 GPG keyring</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%AF%BC%E5%85%A5-trustdb%EF%BC%9F"><span class="nav-text">为什么需要导入 trustdb？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-text">Reference</span></a></li></ol>
     </div>
 </div>
 
@@ -552,7 +596,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9B%BE%E7%89%87%E9%85%8D%E7%BD%AE"><span class="nav-text">一、图片配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8F%92%E4%BB%B6"><span class="nav-text">二、插件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%9A%84%E6%8F%92%E4%BB%B6"><span class="nav-text">安装的插件</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Generate-GPG-keyring"><span class="nav-text">Generate GPG keyring</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rpmsign"><span class="nav-text">rpmsign</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#migrate-GPG-keyring"><span class="nav-text">migrate GPG keyring</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%AD%E9%85%8D-OBS-%E4%BD%BF%E7%94%A8"><span class="nav-text">搭配 OBS 使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FAQ"><span class="nav-text">FAQ</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E8%BF%81%E7%A7%BB-GPG-keyring"><span class="nav-text">为什么需要迁移 GPG keyring</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%AF%BC%E5%85%A5-trustdb%EF%BC%9F"><span class="nav-text">为什么需要导入 trustdb？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-text">Reference</span></a></li></ol>
     </div>
 </div>
 

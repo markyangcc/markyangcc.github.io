@@ -9,7 +9,7 @@
     
     <title>
         
-            修改重新封装 Linux ISO |
+            使用 ebpf USDT 追踪用户态程序 |
         
         Lapin Gris
     </title>
@@ -227,7 +227,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        修改重新封装 Linux ISO
+                        使用 ebpf USDT 追踪用户态程序
                     </div>
                 
 
@@ -255,7 +255,7 @@
         
             <span class="meta-info-item post-create-date">
                 <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2024-06-24 11:31:44</span>
+                <span class="datetime">2024-01-23 05:53:55</span>
             </span>
 
             
@@ -267,15 +267,33 @@
         
 
         
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/tracing/">tracing</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
 
         
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/iso/">iso</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/ebpf/">ebpf</a></li>
                         
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/linux/">linux</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/usdt/">usdt</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/sdt/">sdt</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/tracing/">tracing</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/userspace/">userspace</a></li>
                         
                     
                 </ul>
@@ -300,32 +318,31 @@
                     
 
                     
-                         <blockquote>
-<p>请注意：本文档旨在帮助您根据现有的 ISO 来创建一个 自定义的ISO文件。如果您希望从零开始，可以参考OpenCloudOS ISO镜像构建项目，</p>
-<p><a class="link"   target="_blank" rel="noopener" href="https://gitee.com/OpenCloudOS/ocs_lorax_build_image" >https://gitee.com/OpenCloudOS/ocs_lorax_build_image<i class="fas fa-external-link-alt"></i></a></p>
-</blockquote>
-<p>以 Rocky-9.4-x86_64-dvd.iso 为例，</p>
-<h2 id="挂载-ISO"><a href="#挂载-ISO" class="headerlink" title="挂载 ISO"></a>挂载 ISO</h2><p>挂载 ISO 到 &#x2F;mnt 目录, 因为 ISO 镜像挂载后是只读的，因为我们需要先将 ISO 里的文件复制到新的目录，后续对 ISO 的修改在这个新的目录中进行。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 挂载 iso</span></span><br><span class="line">mount -o loop Rocky-9.4-x86_64-dvd.iso /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将 ISO 文件拷贝到工作目录，本示例使用的工作目录为 /opt/iso</span></span><br><span class="line"><span class="built_in">cp</span> -a /mnt /opt/iso</span><br><span class="line"></span><br><span class="line"><span class="comment"># umount iso</span></span><br><span class="line">umount /mnt</span><br></pre></td></tr></table></figure>
+                         <p>USDT 是一种探针技术，让用户态程序也支持使用 perf&#x2F;ebpf 性能分析工具进行 tracing&#x2F;profiling。做性能分析通常听过 perf&#x2F;ebpf 这些工具，这些工具通常用在内核上，用于分析内核的一些性能问题，如果是用户态程序也遇到性能问题了，我们希望用户态程序也能使用 perf&#x2F;ebpf 工具进行 tracing&#x2F;profiling。那么就需要 USDT 技术了。</p>
+<p>简单来说，USDT 就是探针技术，我们在源码里插入一个固定的探针。当我们 tracing 这个探针的时候，就获取我们埋点的数据了。</p>
+<h2 id="USDT-如何插入探针？"><a href="#USDT-如何插入探针？" class="headerlink" title="USDT  如何插入探针？"></a>USDT  如何插入探针？</h2><p>插入探针，有时候也叫做埋点。只需要包含 &lt;sys&#x2F;sdt.h&gt; 头文件，然后利用 DTRACE_PROBE 系列函数埋点即可。</p>
+<p>DTRACE_PROBE 系列函数定义在  <code>/usr/include/sys/sdt.h</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* DTrace compatible macro names.  */</span></span><br><span class="line">DTRACE_PROBE(provider,probe)</span><br><span class="line">DTRACE_PROBE1(provider,probe,parm1)</span><br><span class="line">DTRACE_PROBE2(provider,probe,parm1,parm2)</span><br><span class="line">DTRACE_PROBE3(provider,probe,parm1,parm2,parm3)</span><br><span class="line">[...]</span><br></pre></td></tr></table></figure>
+<p>第一次看到DTRACE_PROBE1, 2, 3, 4 … 可能会有些懵，这都是啥呀？！</p>
+<p>实际上很简单，而且用法也很简单，我用 DPDK l2fwd 举个例子，<br><a class="link"   target="_blank" rel="noopener" href="https://git.dpdk.org/dpdk/tree/examples/l2fwd" >https://git.dpdk.org/dpdk/tree/examples/l2fwd<i class="fas fa-external-link-alt"></i></a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line">        </span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line">        </span><br><span class="line">    	<span class="built_in">printf</span>(<span class="string">&quot;portid: %d, queueid: %d, rcvd: %d\n&quot;</span>, portid, <span class="number">0</span>, nb_rx);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>上面的代码是一个利用 DPDK l2 fwd 里的示例代码， rte_eth_rx_burst 函数从网卡收包，我们想知道本次收包收了多少个，于是我们打了一条 log。</p>
+<p>这样实现很不优雅，<strong>首先是在 datapath 打 log 是错误的决定</strong>。其次，我们只希望在 tracing 的时候打印结果，不 tracing 的时候不打印结果。使用 打 log 的方式是无法实现这种效果的，我们需要一个开关，能动态打开和关闭 tracing 的开关，当我们 attach 到这个探针时候，我们可以观测到数据，当我们 detach 的时候，就去掉这个探针，不增加额外的观测消耗。</p>
+<p>USDT 可以实现动态开关的功能。我们只需要添加 &lt;sys&#x2F;sdt.h&gt; 头文件，将 log 语句替换为 DTRACE_PROBE3 语句即可。DTRACE_PROBE5 的数字 3 代表 3 个观测参数，前两个是标识参数，第一个通常用 appname 填充,第二个通常用函数名称填充。当我们使用 perf、ebpf 等观测工具时，通过这两个参数定位我们预先埋下的观测点。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/sdt.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line"></span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line"></span><br><span class="line">		DTRACE_PROBE3(l2fwd, l2fwd_main_loop, portid, <span class="number">0</span>, rcvd);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="查看可用的探针"><a href="#查看可用的探针" class="headerlink" title="查看可用的探针"></a>查看可用的探针</h2><p>查看可用探针</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bpftrace -l <span class="string">&quot;usdt:/usr/bin/l2fwd:*&quot;</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="新增-删除-RPM-包"><a href="#新增-删除-RPM-包" class="headerlink" title="新增&#x2F;删除 RPM 包"></a>新增&#x2F;删除 RPM 包</h2><p>大多是时候，修改 ISO 是新增&#x2F;删除 RPM 包，比如更换内核包，添加自定义包等等。</p>
-<p>Rocky 9.4 ISO RPM 存放目录在 AppStream 和 BaseOS 两个目录下, 与其 yum 源的目录结构相同。</p>
-<p>RPM 以及 repodata, 目录结构如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tree -d 1 AppStream/</span></span><br><span class="line">AppStream/</span><br><span class="line">├── Packages</span><br><span class="line">└── repodata</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tree -d 1 BaseOS/</span></span><br><span class="line">BaseOS/</span><br><span class="line">├── Packages</span><br><span class="line">└── repodata</span><br></pre></td></tr></table></figure>
+<p>查看正在运行的进程的可用探针，会同时展示其链接的动态库的可用探针</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bpftrace -lp $(pidof l2fwd) <span class="string">&quot;usdt:*&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="USDT-使用"><a href="#USDT-使用" class="headerlink" title="USDT 使用"></a>USDT 使用</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bpftrace -e &#x27;usdt:/usr/bin/l2fwd:l2fwd_main_loop &#123; printf(&quot;%d,%d,%d\n&quot;,arg0,arg1,arg2); &#125;&#x27;</span><br></pre></td></tr></table></figure>
+<p>bpftrace 内置许多参数，比如 comm, pid, cpu, elapsed，利用这些参数可以实现更高级的 tracing。<br>还可以通过 bcc&#x2F;libbpf 将一段时间的数据收集起来，进行统计，得出更宏观的指标，这样有一定的代码量。bpftrace 的优势就是一行，很简单。</p>
+<h2 id="USDT-原理"><a href="#USDT-原理" class="headerlink" title="USDT 原理"></a>USDT 原理</h2><p>包含 USDT 的代码经过编译后生成的二进制文件将有一个名为 .stapsdt.base 的 ELF 段。这个 .stapsdt.base 有助于 tracing 工具在二进制文件加载到内存后计算探针的内存地址。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">readelf -S l2fwd | grep sdt</span></span><br><span class="line">  [17] .stapsdt.base     PROGBITS         00000000004053d0  000053d0</span><br><span class="line">  [28] .note.stapsdt     NOTE             0000000000000000  000061fc</span><br></pre></td></tr></table></figure>
 
-<p>子目录 Packages 存放 RPM 包文件，repodata 存放 RPM 包的元数据。在 Packages 目录下放入新的包或者删除不需要的包后，需要重新生成 repodata。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">createrepo --update AppStream/</span><br><span class="line">createrepo --update BaseOS/</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="ISO-换标"><a href="#ISO-换标" class="headerlink" title="ISO 换标"></a>ISO 换标</h2><p>修改 Rocky 为 CustomizedRocky，</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sed -i &#x27;s/Rocky/CustomizedRocky/g&#x27; EFI/BOOT/grub.cfg</span><br><span class="line">sed -i &#x27;s/Rocky/CustomizedRocky/g&#x27; isolinux/grub.conf</span><br><span class="line">sed -i &#x27;s/Rocky/CustomizedRocky/g&#x27; isolinux/isolinux.cfg</span><br></pre></td></tr></table></figure>
-
-<h2 id="封装-ISO"><a href="#封装-ISO" class="headerlink" title="封装 ISO"></a>封装 ISO</h2><p>完成修改后，重新封装 ISO, 命令如下，</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">genisoimage -U -r -v -J -joliet-long -V &quot;CustomizedRocky-9-4-x86_64-dvd&quot; -volset &quot;CustomizedRocky-9-4-x86_64-dvd&quot; \</span><br><span class="line">	-A &quot;CustomizedRocky-9-4-x86_64-dvd&quot; -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 \</span><br><span class="line">	-boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot \</span><br><span class="line">	-o /Rocky-9.4-x86_64-customized.iso .</span><br></pre></td></tr></table></figure>
-
-<p>需要注意的是，确保命令中 -V, -volset 和 -A 选项的值与 ISO 里的引导加载程序配置匹配。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>1、<a class="link"   target="_blank" rel="noopener" href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/anaconda_customization_guide/sect-iso-images#sect-iso-images" >Working with ISO Images<i class="fas fa-external-link-alt"></i></a></p>
-<p>2、<a class="link"   target="_blank" rel="noopener" href="https://blog.k8s.li/rebuild-iso-image.html" >使用 overlay2 或 bind 重新构建 ISO 镜像<i class="fas fa-external-link-alt"></i></a> <strong>适用于 ISO CICD 方案的一种加速方案</strong></p>
+<p>还有一个 ELF note，note 记录了探针的相关信息（名称、地址、信号量、参数）。用户态进程可以读取这个段获得探针的信息。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Displaying notes found in: .note.stapsdt</span><br><span class="line">  Owner                Data size 	Description</span><br><span class="line">  stapsdt              0x00000042	NT_STAPSDT (SystemTap probe descriptors)</span><br><span class="line">    Provider: l2fwd</span><br><span class="line">    Name: l2fwd_main_loop</span><br><span class="line">    Location: 0x0000000000402596, Base: 0x00000000004053d0, Semaphore: 0x0000000000000000</span><br><span class="line">    Arguments: 4@%ebp -4@$0 4@%ecx</span><br></pre></td></tr></table></figure>
+<h2 id="USDT-动态开关"><a href="#USDT-动态开关" class="headerlink" title="USDT 动态开关"></a>USDT 动态开关</h2><p>反汇编二进制，发现 DTRACE_PROBE 被编译为一条 nop 指令，当不进行 probe 时候，就是执行一条 nop 指令，当进行 probe 的时候替换为 int3 进行跳转到 hook 函数。<br><img   src="/../img/1706001641941-1e147d49-ec2e-4ecb-8cdc-6dbec57fbf17.png"  alt="image.png"></p>
 
                     
                 </div>
@@ -338,11 +355,23 @@
                             <ul class="post-tags-box border-box">
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/iso/">iso</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/ebpf/">ebpf</a>
                                     </li>
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/linux/">linux</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/usdt/">usdt</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/sdt/">sdt</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/tracing/">tracing</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/userspace/">userspace</a>
                                     </li>
                                 
                             </ul>
@@ -361,14 +390,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/debug-the-linux-kernel-libvirt/"
-                                   title="调试 libvirt 启动的 VM"
+                                   href="/Intel_AMD_ISA_difference"
+                                   title="Intel &amp; AMD 指令集之间的差异"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">调试 libvirt 启动的 VM</span>
+                                        <span class="post-nav-title-item text-ellipsis">Intel &amp; AMD 指令集之间的差异</span>
                                         <span class="post-nav-item">Prev posts</span>
                                     </span>
                                 </a>
@@ -378,11 +407,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/xv6-lab6-multithreading/"
-                                   title="xv6 Lab6: Multithreading"
+                                   href="/intel-cpu-cve"
+                                   title="查询 Intel 处理器安全漏洞"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">xv6 Lab6: Multithreading</span>
+                                        <span class="post-nav-title-item text-ellipsis">查询 Intel 处理器安全漏洞</span>
                                         <span class="post-nav-item">Next posts</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">
@@ -410,7 +439,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD-ISO"><span class="nav-text">挂载 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E-%E5%88%A0%E9%99%A4-RPM-%E5%8C%85"><span class="nav-text">新增&#x2F;删除 RPM 包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ISO-%E6%8D%A2%E6%A0%87"><span class="nav-text">ISO 换标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%81%E8%A3%85-ISO"><span class="nav-text">封装 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-text">参考链接</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E5%A6%82%E4%BD%95%E6%8F%92%E5%85%A5%E6%8E%A2%E9%92%88%EF%BC%9F"><span class="nav-text">USDT  如何插入探针？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%8F%AF%E7%94%A8%E7%9A%84%E6%8E%A2%E9%92%88"><span class="nav-text">查看可用的探针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E4%BD%BF%E7%94%A8"><span class="nav-text">USDT 使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E5%8E%9F%E7%90%86"><span class="nav-text">USDT 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E5%8A%A8%E6%80%81%E5%BC%80%E5%85%B3"><span class="nav-text">USDT 动态开关</span></a></li></ol>
     </div>
 </div>
 
@@ -570,7 +599,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD-ISO"><span class="nav-text">挂载 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E-%E5%88%A0%E9%99%A4-RPM-%E5%8C%85"><span class="nav-text">新增&#x2F;删除 RPM 包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ISO-%E6%8D%A2%E6%A0%87"><span class="nav-text">ISO 换标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%81%E8%A3%85-ISO"><span class="nav-text">封装 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-text">参考链接</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E5%A6%82%E4%BD%95%E6%8F%92%E5%85%A5%E6%8E%A2%E9%92%88%EF%BC%9F"><span class="nav-text">USDT  如何插入探针？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%8F%AF%E7%94%A8%E7%9A%84%E6%8E%A2%E9%92%88"><span class="nav-text">查看可用的探针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E4%BD%BF%E7%94%A8"><span class="nav-text">USDT 使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E5%8E%9F%E7%90%86"><span class="nav-text">USDT 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E5%8A%A8%E6%80%81%E5%BC%80%E5%85%B3"><span class="nav-text">USDT 动态开关</span></a></li></ol>
     </div>
 </div>
 
