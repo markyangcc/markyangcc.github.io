@@ -227,15 +227,16 @@
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/Intel_AMD_ISA_difference">
-                            Intel &amp; AMD 指令集之间的差异
+                        <a href="/hexo-next-theme-configuration-picture-configuration">
+                            Hexo-Next主题配置
                         </a>
                     </h3>
 
                     <div class="home-post-content keep-markdown-body">
                         
-                            促进我写这篇文章的起因是，线上机器会使用基于 SPDK 的云盘存储方案，需要编译一个 RPM 包。这个包在 Intel 机器是运行正常的，在 AMD 的机器上无法运行报不支持 AVX512 指令。
-这个问题很常见，是指令集不兼容造成的。AMD 虽然是...
+                            一、图片配置hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。
+修改引入图片路径即可解决，
+我们只需要在 _posts 的同级目录下新建一个 img 文件夹专门用来存放所有的图片，m...
                         
                     </div>
 
@@ -246,8 +247,8 @@
         
             <span class="meta-info-item border-box">
                 <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Mon Feb 05 2024 17:46:00 GMT+0800"
-                >2024-02-05 17:46:00</span>
+                                                                                data-updated="Sun Jan 02 2022 04:40:37 GMT+0800"
+                >2022-01-02 04:40:37</span>
             </span>
         
 
@@ -264,462 +265,7 @@
     </div>
 
     
-        <a class="home-read-more" href="/Intel_AMD_ISA_difference">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
-    
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-post-item">
-
-                
-
-                <div class="home-post-item-bottom border-box">
-                    
-                    <h3 class="home-post-title border-box">
-                        <a href="/tracing-userspace-process-ebpf-usdt">
-                            使用 ebpf USDT 追踪用户态程序
-                        </a>
-                    </h3>
-
-                    <div class="home-post-content keep-markdown-body">
-                        
-                            USDT 是一种探针技术，让用户态程序也支持使用 perf&#x2F;ebpf 性能分析工具进行 tracing&#x2F;profiling。做性能分析通常听过 perf&#x2F;ebpf 这些工具，这些工具通常用在内核上，用于分析内核的一些性能...
-                        
-                    </div>
-
-                    
-
-<div class="post-meta-info-container border-box home">
-    <div class="post-meta-info border-box">
-        
-            <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Tue Jan 23 2024 05:53:55 GMT+0800"
-                >2024-01-23 05:53:55</span>
-            </span>
-        
-
-        
-
-        
-
-        
-
-        
-        
-        
-        
-    </div>
-
-    
-        <a class="home-read-more" href="/tracing-userspace-process-ebpf-usdt">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
-    
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-post-item">
-
-                
-
-                <div class="home-post-item-bottom border-box">
-                    
-                    <h3 class="home-post-title border-box">
-                        <a href="/intel-cpu-cve">
-                            查询 Intel 处理器安全漏洞
-                        </a>
-                    </h3>
-
-                    <div class="home-post-content keep-markdown-body">
-                        
-                            Intel 处理器安全漏洞表https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affect...
-                        
-                    </div>
-
-                    
-
-<div class="post-meta-info-container border-box home">
-    <div class="post-meta-info border-box">
-        
-            <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Mon Nov 27 2023 19:24:00 GMT+0800"
-                >2023-11-27 19:24:00</span>
-            </span>
-        
-
-        
-
-        
-
-        
-
-        
-        
-        
-        
-    </div>
-
-    
-        <a class="home-read-more" href="/intel-cpu-cve">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
-    
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-post-item">
-
-                
-
-                <div class="home-post-item-bottom border-box">
-                    
-                    <h3 class="home-post-title border-box">
-                        <a href="/reboot_is_link_to_systemctl">
-                            Reboot 命令实际是 systemctl ？
-                        </a>
-                    </h3>
-
-                    <div class="home-post-content keep-markdown-body">
-                        
-                            背景在一次查问题的过程中，偶然发现 reboot 命令是直接链接到 systemctl 的（划重点：直接链接到），看下面的演示，
-12345# which reboot/sbin/reboot# file /sbin/reboot/sbin/rebo...
-                        
-                    </div>
-
-                    
-
-<div class="post-meta-info-container border-box home">
-    <div class="post-meta-info border-box">
-        
-            <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Thu Aug 24 2023 12:31:00 GMT+0800"
-                >2023-08-24 12:31:00</span>
-            </span>
-        
-
-        
-
-        
-
-        
-
-        
-        
-        
-        
-    </div>
-
-    
-        <a class="home-read-more" href="/reboot_is_link_to_systemctl">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
-    
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-post-item">
-
-                
-
-                <div class="home-post-item-bottom border-box">
-                    
-                    <h3 class="home-post-title border-box">
-                        <a href="/cmu-15-445-fall-2022-project1-buffer-pool">
-                            CMU 15-445 Fall 2022 Project1: Buffer Pool
-                        </a>
-                    </h3>
-
-                    <div class="home-post-content keep-markdown-body">
-                        
-                            这个项目是实现 bpm，简而言之是实现一个磁盘缓冲区，用于加速数据库应用的 IO 操作。
-背景众所周知，磁盘（SSD&#x2F;HDD）的访问速度是很慢的，内存 DRAM 访问相比较很快了。我们希望为磁盘经常访问的数据在内存建立对应的缓存来加速数据库...
-                        
-                    </div>
-
-                    
-
-<div class="post-meta-info-container border-box home">
-    <div class="post-meta-info border-box">
-        
-            <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sat Jul 22 2023 17:29:21 GMT+0800"
-                >2023-07-22 17:29:21</span>
-            </span>
-        
-
-        
-
-        
-
-        
-
-        
-        
-        
-        
-    </div>
-
-    
-        <a class="home-read-more" href="/cmu-15-445-fall-2022-project1-buffer-pool">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
-    
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-post-item">
-
-                
-
-                <div class="home-post-item-bottom border-box">
-                    
-                    <h3 class="home-post-title border-box">
-                        <a href="/cmu-15-445-fall-2022-project0-cpp-primer">
-                            CMU 15-445 Fall 2022 Project0: C++ Primer
-                        </a>
-                    </h3>
-
-                    <div class="home-post-content keep-markdown-body">
-                        
-                            这个项目是使用 Modern C++ 17 实现一个 字典树（Trie）项目难点在于理解项目里如何使用 TrieNode 和 TrieTerminalNode 来组合实现一个 Trie Tree。另外一个难点是对 unique_ptr 的理解。理解 ...
-                        
-                    </div>
-
-                    
-
-<div class="post-meta-info-container border-box home">
-    <div class="post-meta-info border-box">
-        
-            <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sun Jun 04 2023 03:08:21 GMT+0800"
-                >2023-06-04 03:08:21</span>
-            </span>
-        
-
-        
-
-        
-
-        
-
-        
-        
-        
-        
-    </div>
-
-    
-        <a class="home-read-more" href="/cmu-15-445-fall-2022-project0-cpp-primer">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
-    
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-post-item">
-
-                
-
-                <div class="home-post-item-bottom border-box">
-                    
-                    <h3 class="home-post-title border-box">
-                        <a href="/parsec3.0-compile-error">
-                            PARSEC 3.0 编译报错
-                        </a>
-                    </h3>
-
-                    <div class="home-post-content keep-markdown-body">
-                        
-                            PARSEC 3.0(Parallel Applications Research for System Efficiency Collectio)是一个基准测试套件，用于评估多核处理器和系统的性能，也就是跑分软件。
-工作中需要使用到这个软件作为基准...
-                        
-                    </div>
-
-                    
-
-<div class="post-meta-info-container border-box home">
-    <div class="post-meta-info border-box">
-        
-            <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Fri May 05 2023 01:52:23 GMT+0800"
-                >2023-05-05 01:52:23</span>
-            </span>
-        
-
-        
-
-        
-
-        
-
-        
-        
-        
-        
-    </div>
-
-    
-        <a class="home-read-more" href="/parsec3.0-compile-error">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
-    
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-post-item">
-
-                
-
-                <div class="home-post-item-bottom border-box">
-                    
-                    <h3 class="home-post-title border-box">
-                        <a href="/extend-system-ram-using-pmem">
-                            PMEM 扩展系统内存用法介绍
-                        </a>
-                    </h3>
-
-                    <div class="home-post-content keep-markdown-body">
-                        
-                            在介绍 pmem 的几种用法之前，我们先来介绍 pmem 的几种模式，因为后面介绍的用法与 pmem 的这几种模式是分不开的。
-PMEM 的三种模式1、Memory Modepmem 配置为内存模式时，pmem 作为系统内存（system ram），...
-                        
-                    </div>
-
-                    
-
-<div class="post-meta-info-container border-box home">
-    <div class="post-meta-info border-box">
-        
-            <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sun Feb 05 2023 18:04:09 GMT+0800"
-                >2023-02-05 18:04:09</span>
-            </span>
-        
-
-        
-
-        
-
-        
-
-        
-        
-        
-        
-    </div>
-
-    
-        <a class="home-read-more" href="/extend-system-ram-using-pmem">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
-    
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-post-item">
-
-                
-
-                <div class="home-post-item-bottom border-box">
-                    
-                    <h3 class="home-post-title border-box">
-                        <a href="/run-your-own-obs-open-build-service">
-                            Run Your Own OBS 编译系统
-                        </a>
-                    </h3>
-
-                    <div class="home-post-content keep-markdown-body">
-                        
-                            OBS（Open Build Service）是一个由 SUSE 开源的操作系统发行版的构建系统，可以用来创建和分发软件包。OBS支持几乎所有的主流发行版的包，比如说 SUSE系，RedHat系，Debian系，Arch系等等。
-下载安装 OBS 最...
-                        
-                    </div>
-
-                    
-
-<div class="post-meta-info-container border-box home">
-    <div class="post-meta-info border-box">
-        
-            <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sun Jan 22 2023 15:31:46 GMT+0800"
-                >2023-01-22 15:31:46</span>
-            </span>
-        
-
-        
-
-        
-
-        
-
-        
-        
-        
-        
-    </div>
-
-    
-        <a class="home-read-more" href="/run-your-own-obs-open-build-service">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
-    
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-post-item">
-
-                
-
-                <div class="home-post-item-bottom border-box">
-                    
-                    <h3 class="home-post-title border-box">
-                        <a href="/how-to-sign-rpm-package">
-                            如何为 RPM 包签名
-                        </a>
-                    </h3>
-
-                    <div class="home-post-content keep-markdown-body">
-                        
-                            Generate GPG keyring使用下面的命令生成 GPG keyring。输入 Name 和 Email 。输入 o 确认后，passphrase 可以不输入（保留为空即可），passphrase 保留为空代表不需要密码保护（公钥和私钥需要...
-                        
-                    </div>
-
-                    
-
-<div class="post-meta-info-container border-box home">
-    <div class="post-meta-info border-box">
-        
-            <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Thu Nov 03 2022 11:08:45 GMT+0800"
-                >2022-11-03 11:08:45</span>
-            </span>
-        
-
-        
-
-        
-
-        
-
-        
-        
-        
-        
-    </div>
-
-    
-        <a class="home-read-more" href="/how-to-sign-rpm-package">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/hexo-next-theme-configuration-picture-configuration">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
@@ -735,7 +281,7 @@ PMEM 的三种模式1、Memory Modepmem 配置为内存模式时，pmem 作为�
 
         <div class="border-box paginator-btn allowed">
             <a class="border-box"
-               href="/"
+               href="/page/2/"
             ><i class="fa-solid fa-chevron-left"></i></a>
         </div>
 
@@ -743,20 +289,20 @@ PMEM 的三种模式1、Memory Modepmem 配置为内存模式时，pmem 作为�
         <div class="page-number-box border-box flex-center">
             <input class="page-number-input border-box base-style"
                    type="number"
-                   value="2"
+                   value="3"
                    min="1"
                    max="3"
             /><span class="delimiter base-style">/</span><span class="base-style">3</span>
         </div>
 
 
-        <div class="border-box paginator-btn allowed">
+        <div class="border-box paginator-btn">
             <a class="border-box"
-               href="/page/3/"
+               href="/"
             ><i class="fa-solid fa-chevron-right"></i></a>
         </div>
 
-        <div class="border-box last-page paginator-btn allowed">
+        <div class="border-box last-page paginator-btn not-allow">
             <a class="border-box"><i class="fa-solid fa-angle-double-right"></i></a>
         </div>
     </div>
