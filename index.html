@@ -25,7 +25,7 @@
     <script class="keep-theme-configurations">
     const KEEP = window.KEEP || {}
     KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en"}
-    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"Lapin Gris","author":"Lapin Gris","avatar":"/images/Folklore.png","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":true,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":false},"social_contact":{"enable":false,"links":{"github":"https://github.com/markyangcc","weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":true,"percent":true,"hide_header":true},"home":{"announcement":null,"category":false,"tag":false,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":false,"min2read":false},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":false,"share":false,"reward":{"enable":false,"img_link":null,"text":null,"icon":null}},"code_block":{"tools":{"enable":false,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":false,"site_uv":false,"site_pv":false,"page_pv":false}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"gitalk","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":"markyangcc","github_admins":null,"repository":"markyangcc.github.io","client_id":"Ov23limODCqt0en2mPRD","client_secret":"6c276a6c1847f1f4663f172bc809e31d0cab1410","proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":false},"cdn":{"enable":true,"provider":"cdnjs"},"pjax":{"enable":true},"footer":{"since":2022,"word_count":false,"site_deploy":{"enable":false,"provider":"github","url":null},"record":{"enable":false,"list":[{"code":null,"link":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.2.5"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"Lapin Gris","author":"Lapin Gris","avatar":"/images/Folklore.png","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":true,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":false},"social_contact":{"enable":false,"links":{"github":"https://github.com/markyangcc","weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":true,"percent":true,"hide_header":true},"home":{"announcement":null,"category":false,"tag":false,"post_datetime":"created"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":false,"min2read":false},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":false,"share":false,"reward":{"enable":false,"img_link":null,"text":null,"icon":null}},"code_block":{"tools":{"enable":false,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":false,"site_uv":false,"site_pv":false,"page_pv":false}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"gitalk","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":"markyangcc","github_admins":null,"repository":"markyangcc.github.io","client_id":"Ov23limODCqt0en2mPRD","client_secret":"6c276a6c1847f1f4663f172bc809e31d0cab1410","proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":false},"cdn":{"enable":true,"provider":"cdnjs"},"pjax":{"enable":false},"footer":{"since":2022,"word_count":true,"site_deploy":{"enable":false,"provider":"github","url":null},"record":{"enable":false,"list":[{"code":null,"link":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.2.5"}
     KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
     KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
     KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
@@ -39,9 +39,6 @@
         <span class="scroll-progress-bar"></span>
     
 
-    
-        <span class="pjax-progress-bar"></span>
-        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
     
 </div>
 
@@ -258,7 +255,7 @@
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2024/07/29/debug-the-linux-kernel-libvirt/">
+                        <a href="/debug-the-linux-kernel-libvirt/">
                             调试 libvirt 启动的 VM
                         </a>
                     </h3>
@@ -276,9 +273,9 @@ xml 添加 -s 参数12345&l...
     <div class="post-meta-info border-box">
         
             <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sun Jan 12 2025 18:38:32 GMT+0800"
-                >2025-01-12 18:38:32</span>
+                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Mon Jul 29 2024 17:46:46 GMT+0800"
+                >2024-07-29 17:46:46</span>
             </span>
         
 
@@ -295,7 +292,7 @@ xml 添加 -s 参数12345&l...
     </div>
 
     
-        <a class="home-read-more" href="/2024/07/29/debug-the-linux-kernel-libvirt/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/debug-the-linux-kernel-libvirt/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
@@ -309,7 +306,7 @@ xml 添加 -s 参数12345&l...
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2024/06/24/customize-linux-boot-iso/">
+                        <a href="/customize-linux-boot-iso/">
                             修改重新封装 Linux ISO
                         </a>
                     </h3>
@@ -328,9 +325,9 @@ https://gitee.com/OpenCloudOS/ocs_lorax_build_ima...
     <div class="post-meta-info border-box">
         
             <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sun Jan 12 2025 18:38:32 GMT+0800"
-                >2025-01-12 18:38:32</span>
+                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Mon Jun 24 2024 11:31:44 GMT+0800"
+                >2024-06-24 11:31:44</span>
             </span>
         
 
@@ -347,7 +344,7 @@ https://gitee.com/OpenCloudOS/ocs_lorax_build_ima...
     </div>
 
     
-        <a class="home-read-more" href="/2024/06/24/customize-linux-boot-iso/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/customize-linux-boot-iso/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
@@ -361,7 +358,7 @@ https://gitee.com/OpenCloudOS/ocs_lorax_build_ima...
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2024/06/23/xv6-lab6-multithreading/">
+                        <a href="/xv6-lab6-multithreading/">
                             xv6 Lab6: Multithreading
                         </a>
                     </h3>
@@ -380,9 +377,9 @@ uthread打开 user&#x2F;uthread.c 文件，观察 uthread 的数据结构以及�
     <div class="post-meta-info border-box">
         
             <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sun Jan 12 2025 18:38:32 GMT+0800"
-                >2025-01-12 18:38:32</span>
+                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Sun Jun 23 2024 15:59:36 GMT+0800"
+                >2024-06-23 15:59:36</span>
             </span>
         
 
@@ -399,7 +396,7 @@ uthread打开 user&#x2F;uthread.c 文件，观察 uthread 的数据结构以及�
     </div>
 
     
-        <a class="home-read-more" href="/2024/06/23/xv6-lab6-multithreading/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/xv6-lab6-multithreading/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
@@ -413,7 +410,7 @@ uthread打开 user&#x2F;uthread.c 文件，观察 uthread 的数据结构以及�
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2024/05/24/xv6-lab5-cow.md/">
+                        <a href="/xv6-lab5-cow.md/">
                             xv6 Lab5: COW
                         </a>
                     </h3>
@@ -432,9 +429,9 @@ Implement copy-on-write fork关键实现struct kmem在 struct kmem 结构体中�
     <div class="post-meta-info border-box">
         
             <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sun Jan 12 2025 18:38:32 GMT+0800"
-                >2025-01-12 18:38:32</span>
+                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Fri May 24 2024 19:50:08 GMT+0800"
+                >2024-05-24 19:50:08</span>
             </span>
         
 
@@ -451,7 +448,7 @@ Implement copy-on-write fork关键实现struct kmem在 struct kmem 结构体中�
     </div>
 
     
-        <a class="home-read-more" href="/2024/05/24/xv6-lab5-cow.md/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/xv6-lab5-cow.md/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
@@ -465,7 +462,7 @@ Implement copy-on-write fork关键实现struct kmem在 struct kmem 结构体中�
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2024/04/26/xv6-lab4-traps/">
+                        <a href="/xv6-lab4-traps/">
                             xv6 Lab4: Traps
                         </a>
                     </h3>
@@ -485,9 +482,9 @@ Which registers contain arguments to functions?...
     <div class="post-meta-info border-box">
         
             <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sun Jan 12 2025 18:38:32 GMT+0800"
-                >2025-01-12 18:38:32</span>
+                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Fri Apr 26 2024 19:17:18 GMT+0800"
+                >2024-04-26 19:17:18</span>
             </span>
         
 
@@ -504,7 +501,7 @@ Which registers contain arguments to functions?...
     </div>
 
     
-        <a class="home-read-more" href="/2024/04/26/xv6-lab4-traps/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/xv6-lab4-traps/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
@@ -518,7 +515,7 @@ Which registers contain arguments to functions?...
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2024/03/20/xv6-lab3-page-tables/">
+                        <a href="/xv6-lab3-page-tables/">
                             xv6 Lab3: page tables
                         </a>
                     </h3>
@@ -536,9 +533,9 @@ Speed up ...
     <div class="post-meta-info border-box">
         
             <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sun Jan 12 2025 18:38:32 GMT+0800"
-                >2025-01-12 18:38:32</span>
+                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Wed Mar 20 2024 12:13:14 GMT+0800"
+                >2024-03-20 12:13:14</span>
             </span>
         
 
@@ -555,7 +552,7 @@ Speed up ...
     </div>
 
     
-        <a class="home-read-more" href="/2024/03/20/xv6-lab3-page-tables/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/xv6-lab3-page-tables/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
@@ -569,7 +566,7 @@ Speed up ...
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2024/02/20/xv6-lab2-system-calls/">
+                        <a href="/xv6-lab2-system-calls/">
                             xv6 Lab2: system calls
                         </a>
                     </h3>
@@ -588,9 +585,9 @@ Using gdb第一部分是了解使用 gdb 调试 xv6（我使用的是 Debian）
     <div class="post-meta-info border-box">
         
             <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sun Jan 12 2025 18:38:32 GMT+0800"
-                >2025-01-12 18:38:32</span>
+                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Tue Feb 20 2024 18:07:17 GMT+0800"
+                >2024-02-20 18:07:17</span>
             </span>
         
 
@@ -607,7 +604,7 @@ Using gdb第一部分是了解使用 gdb 调试 xv6（我使用的是 Debian）
     </div>
 
     
-        <a class="home-read-more" href="/2024/02/20/xv6-lab2-system-calls/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/xv6-lab2-system-calls/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
@@ -621,7 +618,7 @@ Using gdb第一部分是了解使用 gdb 调试 xv6（我使用的是 Debian）
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2024/02/19/xv6-lab1-xv6-and-unix-utilities/">
+                        <a href="/xv6-lab1-xv6-and-unix-utilities/">
                             xv6 Lab1: Xv6 and Unix utilities
                         </a>
                     </h3>
@@ -640,9 +637,9 @@ sleep写第一个程序，主要的体会就是懵。不知道从哪下手，在
     <div class="post-meta-info border-box">
         
             <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sun Jan 12 2025 18:38:32 GMT+0800"
-                >2025-01-12 18:38:32</span>
+                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Mon Feb 19 2024 20:54:19 GMT+0800"
+                >2024-02-19 20:54:19</span>
             </span>
         
 
@@ -659,7 +656,7 @@ sleep写第一个程序，主要的体会就是懵。不知道从哪下手，在
     </div>
 
     
-        <a class="home-read-more" href="/2024/02/19/xv6-lab1-xv6-and-unix-utilities/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/xv6-lab1-xv6-and-unix-utilities/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
@@ -673,7 +670,7 @@ sleep写第一个程序，主要的体会就是懵。不知道从哪下手，在
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2024/02/18/xv6-lab0-prepare-workspace/">
+                        <a href="/xv6-lab0-prepare-workspace/">
                             xv6 Lab0: Prepare for the Lab
                         </a>
                     </h3>
@@ -693,9 +690,9 @@ sleep写第一个程序，主要的体会就是懵。不知道从哪下手，在
     <div class="post-meta-info border-box">
         
             <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sun Jan 12 2025 18:38:32 GMT+0800"
-                >2025-01-12 18:38:32</span>
+                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Sun Feb 18 2024 20:54:19 GMT+0800"
+                >2024-02-18 20:54:19</span>
             </span>
         
 
@@ -712,7 +709,7 @@ sleep写第一个程序，主要的体会就是懵。不知道从哪下手，在
     </div>
 
     
-        <a class="home-read-more" href="/2024/02/18/xv6-lab0-prepare-workspace/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/xv6-lab0-prepare-workspace/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
@@ -726,7 +723,7 @@ sleep写第一个程序，主要的体会就是懵。不知道从哪下手，在
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2024/02/05/Intel_AMD_ISA_difference/">
+                        <a href="/Intel_AMD_ISA_difference/">
                             Intel &amp; AMD 指令集之间的差异
                         </a>
                     </h3>
@@ -744,9 +741,9 @@ sleep写第一个程序，主要的体会就是懵。不知道从哪下手，在
     <div class="post-meta-info border-box">
         
             <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Sun Jan 12 2025 18:38:32 GMT+0800"
-                >2025-01-12 18:38:32</span>
+                <i class="icon fa-solid fa-file-circle-plus"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Mon Feb 05 2024 17:46:00 GMT+0800"
+                >2024-02-05 17:46:00</span>
             </span>
         
 
@@ -763,7 +760,7 @@ sleep写第一个程序，主要的体会就是懵。不知道从哪下手，在
     </div>
 
     
-        <a class="home-read-more" href="/2024/02/05/Intel_AMD_ISA_difference/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/Intel_AMD_ISA_difference/">Read more&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
@@ -946,7 +943,7 @@ sleep写第一个程序，主要的体会就是懵。不知道从哪下手，在
 <!-- lazyload -->
 
 
-<div class="pjax">
+<div class="">
     <!-- home page -->
     
         <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/page/home-page.min.js"></script>
@@ -972,37 +969,6 @@ sleep写第一个程序，主要的体会就是懵。不知道从哪下手，在
 
 
 <!-- pjax -->
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/libs/pjax.min.js"></script>
-<script>
-    window.addEventListener('DOMContentLoaded', () => {
-        window.pjax = new Pjax({
-            selectors: [
-                'head title',
-                '.page-container',
-                '.pjax'
-            ],
-            history: true,
-            debug: false,
-            cacheBust: false,
-            timeout: 0,
-            analytics: false,
-            currentUrlFullReload: false,
-            scrollRestoration: false,
-        });
-
-        document.addEventListener('pjax:send', () => {
-            KEEP.utils.pjaxProgressBarStart()
-        });
-
-        document.addEventListener('pjax:complete', () => {
-            KEEP.utils.pjaxProgressBarEnd()
-            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
-            KEEP.initExecute()
-        });
-    });
-</script>
-
 
 
 

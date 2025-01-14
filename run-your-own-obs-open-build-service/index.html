@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="Lapin Gris">
+    
+    <title>
+        
+            Run Your Own OBS 编译系统 |
+        
+        Lapin Gris
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/regular.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/solid.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/brands.min.css">
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"Lapin Gris","author":"Lapin Gris","avatar":"/images/Folklore.png","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":true,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":false},"social_contact":{"enable":false,"links":{"github":"https://github.com/markyangcc","weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":true,"percent":true,"hide_header":true},"home":{"announcement":null,"category":false,"tag":false,"post_datetime":"created"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":false,"min2read":false},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":false,"share":false,"reward":{"enable":false,"img_link":null,"text":null,"icon":null}},"code_block":{"tools":{"enable":false,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":false,"site_uv":false,"site_pv":false,"page_pv":false}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"gitalk","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":"markyangcc","github_admins":null,"repository":"markyangcc.github.io","client_id":"Ov23limODCqt0en2mPRD","client_secret":"6c276a6c1847f1f4663f172bc809e31d0cab1410","proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":false},"cdn":{"enable":true,"provider":"cdnjs"},"pjax":{"enable":false},"footer":{"since":2022,"word_count":true,"site_deploy":{"enable":false,"provider":"github","url":null},"record":{"enable":false,"list":[{"code":null,"link":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               Lapin Gris
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                HOME
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                ARCHIVES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                TAGS
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                CATEGORIES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                ABOUT
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                            HOME
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                            ARCHIVES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                            TAGS
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                            CATEGORIES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                            ABOUT
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        Run Your Own OBS 编译系统
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/Folklore.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">Lapin Gris</span>
+                                
+                                    <span class="author-badge">Lv3</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2023-01-22 15:31:46</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Sun Jan 12 2025 18:38:32 GMT+0800">2025-01-12 18:38:32</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/OBS/">OBS</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/OBS/">OBS</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body ">
+                    
+
+                    
+                         <p>OBS（Open Build Service）是一个由 SUSE 开源的操作系统发行版的构建系统，可以用来创建和分发软件包。OBS支持几乎所有的主流发行版的包，比如说 SUSE系，RedHat系，Debian系，Arch系等等。</p>
+<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p>安装 OBS 最简单的方式就是使用 <a class="link"   target="_blank" rel="noopener" href="https://openbuildservice.org/download/" >openbuildservice<i class="fas fa-external-link-alt"></i></a> 网站提供的镜像（iso&#x2F;qcow2&#x2F;vmdk&#x2F;vdi），将镜像部署机器上就获得一个 OBS 实例。</p>
+<p>通常情况下，使用 SUSE 制作好的虚拟机镜像是最省时间的，比如,</p>
+<ul>
+<li>使用 qemu-kvm, 下载 qcow2 镜像</li>
+<li>使用 VMware, 下载 vmdk 镜像</li>
+<li>使用 virtualbox, 下载 vdi 镜像</li>
+</ul>
+<p>也可以使用 SUSE 提供的 ISO 镜像重新安装一台 OBS 实例，缺点是需要等待 ISO 安装完成才能得到一台 OBS 实例，使用虚拟机镜像，启动后就可以获得 OBS 实例，节省了 ISO 的安装时间。</p>
+<h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><p>在 Linux 平台部署 OBS 应该是大多数人的需求。当然也很简单，Linux 平台下大家经常使用 libvirt&#x2F;qemu 组合创建虚拟机，使用 <code>virt-install</code> 会比写 libvirt xml 或写 qemu 命令行简单一些</p>
+<p>可以使用 virt-install 命令行快速创建一个 OBS 实例,</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/usr/bin/bash</span></span><br><span class="line"></span><br><span class="line">VM_NAME=&quot;OBS&quot;</span><br><span class="line">DISK=&quot;obs-server.x86_64-qcow2.qcow2&quot;</span><br><span class="line"></span><br><span class="line">virt-install \</span><br><span class="line">--name &quot;$&#123;VM_NAME&#125;&quot; \</span><br><span class="line">--memory 32768 \</span><br><span class="line">--vcpus 16 \</span><br><span class="line">--import \</span><br><span class="line">--os-variant opensuse15.3 \</span><br><span class="line">--disk &quot;$&#123;DISK&#125;&quot; \</span><br><span class="line">--network network=default,model=virtio \</span><br><span class="line">--graphics none \</span><br><span class="line">--virt-type kvm</span><br></pre></td></tr></table></figure>
+<p>注：cpu 和 内存可以根据 host 机器的实际 cpu 和内存进行调整，示例是 16 核 32g 的配置，网络是 libvirt 创建的默认网络 <code>default</code>。</p>
+<p>默认的登录名和密码分别是 <code>root</code> &#x2F; <code>opensuse</code> 。登录方式为, <code>virsh console &lt;VM_NAME&gt;</code>.</p>
+<h3 id="Host-配置端口转发"><a href="#Host-配置端口转发" class="headerlink" title="Host 配置端口转发"></a>Host 配置端口转发</h3><blockquote>
+<p>注：如果你是使用笔记本等拥有显示器的 host 机器，忽略本步骤。</p>
+<p>注：如果你能为这台 OBS 实例分配单独的 IP，忽略本步骤。</p>
+</blockquote>
+<p>OBS 实例安装完成，为了能够在浏览器上访问这台 IP 为 <code>192.168.x.x</code> 的实例页面。我们需要在 Host 上配置端口转发，将 OBS 实例的流量转发到 host 机器上对应端口。</p>
+<p>使用 nginx 实现端口转发，</p>
+<p>修改 <code>/etc/nginx/nginx.conf</code>， 添加 server 转发规则，</p>
+<p>配置 443 端口转发,</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 443 ssl;</span><br><span class="line">    server_name _;  # 不需要填，使用 _ 代替即可</span><br><span class="line"></span><br><span class="line">    ssl_certificate /etc/nginx/ssl/nginx.crt;</span><br><span class="line">    ssl_certificate_key /etc/nginx/ssl/nginx.key;</span><br><span class="line"></span><br><span class="line">    ssl_session_cache shared:SSL:1m;</span><br><span class="line">    ssl_session_timeout 5m;</span><br><span class="line"></span><br><span class="line">    ssl_ciphers HIGH:!aNULL:!MD5;</span><br><span class="line">    ssl_prefer_server_ciphers on;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">            proxy_set_header Host $host;</span><br><span class="line">            proxy_set_header X-Real-Ip $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $remote_addr;</span><br><span class="line">            proxy_pass https://192.168.122.100:443;          # 转发目标地址</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>443 转发需要配置证书的，本地使用 openssl 自签一个，一直回车即可，</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir /etc/nginx/ssl</span><br><span class="line">openssl req -x509 -nodes -days 36500 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt</span><br></pre></td></tr></table></figure>
+
+<p>解释：转发配置的是将 host 443 端口的 http 流量全部转发到 <code>http://192.168.122.100:443</code>。</p>
+<p>为了简单，我这里选择的是同端口映射，也就是 443 映射 443，也可以把 <code>listen 443;</code> 换成 <code>listen 4433;</code> 等其他端口。那么访问时候，带上端口号即可。</p>
+<p>配置 80 端口转发(可以不配置，OBS 不需要这个端口),</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line"></span><br><span class="line">    listen 80;</span><br><span class="line">    server_name _;</span><br><span class="line">    location / &#123;</span><br><span class="line"></span><br><span class="line">        proxy_pass http://192.168.122.100:80;</span><br><span class="line">        proxy_set_header Host $host;</span><br><span class="line">        proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>配置完成后， 执行 <code>systemctl reload nginx</code> reload NGINX</p>
+<p>现在打开浏览器，可以看到 OBS 的页面了。</p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>OBS 镜像首次启动至少需要 10 分钟，使用 vnc 连接服务器就可以看到 OBS 实例的启动卡在这个地方，待会会介绍这里进行的实际是 OBS 读取 fqdn，默认超时时间是 10 mins (shit code…)</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A start job is running for OBS API Setup (8min 34s / no limit )</span><br></pre></td></tr></table></figure>
+
+<p>journal 看日志可以看到，setup-appliance.sh 脚本在持续等待 fqdn，而且超时时间设置为 600 秒，也就是 10mins，感觉时间设置的过长了，如果本地网络比较好的话，改下脚本将超时时间设置为 十几秒就够了<br><img   src="/../img/obs-set-fqdn-journal-log.png"  alt="image.png"></p>
+<p>&#x2F;usr&#x2F;lib&#x2F;obs&#x2F;server&#x2F;setup-appliance.sh</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">function get_hostname &#123;</span><br><span class="line"></span><br><span class="line">  if [[ $1 &amp;&amp; $BOOTSTRAP_TEST_MODE == 1 ]];then</span><br><span class="line">    FQHOSTNAME=$1</span><br><span class="line">  else</span><br><span class="line">    TIMEOUT=600</span><br><span class="line">    while [ -z &quot;$FQHOSTNAME&quot; -o &quot;$FQHOSTNAME&quot; = &quot;localhost&quot; ];do</span><br><span class="line">      FQHOSTNAME=`hostname -f 2&gt;/dev/null`</span><br><span class="line">      TIMEOUT=$(($TIMEOUT-1))</span><br><span class="line">      [ &quot;$TIMEOUT&quot; -le 0 ] &amp;&amp; break</span><br><span class="line">      echo &quot;Waiting for FQHOSTNAME ($TIMEOUT)&quot;</span><br><span class="line">      sleep 1</span><br><span class="line">    done</span><br><span class="line">  fi</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>超时时间设置为 600 s ，在目前的网络条件下可能是没有必要的，改为十几秒足够了<br>注：在目前版本的 OBS  Git 仓库上，超时时间已经被调整为 30 s 了（<a class="link"   target="_blank" rel="noopener" href="https://github.com/openSUSE/open-build-service/blob/c5ad76b359fd8b2ad77a597fa7cd65ed47b93d76/dist/functions.setup-appliance.sh#L144" >functions.setup-appliance.sh<i class="fas fa-external-link-alt"></i></a>），感觉这才是比较合理的值</p>
+<h3 id="设置-ssh-服务开机自启"><a href="#设置-ssh-服务开机自启" class="headerlink" title="设置 ssh 服务开机自启"></a>设置 ssh 服务开机自启</h3><p>默认 OBS 2.10 镜像是没有开启 ssh 远程连接的，推荐开启，方便远程登录</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable --now sshd</span><br></pre></td></tr></table></figure>
+<p>云厂商虚拟机可以先通过控制台的 vnc 连接到服务器，执行以上命令。之后可以通过 ssh 连接 OBS 实例了，OBS 镜像默认的登录用户名和密码是 root&#x2F;opensuse 。</p>
+<p>现在针对各个云服务器的攻击非常多，保持默认密码很容易被攻击者入侵服务器，导致服务器成为肉鸡。。<br>为了安全起见，在以下几种方案里选择一个方式保护自己的云服务器<br>1、禁用密码登录、采用公钥登录，目前最安全的方案<br>2、禁用 root 远程登录，新增一个用户用于远程登录，修改默认 ssh 端口号，安全性适中<br>3、不禁用 root 远程登录，但是修改一个复杂一点的密码，修改默认 ssh 端口号，安全性弱</p>
+<h3 id="更换国内镜像源"><a href="#更换国内镜像源" class="headerlink" title="更换国内镜像源"></a>更换国内镜像源</h3><p>OBS 默认的镜像源速度不是很理想，换成国内源加快安装软件包的速度</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">禁用已有所有镜像源</span></span><br><span class="line">zypper mr -da</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用 USTC 的软件源</span></span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/distribution/leap/\$releasever/repo/oss USTC:OSS</span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/distribution/leap/\$releasever/repo/non-oss USTC:NON-OSS</span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/update/leap/\$releasever/oss USTC:UPDATE-OSS</span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/update/leap/\$releasever/non-oss USTC:UPDATE-NON-OSS</span><br><span class="line">zypper ar -fcg https://mirrors.ustc.edu.cn/opensuse/update/leap/\$releasever/sle USTC:UPDATE-SLE</span><br></pre></td></tr></table></figure>
+<p>注：SUSE 系列 OS 存放 repo 文件的目录是<code>/etc/zypp/repos.d</code></p>
+<h2 id="数据分盘（强烈推荐）"><a href="#数据分盘（强烈推荐）" class="headerlink" title="数据分盘（强烈推荐）"></a>数据分盘（强烈推荐）</h2><p><strong>如果你是想搭建一个试一下或者自己使用，并不是用于企业的生产环境，可以跳过这一步。</strong><br>OBS 作为一个打包系统，数据虽然不是特别的重要，但是还是建议将 OBS 的数据分盘存储。<br>在介绍数据分盘的逻辑前，先介绍一下 OBS 镜像本身，下载下来的 OBS 镜像安装好后是一个 openSUSE leap 15.3 系统，我们的 OBS 服务安装在 openSUSE 操作系统上的，更具体来说，是安装在<code>/srv</code> 目录下，所以数据分盘的逻辑就很显而易见了。将 OBS <code>/srv </code>目录单独放到一个数据盘上，剩下的作为系统盘。</p>
+<h3 id="分盘操作原理"><a href="#分盘操作原理" class="headerlink" title="分盘操作原理"></a>分盘操作原理</h3><p>我们可以很轻松的联想到，单独给我们 OBS 虚拟机通一块数据盘，将数据盘挂在到 &#x2F;srv 分区，将原有的数据拷贝到数据盘上就可以实现 OBS 服务与系统盘脱钩。</p>
+<h3 id="查看磁盘的情况"><a href="#查看磁盘的情况" class="headerlink" title="查看磁盘的情况"></a>查看磁盘的情况</h3><p>查看系统的磁盘情况，此处挂了一块 100G 的磁盘，被 Linux 系统标识为 &#x2F;dev&#x2F;vdb</p>
+<blockquote>
+<p>注：这里的 vda 是 &#x2F;dev&#x2F;vda，是系统盘，vda1 是在系统盘上分区，这里分区设置是将整个磁盘的空间全部分给 vda1，这里没必要讲磁盘分区。官方提供的 OBS 镜像里做了分区，那就保持这样就好了，系统盘和我们的数据分盘操作关系不大。</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">lsblk</span></span><br><span class="line">NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT</span><br><span class="line">sr0     11:0    1  368K  0 rom</span><br><span class="line">vda    253:0    0  100G  0 disk</span><br><span class="line">`-vda1 253:1    0  100G  0 part /</span><br><span class="line">vdb    253:16   0  100G  0 disk</span><br></pre></td></tr></table></figure>
+<h3 id="磁盘需要格式化为文件系统"><a href="#磁盘需要格式化为文件系统" class="headerlink" title="磁盘需要格式化为文件系统"></a>磁盘需要格式化为文件系统</h3><p>将单独的数据盘 vdb 全盘格式化为 ext4 文件系统，此处不需要将磁盘分区为 1,2,3。（可以，但没必要）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkfs -t ext4 /dev/vdb</span><br></pre></td></tr></table></figure>
+
+<p>将格式化好的磁盘挂在到 &#x2F;mnt 目录，（挂载到 &#x2F;mnt 目录下是为了拷贝数据用的，算是个临时目录 ）接着将 &#x2F;srv 目录下的所有文件同步到 &#x2F;mnt 目录，也就是同步到单独的数据盘上</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mount /dev/vdb /mnt</span><br><span class="line">rsync -av --progress /srv/ /mnt</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置开机挂载"><a href="#设置开机挂载" class="headerlink" title="设置开机挂载"></a>设置开机挂载</h3><p>在 systemd 启动 OBS 服务之前，我们需要将我们的数据盘 mount 到 &#x2F;sev 目录下，隐藏原有的文件。这样当 systemd 拉起 OBS 服务是时候，读取的数据就是从<br>通过 <code>lsblk -f</code> 命令查询 &#x2F;dev&#x2F;vdb 磁盘的 uuid 号，将数据盘开机挂载到 &#x2F;srv 目录， Linux mount 会隐藏原有目录的内容，不用担心 &#x2F;srv 目录非空，OBS 运行过程中对 &#x2F;srv 目录下的文件读写会写到系统盘上的位置，这种情况是不会发生的，这个是文件系统的实现，mount 过后，对 &#x2F;srv 路径下所有文件读写都会被文件系统重定向到 mount 的数据盘上。<br>mount 之后，这样每次 OBS 服务启动时读取的数据都是从单独的数据盘上读的，这样实现数据分离。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cat</span> /etc/fatab</span></span><br><span class="line">UUID=bedc29dd-b6c7-408d-917e-05d13111e056 /     ext4 defaults 1 1</span><br><span class="line">UUID=ba63af21-95d4-4fcc-b77e-a4e8de89280c /srv  ext4 defaults 1 1</span><br></pre></td></tr></table></figure>
+<p>这里有一个问题，要不要在上一步的 rsync 过后，将原有的 &#x2F;srv 目录清空，其实是可以的，但是没有必要。</p>
+<p>此时我们已经完成了 OBS 的数据分盘。</p>
+<h2 id="为-OBS-添加-build-target"><a href="#为-OBS-添加-build-target" class="headerlink" title="为 OBS 添加 build target"></a>为 OBS 添加 build target</h2><p>默认情况下，新创建的 OBS 是没有 build target。添加了对应发行版的 build target 后，就可以为对应的发行版编译软件包了。<br>我们查看 <a class="link"   target="_blank" rel="noopener" href="https://build.opensuse.org/project" >https://build.opensuse.org<i class="fas fa-external-link-alt"></i></a> 网站上，发现拥有许多 build target，比如说 CentOS 7, CentOS 8，CentOS Stream，SUSE SLE，openSUSE，AlmaLinux，RockyLinux，Debian 等等。</p>
+<p>推荐先创建一个 Meta 项目，在以这个 Meta 项目作为基石，创建 AlmaLinux:9 的编译环境。</p>
+<h3 id="1-为发行版编译项目创建一个-meta-项目"><a href="#1-为发行版编译项目创建一个-meta-项目" class="headerlink" title="1) 为发行版编译项目创建一个 meta 项目"></a>1) 为发行版编译项目创建一个 meta 项目</h3><p>创建 meta 项目是必要的，后面会介绍。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">osc meta -e prj Meta:AlmaLinux:9</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;project name=&quot;Meta:AlmaLinux:9&quot;&gt;</span><br><span class="line">  &lt;title&gt;Meta AlmaLinux 9&lt;/title&gt;</span><br><span class="line">  &lt;description/&gt;</span><br><span class="line">  &lt;person userid=&quot;Admin&quot; role=&quot;maintainer&quot;/&gt;</span><br><span class="line"></span><br><span class="line">  &lt;repository name=&quot;standard&quot;&gt;</span><br><span class="line">    &lt;arch&gt;x86_64&lt;/arch&gt;</span><br><span class="line">  &lt;/repository&gt;</span><br><span class="line"></span><br><span class="line">&lt;/project&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>编写好项目的 build target 之后，会自动创建如下目录<br><code>/srv/obs/build/AlmaLinux:9/standard/x86_64</code></p>
+<h3 id="2-添加编译依赖-rpm-包（BuildRequire-）"><a href="#2-添加编译依赖-rpm-包（BuildRequire-）" class="headerlink" title="2) 添加编译依赖 rpm 包（BuildRequire ）"></a>2) 添加编译依赖 rpm 包（BuildRequire ）</h3><p>对于 AlmaLinux 来说，以 repo粒度来说最小化的依赖包是 baseos 和 appstream 里面的包。但是通常情况下，这些包是不够用的，比如说编译 kernel, 还需要 crb 和 epel 里的包。<br>这里推荐将发行版的，baseos, appstream, crb, epel 仓库的对应 arch 的包都下载到 :full 路径下作为依赖。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir /srv/obs/build/Meta:AlmaLinux:9/standard/x86_64/:full</span><br><span class="line"></span><br><span class="line">cp &lt;needed-packages-to-build-packages&gt;/*.rpm /srv/obs/build/Meta:AlmaLinux:9/standard/x86_64/:full/</span><br><span class="line">chown -R obsrun.obsrun /srv/obs/build/Meta:AlmaLinux:9</span><br></pre></td></tr></table></figure>
+<h3 id="3-添加项目的配置文件"><a href="#3-添加项目的配置文件" class="headerlink" title="3) 添加项目的配置文件"></a>3) 添加项目的配置文件</h3><p>没添加 project config 之前，项目是处于 broken 状态的<br><img   src="/../img/obs-broken-status.png"  alt="obs-broken-status"></p>
+<p>添加也很简单，将 openSUSE  网站的 project conf 复制过来即可<br><a class="link"   target="_blank" rel="noopener" href="https://build.opensuse.org/projects/AlmaLinux:9/prjconf" >https://build.opensuse.org/projects/AlmaLinux:9/prjconf<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="4-扫描项目解决依赖"><a href="#4-扫描项目解决依赖" class="headerlink" title="4) 扫描项目解决依赖"></a>4) 扫描项目解决依赖</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">obs_admin --rescan-repository Meta:AlmaLinux:9 standard x86_64</span><br></pre></td></tr></table></figure>
+
+<p>执行完 rescan-repository 命令后，如果出现 :repodone 文件代表文件扫描完毕<br>如果配置不完整，查下目录下的文件里面的内容，可以看出报错出在哪里</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">ls</span> /srv/obs/build/AlmaLinux:9/standard/x86_64</span></span><br><span class="line">:bininfo  :depends  :full  :full.solv  :packstatus  :repodone  :repoinfo  :schedulerstate</span><br></pre></td></tr></table></figure>
+<p>5）以 meta 项目为基础创建发行版编译项目<br>添加完 build target 之后，就可以为这个发行版构建软件包了<br><img   src="/../img/obs-public-status.png"  alt="obs-public-status"></p>
+<h3 id="5）如法炮制，创建一个用于发行版编译的项目"><a href="#5）如法炮制，创建一个用于发行版编译的项目" class="headerlink" title="5）如法炮制，创建一个用于发行版编译的项目"></a>5）如法炮制，创建一个用于发行版编译的项目</h3><p>前面 4 个步骤中，我们已经创建了 一个 Meta 项目，但是这个项目并不能作为发行版编译的项目，需要以 meta 项目为模板创建用于发行版编译的项目<br>因为在 OBS 里所有的项目都是一样的，这里和创建 meta 项目一样创建一个用于发行版编译的项目。<br>这里的区别是，repository 标签的写法，我们复用了之前创建的 meta 项目。创建完成，扫描仓库解决依赖后就可以正式用作编译的仓库了。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">osc meta -e prj AlmaLinux:9</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;project name=&quot;AlmaLinux:9&quot;&gt;</span><br><span class="line">  &lt;title&gt;AlmaLinux 9&lt;/title&gt;</span><br><span class="line">  &lt;description&gt;AlmaLinux 9 distribution project.</span><br><span class="line"></span><br><span class="line">  &lt;/description&gt;</span><br><span class="line">  &lt;person userid=&quot;Admin&quot; role=&quot;maintainer&quot;/&gt;</span><br><span class="line">  &lt;repository name=&quot;standard&quot;&gt;</span><br><span class="line">    &lt;path project=&quot;Meta:AlmaLinux:9&quot; repository=&quot;standard&quot;/&gt;</span><br><span class="line">    &lt;arch&gt;x86_64&lt;/arch&gt;</span><br><span class="line">  &lt;/repository&gt;</span><br><span class="line">&lt;/project&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">obs_admin --rescan-repository AlmaLinux:9 standard x86_64</span><br></pre></td></tr></table></figure>
+
+<p>现在可以为 AlmaLinux 编译软件包了，如下图<br><img   src="/img/obs-build-success-status.png"  alt="obs-build-success-status"></p>
+<h2 id="已知问题"><a href="#已知问题" class="headerlink" title="已知问题"></a>已知问题</h2><h3 id="OBS-使用-qemu-kvm-作为构建环境会构建失败"><a href="#OBS-使用-qemu-kvm-作为构建环境会构建失败" class="headerlink" title="OBS 使用 qemu-kvm 作为构建环境会构建失败"></a>OBS 使用 qemu-kvm 作为构建环境会构建失败</h3><p>OBS 默认采用 qemu-kvm 创建的虚拟机作为编译环境，采用 qemu-kvm 作为构建方式很多情况下会报错，导致构建失败。这个问题没有仔细研究过，有一个 workaround 可以比较简单的解决这个问题，那就是将 qemu-kvm 命令重命名，然后重启 obsworker.service 。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mv /usr/bin/qemu-kvm /usr/bin/qemu-kvm.bak</span><br><span class="line">systemctl restart obsworker.service</span><br></pre></td></tr></table></figure>
+
+<h3 id="waiting-for-8-compliant-workers-8-of-them-bad"><a href="#waiting-for-8-compliant-workers-8-of-them-bad" class="headerlink" title="waiting for 8 compliant workers (8 of them bad)"></a>waiting for 8 compliant workers (8 of them bad)</h3><p>执行以下命令可以解决这个问题</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">obs_admin --drop-badhosts</span><br></pre></td></tr></table></figure>
+
+<h3 id="warning-Signature-not-supported-Hash-algorithm-SHA1-not-available"><a href="#warning-Signature-not-supported-Hash-algorithm-SHA1-not-available" class="headerlink" title="warning: Signature not supported. Hash algorithm SHA1 not available"></a>warning: Signature not supported. Hash algorithm SHA1 not available</h3><p>因为 OBS 默认采用 SHA1 算法为 RPM 包签名，在一些系统上比如 RHEL 9 上 sha1 算法被弃用。因为 OBS 为了保证兼容性，默认的签名算法依然是 sha1。<br>通过编辑 sign.conf 文件可以将签名算法改为 sha256。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /etc/sign.conf</span></span><br><span class="line">user: obsrun@localhost</span><br><span class="line">server: 127.0.0.1</span><br><span class="line">allowuser: obsrun</span><br><span class="line">allow: 127.0.0.1</span><br><span class="line">hash: sha256</span><br><span class="line">phrases: /srv/obs/gnupg/phrases</span><br></pre></td></tr></table></figure>
+
+<h3 id="obs-页面点击下载会被重定向回首页"><a href="#obs-页面点击下载会被重定向回首页" class="headerlink" title="obs 页面点击下载会被重定向回首页"></a>obs 页面点击下载会被重定向回首页</h3><p>修改 external_frontend 可以解决这个问题。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /srv/www/obs/api/config/options.yml</span></span><br><span class="line"></span><br><span class="line">external_frontend_host: &lt;ip or hostname&gt;</span><br><span class="line">external_frontend_port: 443</span><br><span class="line">external_frontend_protocol: https</span><br></pre></td></tr></table></figure>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>1、Archive:Build Service adding build targets<br><a class="link"   target="_blank" rel="noopener" href="https://en.opensuse.org/Archive:Build_Service_adding_build_targets" >https://en.opensuse.org/Archive:Build_Service_adding_build_targets<i class="fas fa-external-link-alt"></i></a><br>2、Local OBS doesn’t build anymore (waiting for 4 compliant workers (4 of them bad))<br><a class="link"   target="_blank" rel="noopener" href="https://lists.opensuse.org/archives/list/buildservice@lists.opensuse.org/thread/EGWPVEZXSBAB3TTFKPERUNBU5SWECYNB/" >https://lists.opensuse.org/archives/list/buildservice@lists.opensuse.org/thread/EGWPVEZXSBAB3TTFKPERUNBU5SWECYNB/<i class="fas fa-external-link-alt"></i></a><br>3、Enhancing RHEL Security: Understanding SHA-1 deprecation on RHEL 9<br><a class="link"   target="_blank" rel="noopener" href="https://www.redhat.com/en/blog/rhel-security-sha-1-package-signatures-distrusted-rhel-9" >https://www.redhat.com/en/blog/rhel-security-sha-1-package-signatures-distrusted-rhel-9<i class="fas fa-external-link-alt"></i></a><br>4、man sign.conf<br>5、初始化Linux数据盘<br> <a class="link"   target="_blank" rel="noopener" href="https://support.huaweicloud.com/qs-ecs/zh-cn_topic_0085634797.html" >https://support.huaweicloud.com/qs-ecs/zh-cn_topic_0085634797.html<i class="fas fa-external-link-alt"></i></a><br>6、openSUSE 源使用帮助<br><a class="link"   target="_blank" rel="noopener" href="https://mirrors.ustc.edu.cn/help/opensuse.html" >https://mirrors.ustc.edu.cn/help/opensuse.html<i class="fas fa-external-link-alt"></i></a></p>
+
+                    
+                </div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/OBS/">OBS</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/extend-system-ram-using-pmem/"
+                                   title="PMEM 扩展系统内存用法介绍"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">PMEM 扩展系统内存用法介绍</span>
+                                        <span class="post-nav-item">Prev posts</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/how-to-sign-rpm-package/"
+                                   title="如何为 RPM 包签名"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">如何为 RPM 包签名</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD"><span class="nav-text">下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8"><span class="nav-text">启动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Host-%E9%85%8D%E7%BD%AE%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91"><span class="nav-text">Host 配置端口转发</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE-ssh-%E6%9C%8D%E5%8A%A1%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="nav-text">设置 ssh 服务开机自启</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8F%E6%BA%90"><span class="nav-text">更换国内镜像源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%88%86%E7%9B%98%EF%BC%88%E5%BC%BA%E7%83%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-text">数据分盘（强烈推荐）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%9B%98%E6%93%8D%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-text">分盘操作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E7%A3%81%E7%9B%98%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-text">查看磁盘的情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E9%9C%80%E8%A6%81%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%B8%BA%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-text">磁盘需要格式化为文件系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E5%BC%80%E6%9C%BA%E6%8C%82%E8%BD%BD"><span class="nav-text">设置开机挂载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA-OBS-%E6%B7%BB%E5%8A%A0-build-target"><span class="nav-text">为 OBS 添加 build target</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%B8%BA%E5%8F%91%E8%A1%8C%E7%89%88%E7%BC%96%E8%AF%91%E9%A1%B9%E7%9B%AE%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA-meta-%E9%A1%B9%E7%9B%AE"><span class="nav-text">1) 为发行版编译项目创建一个 meta 项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%B7%BB%E5%8A%A0%E7%BC%96%E8%AF%91%E4%BE%9D%E8%B5%96-rpm-%E5%8C%85%EF%BC%88BuildRequire-%EF%BC%89"><span class="nav-text">2) 添加编译依赖 rpm 包（BuildRequire ）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%B7%BB%E5%8A%A0%E9%A1%B9%E7%9B%AE%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-text">3) 添加项目的配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%89%AB%E6%8F%8F%E9%A1%B9%E7%9B%AE%E8%A7%A3%E5%86%B3%E4%BE%9D%E8%B5%96"><span class="nav-text">4) 扫描项目解决依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%EF%BC%89%E5%A6%82%E6%B3%95%E7%82%AE%E5%88%B6%EF%BC%8C%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E7%94%A8%E4%BA%8E%E5%8F%91%E8%A1%8C%E7%89%88%E7%BC%96%E8%AF%91%E7%9A%84%E9%A1%B9%E7%9B%AE"><span class="nav-text">5）如法炮制，创建一个用于发行版编译的项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%B2%E7%9F%A5%E9%97%AE%E9%A2%98"><span class="nav-text">已知问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OBS-%E4%BD%BF%E7%94%A8-qemu-kvm-%E4%BD%9C%E4%B8%BA%E6%9E%84%E5%BB%BA%E7%8E%AF%E5%A2%83%E4%BC%9A%E6%9E%84%E5%BB%BA%E5%A4%B1%E8%B4%A5"><span class="nav-text">OBS 使用 qemu-kvm 作为构建环境会构建失败</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#waiting-for-8-compliant-workers-8-of-them-bad"><span class="nav-text">waiting for 8 compliant workers (8 of them bad)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#warning-Signature-not-supported-Hash-algorithm-SHA1-not-available"><span class="nav-text">warning: Signature not supported. Hash algorithm SHA1 not available</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#obs-%E9%A1%B5%E9%9D%A2%E7%82%B9%E5%87%BB%E4%B8%8B%E8%BD%BD%E4%BC%9A%E8%A2%AB%E9%87%8D%E5%AE%9A%E5%90%91%E5%9B%9E%E9%A6%96%E9%A1%B5"><span class="nav-text">obs 页面点击下载会被重定向回首页</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-text">Reference</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;<span>2022</span>&nbsp;-&nbsp;2025
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">Lapin Gris</a>
+        
+    </div>
+
+    <div class="theme-info info-item">
+        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div>
+
+    
+
+    
+
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD"><span class="nav-text">下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8"><span class="nav-text">启动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Host-%E9%85%8D%E7%BD%AE%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91"><span class="nav-text">Host 配置端口转发</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE-ssh-%E6%9C%8D%E5%8A%A1%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="nav-text">设置 ssh 服务开机自启</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%8D%A2%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8F%E6%BA%90"><span class="nav-text">更换国内镜像源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%88%86%E7%9B%98%EF%BC%88%E5%BC%BA%E7%83%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-text">数据分盘（强烈推荐）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%9B%98%E6%93%8D%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-text">分盘操作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E7%A3%81%E7%9B%98%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-text">查看磁盘的情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E9%9C%80%E8%A6%81%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%B8%BA%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-text">磁盘需要格式化为文件系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E5%BC%80%E6%9C%BA%E6%8C%82%E8%BD%BD"><span class="nav-text">设置开机挂载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA-OBS-%E6%B7%BB%E5%8A%A0-build-target"><span class="nav-text">为 OBS 添加 build target</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%B8%BA%E5%8F%91%E8%A1%8C%E7%89%88%E7%BC%96%E8%AF%91%E9%A1%B9%E7%9B%AE%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA-meta-%E9%A1%B9%E7%9B%AE"><span class="nav-text">1) 为发行版编译项目创建一个 meta 项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%B7%BB%E5%8A%A0%E7%BC%96%E8%AF%91%E4%BE%9D%E8%B5%96-rpm-%E5%8C%85%EF%BC%88BuildRequire-%EF%BC%89"><span class="nav-text">2) 添加编译依赖 rpm 包（BuildRequire ）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%B7%BB%E5%8A%A0%E9%A1%B9%E7%9B%AE%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-text">3) 添加项目的配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%89%AB%E6%8F%8F%E9%A1%B9%E7%9B%AE%E8%A7%A3%E5%86%B3%E4%BE%9D%E8%B5%96"><span class="nav-text">4) 扫描项目解决依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%EF%BC%89%E5%A6%82%E6%B3%95%E7%82%AE%E5%88%B6%EF%BC%8C%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E7%94%A8%E4%BA%8E%E5%8F%91%E8%A1%8C%E7%89%88%E7%BC%96%E8%AF%91%E7%9A%84%E9%A1%B9%E7%9B%AE"><span class="nav-text">5）如法炮制，创建一个用于发行版编译的项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%B2%E7%9F%A5%E9%97%AE%E9%A2%98"><span class="nav-text">已知问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OBS-%E4%BD%BF%E7%94%A8-qemu-kvm-%E4%BD%9C%E4%B8%BA%E6%9E%84%E5%BB%BA%E7%8E%AF%E5%A2%83%E4%BC%9A%E6%9E%84%E5%BB%BA%E5%A4%B1%E8%B4%A5"><span class="nav-text">OBS 使用 qemu-kvm 作为构建环境会构建失败</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#waiting-for-8-compliant-workers-8-of-them-bad"><span class="nav-text">waiting for 8 compliant workers (8 of them bad)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#warning-Signature-not-supported-Hash-algorithm-SHA1-not-available"><span class="nav-text">warning: Signature not supported. Hash algorithm SHA1 not available</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#obs-%E9%A1%B5%E9%9D%A2%E7%82%B9%E5%87%BB%E4%B8%8B%E8%BD%BD%E4%BC%9A%E8%A2%AB%E9%87%8D%E5%AE%9A%E5%90%91%E5%9B%9E%E9%A6%96%E9%A1%B5"><span class="nav-text">obs 页面点击下载会被重定向回首页</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-text">Reference</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/header-shrink.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/back2top.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/toggle-theme.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/code-block.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/main.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/libs/anime.min.js"></script>
+
+<!-- local search -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/local-search.min.js"></script>
+
+
+<!-- lazyload -->
+
+
+<div class="">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/post/post-helper.min.js"></script>
+
+        <!-- toc -->
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/post/toc.min.js"></script>
+        
+
+        <!-- copyright-info -->
+        
+
+        <!-- share -->
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+
+
+</body>
+</html>

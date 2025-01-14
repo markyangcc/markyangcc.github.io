@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="Lapin Gris">
+    
+    <title>
+        
+            PMEM 扩展系统内存用法介绍 |
+        
+        Lapin Gris
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/regular.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/solid.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/brands.min.css">
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"Lapin Gris","author":"Lapin Gris","avatar":"/images/Folklore.png","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":true,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":false},"social_contact":{"enable":false,"links":{"github":"https://github.com/markyangcc","weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":true,"percent":true,"hide_header":true},"home":{"announcement":null,"category":false,"tag":false,"post_datetime":"created"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":false,"min2read":false},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":false,"share":false,"reward":{"enable":false,"img_link":null,"text":null,"icon":null}},"code_block":{"tools":{"enable":false,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":false,"site_uv":false,"site_pv":false,"page_pv":false}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"gitalk","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":"markyangcc","github_admins":null,"repository":"markyangcc.github.io","client_id":"Ov23limODCqt0en2mPRD","client_secret":"6c276a6c1847f1f4663f172bc809e31d0cab1410","proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":false},"cdn":{"enable":true,"provider":"cdnjs"},"pjax":{"enable":false},"footer":{"since":2022,"word_count":true,"site_deploy":{"enable":false,"provider":"github","url":null},"record":{"enable":false,"list":[{"code":null,"link":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               Lapin Gris
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                HOME
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                ARCHIVES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                TAGS
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                CATEGORIES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                ABOUT
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                            HOME
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                            ARCHIVES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                            TAGS
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                            CATEGORIES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                            ABOUT
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        PMEM 扩展系统内存用法介绍
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/Folklore.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">Lapin Gris</span>
+                                
+                                    <span class="author-badge">Lv3</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2023-02-05 18:04:09</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Sun Jan 12 2025 18:38:32 GMT+0800">2025-01-12 18:38:32</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/pmem/">pmem</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/pmem/">pmem</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/system-ram/">system-ram</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/gigantic-page/">gigantic page</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body ">
+                    
+
+                    
+                         <p>在介绍 pmem 的几种用法之前，我们先来介绍 pmem 的几种模式，因为后面介绍的用法与 pmem 的这几种模式是分不开的。</p>
+<h1 id="PMEM-的三种模式"><a href="#PMEM-的三种模式" class="headerlink" title="PMEM 的三种模式"></a>PMEM 的三种模式</h1><h2 id="1、Memory-Mode"><a href="#1、Memory-Mode" class="headerlink" title="1、Memory Mode"></a>1、Memory Mode</h2><p>pmem 配置为内存模式时，pmem 作为系统内存（system ram），原有的系统内存作为 cache。pmem 本身是比 DRAM 慢的，这种情况下，应用的访存延迟也会上升。内存模式屏蔽了本身的系统内存，针对虚拟化场景下一台物理机插了好几个内存的情况 几百G 的内存相当于被浪费了。</p>
+<h2 id="2、App-Direct-Mode"><a href="#2、App-Direct-Mode" class="headerlink" title="2、App Direct Mode"></a>2、App Direct Mode</h2><p>pmem 配置为 AD 模式时，这种模式，pmem 作为一个额外的内存资源暴露给 OS。通常情况下，我们也是采用 AD 模式，然后将 pmem 配置为 system-ram ，这样针对 redis 这种大内存的场景提供了大内存的适中的解决方案，因为 pmem 比 DRAM 便宜不少，完全采用 DRAM 比较贵。</p>
+<h2 id="3、Mixed-Mode"><a href="#3、Mixed-Mode" class="headerlink" title="3、Mixed Mode"></a>3、Mixed Mode</h2><p>用的少，混合模式的意思是，一部分配置为内存模式，剩下的容量自动为 AD 模式（配置内存模式时容量不配置为 100% 即代表混合模式）<br>pmem 提供了低成本大容量的内存解决方案。在 pmem 的三种模式的选择中，一般选择将 pmem 配置为 AD 模式来扩展系统内存，为 redis 等数据库场景提供更廉价的内存方案（相对来说，性能比完全采用 DRAM 会低一些）。</p>
+<h1 id="PMEM-的用法"><a href="#PMEM-的用法" class="headerlink" title="PMEM 的用法"></a>PMEM 的用法</h1><h2 id="a-用作磁盘"><a href="#a-用作磁盘" class="headerlink" title="a) 用作磁盘"></a>a) 用作磁盘</h2><p>将原有的 NVME SSD盘换成 pmem，可以获得更高的IOPS和带宽、更低的延时，解决性能瓶颈问题。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ndctl create-namespace --region region0 --mode fsdax</span><br><span class="line"></span><br><span class="line">mkfs -t ext4 /dev/pmem0 &amp;&amp; \</span><br><span class="line">mkdir /mnt/sdb &amp;&amp; \</span><br><span class="line">mount -o dax,noatime /dev/pmem0 /mnt/sdb</span><br></pre></td></tr></table></figure>
+<p>执行 <code>df -h</code> 查看刚刚挂载的磁盘。</p>
+<h2 id="b-用作-ram（DRAM-作为-cache）"><a href="#b-用作-ram（DRAM-作为-cache）" class="headerlink" title="b) 用作 ram（DRAM 作为 cache）"></a>b) 用作 ram（DRAM 作为 cache）</h2><p>将 pmem 当做一个系统内存来使用，原有的系统内存会看做一层 cache。这种用法下， pmem 是易失的，和 DRAM 的易失特性一样。这种用法，唯一的感觉是比较浪费，系统原有的内存被当做 cache 了，没有得到好的运用。</p>
+<h2 id="c-用作-numa-node"><a href="#c-用作-numa-node" class="headerlink" title="c) 用作 numa node"></a>c) 用作 numa node</h2><p>pmem 的另一个种用法是当做一个 numa node。当机器上被插上几根 pmem 内存时，pmem 内存会被识别为 numa 节点（配置方式如下），相较于 用作 ram 的方式，优点是显而易见的，扩展了系统可用内存。原有的系统内存也不会对上层屏蔽掉，依然可以被上层应用使用。</p>
+<p>现在的数据中心级别的服务器操作系统通常都会配置大页来获得更好的性能。通常的大页配置为 2M 大页和 1G 大页。这里我们也介绍在 pmem 所在的 numa node 开启大页。</p>
+<h3 id="开启-2M-大页"><a href="#开启-2M-大页" class="headerlink" title="开启 2M 大页"></a>开启 2M 大页</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">daxctl migrate-device-model</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建 namespace</span></span><br><span class="line">ndctl create-namespace --region=region0 --mode=devdax</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将 dax 设陪配置为 system-ram 模式</span></span><br><span class="line">daxctl reconfigure-device dax0.0 --mode=system-ram</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">分配 1024 个 2M 大页</span></span><br><span class="line">echo 1024 &gt; /sys/devices/system/node/node2/hugepages/hugepages-2048kB/nr_hugepages</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看 2M 页分配结果</span></span><br><span class="line">cat /sys/devices/system/node/node2/hugepages/hugepages-2048kB/nr_hugepages</span><br><span class="line">1024</span><br></pre></td></tr></table></figure>
+<p><code>cat nr_hugepages</code> 返回值可以看到，成功开启了 1024 个 hugepage。<br>注：dax 设备默认的对齐就是 2M，所以 <code>ndctl create-namespace</code>  可以省略掉对齐参数。</p>
+<h3 id="开启-1G-大页"><a href="#开启-1G-大页" class="headerlink" title="开启 1G 大页"></a>开启 1G 大页</h3><p>我们按照下面的方式开启 1G 大页，</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">daxctl migrate-device-model</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">按照 1G 对齐</span></span><br><span class="line">ndctl create-namespace --region=region0 --align 1g --mode=devdax </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将 dax 设陪配置为 system-ram 模式</span></span><br><span class="line">daxctl reconfigure-device dax0.0 --mode=system-ram </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">分配 248 个 1G 内存页</span></span><br><span class="line">echo 248 &gt; /sys/devices/system/node/node2/hugepages/hugepages-1048576kB/nr_hugepages</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看 1G 页分配结果</span></span><br><span class="line">cat /sys/devices/system/node/node2/hugepages/hugepages-1048576kB/nr_hugepages</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
+<p>1G 页分配失败了，原因往下看，一句话概括是 kernel 拒绝将 1G 页面放到 ZONE_MOVABLE 里进行管理。</p>
+<h3 id="为什么同样的方式不能开启-1G-大页？"><a href="#为什么同样的方式不能开启-1G-大页？" class="headerlink" title="为什么同样的方式不能开启 1G 大页？"></a>为什么同样的方式不能开启 1G 大页？</h3><p>这里先介绍一个背景，linux 里大页通常由两种，一种是 2M 大页，另一种是 1G 大页。1G 大页在理论上是可以迁移的，但是实际上是不可以迁移的。<br>不可迁移的原因是，当系统运行了一段时间后，系统内存已经碎了，很难找到一个空闲的 1G 大页将内存页里的数据搬运过去。因此，内核认为 1G 大页是不可以迁移的，不把 1G 大页放在 ZONE_MOVABLE 里进行管理。这也是造成照葫芦画瓢失败的原因。</p>
+<h3 id="如何在-PMEM-上分配-1G-大页？"><a href="#如何在-PMEM-上分配-1G-大页？" class="headerlink" title="如何在 PMEM 上分配 1G 大页？"></a>如何在 PMEM 上分配 1G 大页？</h3><p>当前操作系统（RHEL Family）环境下，很多因素会导致 pmem 会被自动 online 到 ZONE_MOVABLE。这也是我们为什么按照 2M 页方式开启 1G 页的方式失败的原因。</p>
+<p>可能得原因有，daxtctl 工具本身，system udev 规则 或者 auto_online_blocks 。这三个因素，每一个都有可能导致 pmem online 到 ZONE_MOVABLE 上，进而导致分配失败</p>
+<h4 id="1、禁用-auto-online-blocks"><a href="#1、禁用-auto-online-blocks" class="headerlink" title="1、禁用 auto_online_blocks"></a>1、禁用 auto_online_blocks</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat /sys/devices/system/memory/auto_online_blocks</span><br><span class="line">offline</span><br></pre></td></tr></table></figure>
+<h4 id="2、修改系统-udev-规则"><a href="#2、修改系统-udev-规则" class="headerlink" title="2、修改系统 udev 规则"></a>2、修改系统 udev 规则</h4><p>注释掉 Memory hotadd request 部分</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">vim /usr/lib/udev/rules.d/40-redhat.rules</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Memory hotadd request</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">SUBSYSTEM!=<span class="string">&quot;memory&quot;</span>, GOTO=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ACTION!=<span class="string">&quot;add&quot;</span>, GOTO=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">CONST&#123;<span class="built_in">arch</span>&#125;==<span class="string">&quot;s390*&quot;</span>, GOTO=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">CONST&#123;<span class="built_in">arch</span>&#125;==<span class="string">&quot;ppc64*&quot;</span>, GOTO=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ENV&#123;.state&#125;=<span class="string">&quot;online&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">CONST&#123;virt&#125;==<span class="string">&quot;none&quot;</span>, ENV&#123;.state&#125;=<span class="string">&quot;online_movable&quot;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ATTR&#123;state&#125;==<span class="string">&quot;offline&quot;</span>, ATTR&#123;state&#125;=<span class="string">&quot;<span class="variable">$env</span>&#123;.state&#125;&quot;</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">LABEL=<span class="string">&quot;memory_hotplug_end&quot;</span></span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="3、daxctl-配置-ZONE-MOVABLE"><a href="#3、daxctl-配置-ZONE-MOVABLE" class="headerlink" title="3、daxctl 配置 !ZONE_MOVABLE"></a>3、daxctl 配置 !ZONE_MOVABLE</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">daxctl reconfigure-device dax0.0 --mode=system-ram --no-movable</span><br></pre></td></tr></table></figure>
+
+<p>经过上诉几个步骤，现在可以正常开启 1G 大页了。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>1、man daxctl reconfigure-device movable<br>2、<a class="link"   target="_blank" rel="noopener" href="https://docs.kernel.org/admin-guide/mm/memory-hotplug.html#zone-movable:~:text=Gigantic%20pages%20are%20unmovable" >Memory Hot(Un)Plug Docs in Linux Kernel<i class="fas fa-external-link-alt"></i></a><br>3、<a class="link"   target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/RLU1f-7ckETrQhl7mZigyQ" >Linux Kernel中AEP的现状和发展<i class="fas fa-external-link-alt"></i></a><br>4、<a class="link"   target="_blank" rel="noopener" href="https://stevescargall.com/2019/07/09/how-to-extend-volatile-system-memory-ram-using-persistent-memory-on-linux/" >How To Extend Volatile System Memory (RAM) using Persistent Memory on Linux – Steve Scargall<i class="fas fa-external-link-alt"></i></a></p>
+
+                    
+                </div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/pmem/">pmem</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/system-ram/">system-ram</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/gigantic-page/">gigantic page</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/parsec3.0-compile-error/"
+                                   title="PARSEC 3.0 编译报错"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">PARSEC 3.0 编译报错</span>
+                                        <span class="post-nav-item">Prev posts</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/run-your-own-obs-open-build-service/"
+                                   title="Run Your Own OBS 编译系统"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">Run Your Own OBS 编译系统</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PMEM-%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F"><span class="nav-text">PMEM 的三种模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81Memory-Mode"><span class="nav-text">1、Memory Mode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81App-Direct-Mode"><span class="nav-text">2、App Direct Mode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81Mixed-Mode"><span class="nav-text">3、Mixed Mode</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PMEM-%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-text">PMEM 的用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a-%E7%94%A8%E4%BD%9C%E7%A3%81%E7%9B%98"><span class="nav-text">a) 用作磁盘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b-%E7%94%A8%E4%BD%9C-ram%EF%BC%88DRAM-%E4%BD%9C%E4%B8%BA-cache%EF%BC%89"><span class="nav-text">b) 用作 ram（DRAM 作为 cache）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-%E7%94%A8%E4%BD%9C-numa-node"><span class="nav-text">c) 用作 numa node</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%90%AF-2M-%E5%A4%A7%E9%A1%B5"><span class="nav-text">开启 2M 大页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%90%AF-1G-%E5%A4%A7%E9%A1%B5"><span class="nav-text">开启 1G 大页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%90%8C%E6%A0%B7%E7%9A%84%E6%96%B9%E5%BC%8F%E4%B8%8D%E8%83%BD%E5%BC%80%E5%90%AF-1G-%E5%A4%A7%E9%A1%B5%EF%BC%9F"><span class="nav-text">为什么同样的方式不能开启 1G 大页？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%9C%A8-PMEM-%E4%B8%8A%E5%88%86%E9%85%8D-1G-%E5%A4%A7%E9%A1%B5%EF%BC%9F"><span class="nav-text">如何在 PMEM 上分配 1G 大页？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E7%A6%81%E7%94%A8-auto-online-blocks"><span class="nav-text">1、禁用 auto_online_blocks</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81%E4%BF%AE%E6%94%B9%E7%B3%BB%E7%BB%9F-udev-%E8%A7%84%E5%88%99"><span class="nav-text">2、修改系统 udev 规则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%E3%80%81daxctl-%E9%85%8D%E7%BD%AE-ZONE-MOVABLE"><span class="nav-text">3、daxctl 配置 !ZONE_MOVABLE</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-text">Reference</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;<span>2022</span>&nbsp;-&nbsp;2025
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">Lapin Gris</a>
+        
+    </div>
+
+    <div class="theme-info info-item">
+        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div>
+
+    
+
+    
+
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PMEM-%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F"><span class="nav-text">PMEM 的三种模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81Memory-Mode"><span class="nav-text">1、Memory Mode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81App-Direct-Mode"><span class="nav-text">2、App Direct Mode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81Mixed-Mode"><span class="nav-text">3、Mixed Mode</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PMEM-%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-text">PMEM 的用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a-%E7%94%A8%E4%BD%9C%E7%A3%81%E7%9B%98"><span class="nav-text">a) 用作磁盘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b-%E7%94%A8%E4%BD%9C-ram%EF%BC%88DRAM-%E4%BD%9C%E4%B8%BA-cache%EF%BC%89"><span class="nav-text">b) 用作 ram（DRAM 作为 cache）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-%E7%94%A8%E4%BD%9C-numa-node"><span class="nav-text">c) 用作 numa node</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%90%AF-2M-%E5%A4%A7%E9%A1%B5"><span class="nav-text">开启 2M 大页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%90%AF-1G-%E5%A4%A7%E9%A1%B5"><span class="nav-text">开启 1G 大页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%90%8C%E6%A0%B7%E7%9A%84%E6%96%B9%E5%BC%8F%E4%B8%8D%E8%83%BD%E5%BC%80%E5%90%AF-1G-%E5%A4%A7%E9%A1%B5%EF%BC%9F"><span class="nav-text">为什么同样的方式不能开启 1G 大页？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%9C%A8-PMEM-%E4%B8%8A%E5%88%86%E9%85%8D-1G-%E5%A4%A7%E9%A1%B5%EF%BC%9F"><span class="nav-text">如何在 PMEM 上分配 1G 大页？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E7%A6%81%E7%94%A8-auto-online-blocks"><span class="nav-text">1、禁用 auto_online_blocks</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81%E4%BF%AE%E6%94%B9%E7%B3%BB%E7%BB%9F-udev-%E8%A7%84%E5%88%99"><span class="nav-text">2、修改系统 udev 规则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%E3%80%81daxctl-%E9%85%8D%E7%BD%AE-ZONE-MOVABLE"><span class="nav-text">3、daxctl 配置 !ZONE_MOVABLE</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-text">Reference</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/header-shrink.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/back2top.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/toggle-theme.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/code-block.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/main.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/libs/anime.min.js"></script>
+
+<!-- local search -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/local-search.min.js"></script>
+
+
+<!-- lazyload -->
+
+
+<div class="">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/post/post-helper.min.js"></script>
+
+        <!-- toc -->
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/post/toc.min.js"></script>
+        
+
+        <!-- copyright-info -->
+        
+
+        <!-- share -->
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+
+
+</body>
+</html>

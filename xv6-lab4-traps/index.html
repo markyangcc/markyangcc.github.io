@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="Lapin Gris">
+    
+    <title>
+        
+            xv6 Lab4: Traps |
+        
+        Lapin Gris
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/regular.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/solid.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/brands.min.css">
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"Lapin Gris","author":"Lapin Gris","avatar":"/images/Folklore.png","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":true,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":false},"social_contact":{"enable":false,"links":{"github":"https://github.com/markyangcc","weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":true,"percent":true,"hide_header":true},"home":{"announcement":null,"category":false,"tag":false,"post_datetime":"created"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":false,"min2read":false},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":false,"share":false,"reward":{"enable":false,"img_link":null,"text":null,"icon":null}},"code_block":{"tools":{"enable":false,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":false,"site_uv":false,"site_pv":false,"page_pv":false}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"gitalk","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":"markyangcc","github_admins":null,"repository":"markyangcc.github.io","client_id":"Ov23limODCqt0en2mPRD","client_secret":"6c276a6c1847f1f4663f172bc809e31d0cab1410","proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":false},"cdn":{"enable":true,"provider":"cdnjs"},"pjax":{"enable":false},"footer":{"since":2022,"word_count":true,"site_deploy":{"enable":false,"provider":"github","url":null},"record":{"enable":false,"list":[{"code":null,"link":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               Lapin Gris
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                HOME
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                ARCHIVES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                TAGS
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                CATEGORIES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                ABOUT
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                            HOME
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                            ARCHIVES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                            TAGS
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                            CATEGORIES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                            ABOUT
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        xv6 Lab4: Traps
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/Folklore.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">Lapin Gris</span>
+                                
+                                    <span class="author-badge">Lv3</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2024-04-26 19:17:18</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Sun Jan 12 2025 18:38:32 GMT+0800">2025-01-12 18:38:32</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/xv6/">xv6</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+
+        
+        
+        
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body ">
+                    
+
+                    
+                         <p>Lab4 实现用户态 trap 处理，集中在返回用户态的中断上下文保存，很类似 signal 处理。</p>
+<h2 id="RISC-V-assembly"><a href="#RISC-V-assembly" class="headerlink" title="RISC-V assembly"></a>RISC-V assembly</h2><p>主要是一些基础知识。</p>
+<blockquote>
+<p>Which registers contain arguments to functions? For example, which register holds 13 in main’s call to printf?</p>
+</blockquote>
+<p>根据 xv6 传参规范， a1,a2 分别存放第一个参数和第二个参数。故  13 在 a2，另外通过 call.asm 也能看出。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">printf(&quot;%d %d\n&quot;, f(8) + 1, 13);</span><br><span class="line">    24:	4635                	li	a2,13</span><br><span class="line">    26:	45b1                	li	a1,12</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Where is the call to function f in the assembly code for main? Where is the call to g? (Hint: the compiler may inline functions.)</p>
+</blockquote>
+<p>000000000000000e <f><br>0000000000000000 <g></p>
+<blockquote>
+<p>At what address is the function printf located?</p>
+</blockquote>
+<p>0000000000000630 </p>
+<blockquote>
+<p>What value is in the register ra just after the jalr to printf in main?</p>
+</blockquote>
+<p>0x38<br>讲义里介绍，ra 存储的是下一条指令的地址。所以就是,</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">exit(0);</span><br><span class="line">    38:	4501                	li	a0,0</span><br></pre></td></tr></table></figure>
+
+<p>Ref: <a class="link"   target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.1810/2023/lec/l-riscv.txt#:~:text=ra%20%3C%2D%20address%20of%20next%20instruction" >https://pdos.csail.mit.edu/6.1810/2023/lec/l-riscv.txt#:~:text&#x3D;ra &lt;- address of next instruction<i class="fas fa-external-link-alt"></i></a></p>
+<blockquote>
+<p>Run the following code.<br>unsigned int i &#x3D; 0x00646c72;<br>printf(“H%x Wo%s”, 57616, &amp;i);<br>What is the output? Here’s an ASCII table that maps bytes to characters.<br>The output depends on that fact that the RISC-V is little-endian. If the RISC-V were instead big-endian what would you set i to in order to yield the same output? Would you need to change 57616 to a different value?</p>
+</blockquote>
+<p>输出是 “HE110 World”<br>如果是大段序，i &#x3D; 0x726c64</p>
+<p>下面解释输出为什么是 E110 和 rld？<br><strong>为什么是 rld?</strong><br>16 进制字符是 2 组 2 组一读，根据链接里的对照表，我们将 0x00646c72 翻译为 dlr,<br>因为是小端，所以时间上 CPU 从小端往大端读，也就是 rld.<br>00 -&gt; null<br>64 -&gt; ‘d’<br>6c -&gt; ‘l’<br>72 -&gt; ‘r’<br><strong>为什么是 E110?</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># python3</span><br><span class="line">&gt;&gt;&gt; hex(57616)</span><br><span class="line">&#x27;0xe110&#x27;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>In the following code, what is going to be printed after ‘y&#x3D;’? (note: the answer is not a specific value.) Why does this happen?</p>
+</blockquote>
+<p>打印的是 a2 寄存器的值</p>
+<h2 id="Backtrace"><a href="#Backtrace" class="headerlink" title="Backtrace"></a>Backtrace</h2><p>做这个任务前需要先理解 RISC-V 的  <a class="link"   target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.828/2023/lec/l-riscv.txt" >Calling conventions<i class="fas fa-external-link-alt"></i></a> (调用约定) ，理解了 calling conventions 实现 backtrace 就显得很简单～</p>
+<p>函数调用通常都是压栈，栈是从高处往低处增长，图中展示每一个函数的压栈情况，依次压栈的是”函数返回地址”，”fp”，”寄存器”，”本地变量”等<br>然后就是被调用函数以同样的次序压栈，函数调用会依次压栈下去。<br><code>$fp</code> 寄存器指向的当前函数的栈帧<br><code>$sp</code> 寄存器指向的是栈顶，在 backtrace 里，我们不需要它。</p>
+<p><strong>下面这张图很重要，代表 RISC-V 函数调用过程中的压栈操作，也就是函数的栈帧(fucntion frame)</strong></p>
+<p><img   src="/../img/risc-v-stack-frame.png"  alt="function call stack frame"></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://pdos.csail.mit.edu/6.828/2023/lec/l-riscv.txt" >https://pdos.csail.mit.edu/6.828/2023/lec/l-riscv.txt<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="关键实现"><a href="#关键实现" class="headerlink" title="关键实现"></a>关键实现</h3><p>1、<code>kernel/riscv.h</code>: 实现一个获取当前 frame pointer 的方法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="keyword">inline</span> uint64</span><br><span class="line"><span class="title function_">r_fp</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    uint64 x;</span><br><span class="line">    <span class="keyword">asm</span> <span class="title function_">volatile</span><span class="params">(<span class="string">&quot;mv %0, s0&quot;</span> : <span class="string">&quot;=r&quot;</span> (x) )</span>;</span><br><span class="line">    <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2、实现栈回溯</p>
+<p><code>kernel/memlayout.h</code> 里描述了 xv6 内核的 stack 的大小，KSTACK(p) 的参数 p 代表是一个 proc，一个 进程，xv6 里，每个进程的 KSTACK 占用 2 个 PGSIZE 大小，其中一个内核栈，另一个是 GUARD PAGE，用于检测栈溢出的，防止“爆栈”后污染别的进程地址空间。<br>所以，xv6 每个进程的的内核栈大小都是一个 PAGE（4K）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// map kernel stacks beneath the trampoline,</span></span><br><span class="line"><span class="comment">// each surrounded by invalid guard pages.</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> KSTACK(p) (TRAMPOLINE - ((p) + 1) * 2 * PGSIZE)</span></span><br></pre></td></tr></table></figure>
+
+<p>在了解内核栈后。实现对一个进程的 backtrace，就显得很简单。<br>首先获取当前 fp，这个 fp 指向内核栈的某个地址。使用 <code>PGROUNDUP</code> 获得页的上界（因为栈是从高往低处增长，所以向上取基址，最上面的是栈底），通过 fp 之间的指向进行回溯。</p>
+<ul>
+<li>当前 fp 减 8 就是返回地址所在栈帧（frame）地址，解引用地址就获得 return address。</li>
+<li>将 fp 减 16 地址的内容解引用获得就是 caller fp。</li>
+</ul>
+<p>看上图，return address 的位置就在 fp 的下面，通过 fp-8 访问。previous fp 在 return address 的下面，通过 fp - 16 访问，还有函数参数等均可以通过 fp 相对位置计算出来。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">backtrace</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  uint64 retaddr;</span><br><span class="line">  uint64 fp = r_fp();</span><br><span class="line">  uint64 top = PGROUNDUP(fp);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;backtrace:\n&quot;</span>);</span><br><span class="line">  <span class="keyword">while</span> (fp &lt; top) &#123;</span><br><span class="line">    retaddr = *(uint64 *)(fp - <span class="number">8</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%p\n&quot;</span>, retaddr);</span><br><span class="line"></span><br><span class="line">    fp = *(uint64 *)(fp - <span class="number">16</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Show-me-the-code"><a href="#Show-me-the-code" class="headerlink" title="Show me the code"></a>Show me the code</h3><figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">diff --git a/kernel/defs.h b/kernel/defs.h</span></span><br><span class="line"><span class="comment">index f3f5fef..3dface5 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/defs.h</span></span><br><span class="line"><span class="comment">+++ b/kernel/defs.h</span></span><br><span class="line"><span class="meta">@@ -147,6 +147,7 @@</span> void trapinit(void);</span><br><span class="line"> void trapinithart(void);</span><br><span class="line"> extern struct spinlock tickslock;</span><br><span class="line"> void usertrapret(void);</span><br><span class="line"><span class="addition">+void backtrace();</span></span><br><span class="line"> </span><br><span class="line"> // uart.c</span><br><span class="line"> void uartinit(void);</span><br><span class="line"><span class="comment">diff --git a/kernel/printf.c b/kernel/printf.c</span></span><br><span class="line"><span class="comment">index 9171d09..0f901d1 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/printf.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/printf.c</span></span><br><span class="line"><span class="meta">@@ -122,6 +122,7 @@</span> panic(char *s)</span><br><span class="line">   printf(&quot;panic: &quot;);</span><br><span class="line">   printf(s);</span><br><span class="line">   printf(&quot;\n&quot;);</span><br><span class="line"><span class="addition">+  backtrace();</span></span><br><span class="line">   panicked = 1; // freeze uart output from other CPUs</span><br><span class="line">   for (;;)</span><br><span class="line">     ;</span><br><span class="line"><span class="comment">diff --git a/kernel/riscv.h b/kernel/riscv.h</span></span><br><span class="line"><span class="comment">index 4bb2f3a..16ca148 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/riscv.h</span></span><br><span class="line"><span class="comment">+++ b/kernel/riscv.h</span></span><br><span class="line"><span class="meta">@@ -319,6 +319,14 @@</span> r_ra()</span><br><span class="line">   return x;</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"><span class="addition">+static inline uint64</span></span><br><span class="line"><span class="addition">+r_fp()</span></span><br><span class="line"><span class="addition">+&#123;</span></span><br><span class="line"><span class="addition">+  uint64 x;</span></span><br><span class="line"><span class="addition">+  asm volatile(&quot;mv %0, s0&quot; : &quot;=r&quot; (x) );</span></span><br><span class="line"><span class="addition">+  return x;</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"> // flush the TLB.</span><br><span class="line"> static inline void</span><br><span class="line"> sfence_vma()</span><br><span class="line"><span class="comment">diff --git a/kernel/sysproc.c b/kernel/sysproc.c</span></span><br><span class="line"><span class="comment">index 7990c27..0cd201d 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/sysproc.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/sysproc.c</span></span><br><span class="line"><span class="meta">@@ -54,6 +54,8 @@</span> sys_sleep(void)</span><br><span class="line">   int n;</span><br><span class="line">   uint ticks0;</span><br><span class="line"> </span><br><span class="line"><span class="addition">+  backtrace();</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line">   argint(0, &amp;n);</span><br><span class="line">   if (n &lt; 0)</span><br><span class="line">     n = 0;</span><br><span class="line"><span class="comment">diff --git a/kernel/trap.c b/kernel/trap.c</span></span><br><span class="line"><span class="comment">index f30d2e3..0dcd358 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/trap.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/trap.c</span></span><br><span class="line"><span class="meta">@@ -223,3 +223,19 @@</span> devintr()</span><br><span class="line">     return 0;</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+void</span></span><br><span class="line"><span class="addition">+backtrace()</span></span><br><span class="line"><span class="addition">+&#123;</span></span><br><span class="line"><span class="addition">+  uint64 retaddr;</span></span><br><span class="line"><span class="addition">+  uint64 fp = r_fp();</span></span><br><span class="line"><span class="addition">+  uint64 top = PGROUNDUP(fp);</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  printf(&quot;backtrace:\n&quot;);</span></span><br><span class="line"><span class="addition">+  while (fp &lt; top) &#123;</span></span><br><span class="line"><span class="addition">+    retaddr = *(uint64 *)(fp - 8);</span></span><br><span class="line"><span class="addition">+    printf(&quot;%p\n&quot;, retaddr);</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+    fp = *(uint64 *)(fp - 16);</span></span><br><span class="line"><span class="addition">+  &#125;</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br></pre></td></tr></table></figure>
+<h2 id="Alarm"><a href="#Alarm" class="headerlink" title="Alarm"></a>Alarm</h2><h3 id="关键实现-1"><a href="#关键实现-1" class="headerlink" title="关键实现"></a>关键实现</h3><p>1、<code>kernel/proc.h</code>：在 <code>struct proc</code> 添加必要的结构体成员（passed ticks、ticks 阈值、handler 地址、trapframe 备份）<br><strong>优化：这些结构体可以通过单独放到一个 <code>struct alarm</code> 的结构体里，这样就可以达到在不添加 alarm 前缀的情况下区分不同成员的命名。</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">proc</span> &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// traps alarm</span></span><br><span class="line">    <span class="type">int</span> alarm_passed;</span><br><span class="line">    <span class="type">int</span> alarm_threshold;</span><br><span class="line">    uint64 alarm_handler;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">trapframe</span> *<span class="title">alarm_prev_trapframe</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p> 2、解析用户态调用的参数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_sigalarm</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> period;</span><br><span class="line">    uint64 handler;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line"></span><br><span class="line">    argint(<span class="number">0</span>, &amp;period);</span><br><span class="line">    argaddr(<span class="number">1</span>, &amp;handler);</span><br><span class="line"></span><br><span class="line">    p-&gt;alarm_threshold = period;</span><br><span class="line">    p-&gt;alarm_handler = handler;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3、每次时钟中断都会调用 usertrap。因此，我们在 usertrap 里实现 alarm feature。每次发生时钟中断时候，递增 alarm_passed，当 alarm_passed 等于设置的阈值时，此时需要返回用户态，执行用户态的 handler。<br><strong>注：是返回用户态执行 handler，不是直接在内核态执行 handler。</strong></p>
+<p>让流程返回用户态，只需要将 epc 设置为 handler 的地址即可，当返回用户态时候就会从 epc 指向的地方开始执行。在返回之前，我们需要保存现场，将 trapframe 结构体保存到 alarm_prev_trapframe 里，赋值语法是 C 语言的结构体赋值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">usertrap</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="comment">// give up the CPU if this is a timer interrupt.</span></span><br><span class="line">  <span class="keyword">if</span> (which_dev == <span class="number">2</span>) &#123;</span><br><span class="line">    p-&gt;alarm_passed++;</span><br><span class="line">    <span class="keyword">if</span> (p-&gt;alarm_passed == p-&gt;alarm_threshold) &#123;</span><br><span class="line">      *(p-&gt;alarm_prev_trapframe) = *(p-&gt;trapframe);</span><br><span class="line">      p-&gt;trapframe-&gt;epc = p-&gt;alarm_handler;</span><br><span class="line">    &#125;</span><br><span class="line">    yield();</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 4、中断返回，返回需要先恢复现场，恢复到发生中断前。通过将 alarm_prev_trapframe 中保存的现场恢复到 trapframe 即可。重置 alarm_passed。 题目要求，返回值是 <code>a0</code> 寄存的值，不能直接写 <code>return 0</code>.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_sigreturn</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line"></span><br><span class="line">    *(p-&gt;trapframe) = *(p-&gt;alarm_prev_trapframe);</span><br><span class="line">    p-&gt;alarm_passed = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> p-&gt;trapframe-&gt;a0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Show-me-the-code-1"><a href="#Show-me-the-code-1" class="headerlink" title="Show me the code"></a>Show me the code</h3><figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">diff --git a/Makefile b/Makefile</span></span><br><span class="line"><span class="comment">index 46997f8..b5eaf29 100644</span></span><br><span class="line"><span class="comment">--- a/Makefile</span></span><br><span class="line"><span class="comment">+++ b/Makefile</span></span><br><span class="line"><span class="meta">@@ -188,6 +188,7 @@</span> UPROGS=\</span><br><span class="line"> 	$U/_grind\</span><br><span class="line"> 	$U/_wc\</span><br><span class="line"> 	$U/_zombie\</span><br><span class="line"><span class="addition">+	$U/_alarmtest\</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment">diff --git a/kernel/proc.c b/kernel/proc.c</span></span><br><span class="line"><span class="comment">index 4315d58..ae8d6ed 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/proc.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/proc.c</span></span><br><span class="line"><span class="meta">@@ -133,6 +133,13 @@</span> allocproc(void)</span><br><span class="line">     return 0;</span><br><span class="line">   &#125;</span><br><span class="line"> </span><br><span class="line"><span class="addition">+  //  Allocate a trapframe page for alarm</span></span><br><span class="line"><span class="addition">+  if ((p-&gt;alarm_prev_trapframe = (struct trapframe *)kalloc()) == 0) &#123;</span></span><br><span class="line"><span class="addition">+    freeproc(p);</span></span><br><span class="line"><span class="addition">+    release(&amp;p-&gt;lock);</span></span><br><span class="line"><span class="addition">+    return 0;</span></span><br><span class="line"><span class="addition">+  &#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line">   // An empty user page table.</span><br><span class="line">   p-&gt;pagetable = proc_pagetable(p);</span><br><span class="line">   if (p-&gt;pagetable == 0) &#123;</span><br><span class="line"><span class="meta">@@ -147,6 +154,10 @@</span> allocproc(void)</span><br><span class="line">   p-&gt;context.ra = (uint64)forkret;</span><br><span class="line">   p-&gt;context.sp = p-&gt;kstack + PGSIZE;</span><br><span class="line"> </span><br><span class="line"><span class="addition">+  p-&gt;alarm_passed = 0;</span></span><br><span class="line"><span class="addition">+  p-&gt;alarm_threshold = 0;</span></span><br><span class="line"><span class="addition">+  p-&gt;alarm_handler = 0;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line">   return p;</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@@ -159,6 +170,9 @@</span> freeproc(struct proc *p)</span><br><span class="line">   if (p-&gt;trapframe)</span><br><span class="line">     kfree((void *)p-&gt;trapframe);</span><br><span class="line">   p-&gt;trapframe = 0;</span><br><span class="line"><span class="addition">+  if (p-&gt;alarm_prev_trapframe)</span></span><br><span class="line"><span class="addition">+    kfree((void *)p-&gt;alarm_prev_trapframe);</span></span><br><span class="line"><span class="addition">+  p-&gt;alarm_prev_trapframe = 0;</span></span><br><span class="line">   if (p-&gt;pagetable)</span><br><span class="line">     proc_freepagetable(p-&gt;pagetable, p-&gt;sz);</span><br><span class="line">   p-&gt;pagetable = 0;</span><br><span class="line"><span class="meta">@@ -170,6 +184,10 @@</span> freeproc(struct proc *p)</span><br><span class="line">   p-&gt;killed = 0;</span><br><span class="line">   p-&gt;xstate = 0;</span><br><span class="line">   p-&gt;state = UNUSED;</span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  p-&gt;alarm_passed = 0;</span></span><br><span class="line"><span class="addition">+  p-&gt;alarm_threshold = 0;</span></span><br><span class="line"><span class="addition">+  p-&gt;alarm_handler = 0;</span></span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> // Create a user page table for a given process, with no user memory,</span><br><span class="line"><span class="comment">diff --git a/kernel/proc.h b/kernel/proc.h</span></span><br><span class="line"><span class="comment">index a74496c..fe3d174 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/proc.h</span></span><br><span class="line"><span class="comment">+++ b/kernel/proc.h</span></span><br><span class="line"><span class="meta">@@ -104,4 +104,10 @@</span> struct proc &#123;</span><br><span class="line">   struct file *ofile[NOFILE];  // Open files</span><br><span class="line">   struct inode *cwd;           // Current directory</span><br><span class="line">   char name[16];               // Process name (debugging)</span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  // traps alarm</span></span><br><span class="line"><span class="addition">+  int alarm_passed;</span></span><br><span class="line"><span class="addition">+  int alarm_threshold;</span></span><br><span class="line"><span class="addition">+  uint64 alarm_handler;</span></span><br><span class="line"><span class="addition">+  struct trapframe *alarm_prev_trapframe;</span></span><br><span class="line"> &#125;;</span><br><span class="line"><span class="comment">diff --git a/kernel/syscall.c b/kernel/syscall.c</span></span><br><span class="line"><span class="comment">index b1f6d3d..4e19877 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/syscall.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/syscall.c</span></span><br><span class="line"><span class="meta">@@ -102,6 +102,8 @@</span> extern uint64 sys_unlink(void);</span><br><span class="line"> extern uint64 sys_link(void);</span><br><span class="line"> extern uint64 sys_mkdir(void);</span><br><span class="line"> extern uint64 sys_close(void);</span><br><span class="line"><span class="addition">+extern uint64 sys_sigalarm(void);</span></span><br><span class="line"><span class="addition">+extern uint64 sys_sigreturn(void);</span></span><br><span class="line"> </span><br><span class="line"> // An array mapping syscall numbers from syscall.h</span><br><span class="line"> // to the function that handles the system call.</span><br><span class="line"><span class="meta">@@ -113,6 +115,7 @@</span> static uint64 (*syscalls[])(void) = &#123;</span><br><span class="line">     [SYS_sleep] sys_sleep, [SYS_uptime] sys_uptime, [SYS_open] sys_open,</span><br><span class="line">     [SYS_write] sys_write, [SYS_mknod] sys_mknod,   [SYS_unlink] sys_unlink,</span><br><span class="line">     [SYS_link] sys_link,   [SYS_mkdir] sys_mkdir,   [SYS_close] sys_close,</span><br><span class="line"><span class="addition">+    [SYS_sigalarm] sys_sigalarm, [SYS_sigreturn] sys_sigreturn,</span></span><br><span class="line"> &#125;;</span><br><span class="line"> </span><br><span class="line"> void</span><br><span class="line"><span class="comment">diff --git a/kernel/syscall.h b/kernel/syscall.h</span></span><br><span class="line"><span class="comment">index 1e1f4ba..2133a24 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/syscall.h</span></span><br><span class="line"><span class="comment">+++ b/kernel/syscall.h</span></span><br><span class="line"><span class="meta">@@ -20,3 +20,5 @@</span></span><br><span class="line"> #define SYS_link 19</span><br><span class="line"> #define SYS_mkdir 20</span><br><span class="line"> #define SYS_close 21</span><br><span class="line"><span class="addition">+#define SYS_sigalarm 22</span></span><br><span class="line"><span class="addition">+#define SYS_sigreturn 23</span></span><br><span class="line">\ No newline at end of file</span><br><span class="line"><span class="comment">diff --git a/kernel/sysproc.c b/kernel/sysproc.c</span></span><br><span class="line"><span class="comment">index 0cd201d..0c61942 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/sysproc.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/sysproc.c</span></span><br><span class="line"><span class="meta">@@ -93,3 +93,30 @@</span> sys_uptime(void)</span><br><span class="line">   release(&amp;tickslock);</span><br><span class="line">   return xticks;</span><br><span class="line"> &#125;</span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+uint64</span></span><br><span class="line"><span class="addition">+sys_sigalarm(void)</span></span><br><span class="line"><span class="addition">+&#123;</span></span><br><span class="line"><span class="addition">+  int period;</span></span><br><span class="line"><span class="addition">+  uint64 handler;</span></span><br><span class="line"><span class="addition">+  struct proc *p = myproc();</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  argint(0, &amp;period);</span></span><br><span class="line"><span class="addition">+  argaddr(1, &amp;handler);</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  p-&gt;alarm_threshold = period;</span></span><br><span class="line"><span class="addition">+  p-&gt;alarm_handler = handler;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  return 0;</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+uint64</span></span><br><span class="line"><span class="addition">+sys_sigreturn(void)</span></span><br><span class="line"><span class="addition">+&#123;</span></span><br><span class="line"><span class="addition">+  struct proc *p = myproc();</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  *(p-&gt;trapframe) = *(p-&gt;alarm_prev_trapframe);</span></span><br><span class="line"><span class="addition">+  p-&gt;alarm_passed = 0;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  return p-&gt;trapframe-&gt;a0;</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"><span class="comment">diff --git a/kernel/trap.c b/kernel/trap.c</span></span><br><span class="line"><span class="comment">index 0dcd358..58de139 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/trap.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/trap.c</span></span><br><span class="line"><span class="meta">@@ -79,8 +79,19 @@</span> usertrap(void)</span><br><span class="line">     exit(-1);</span><br><span class="line"> </span><br><span class="line">   // give up the CPU if this is a timer interrupt.</span><br><span class="line"><span class="deletion">-  if (which_dev == 2)</span></span><br><span class="line"><span class="addition">+  if (which_dev == 2) &#123;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+    // stop generating periodic alarm calls if threshold is 0</span></span><br><span class="line"><span class="addition">+    if (p-&gt;alarm_threshold != 0) &#123;</span></span><br><span class="line"><span class="addition">+      p-&gt;alarm_passed++;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+      if (p-&gt;alarm_passed == p-&gt;alarm_threshold) &#123;</span></span><br><span class="line"><span class="addition">+        *(p-&gt;alarm_prev_trapframe) = *(p-&gt;trapframe);</span></span><br><span class="line"><span class="addition">+        p-&gt;trapframe-&gt;epc = p-&gt;alarm_handler;</span></span><br><span class="line"><span class="addition">+      &#125;</span></span><br><span class="line"><span class="addition">+    &#125;</span></span><br><span class="line">     yield();</span><br><span class="line"><span class="addition">+  &#125;</span></span><br><span class="line"> </span><br><span class="line">   usertrapret();</span><br><span class="line"> &#125;</span><br><span class="line"><span class="comment">diff --git a/user/alarmtest.c b/user/alarmtest.c</span></span><br><span class="line"><span class="comment">index 2337221..9abd157 100644</span></span><br><span class="line"><span class="comment">--- a/user/alarmtest.c</span></span><br><span class="line"><span class="comment">+++ b/user/alarmtest.c</span></span><br><span class="line"><span class="meta">@@ -106,6 +106,7 @@</span> test1()</span><br><span class="line">     // occurred; another is that that registers may not be</span><br><span class="line">     // restored correctly, causing i or j or the address ofj</span><br><span class="line">     // to get an incorrect value.</span><br><span class="line"><span class="addition">+    printf(&quot;\n test1: i: %d, j:%d\n&quot;, i, j);</span></span><br><span class="line">     printf(&quot;\ntest1 failed: foo() executed fewer times than it was called\n&quot;);</span><br><span class="line">   &#125;</span><br><span class="line">   else &#123;</span><br><span class="line"><span class="comment">diff --git a/user/user.h b/user/user.h</span></span><br><span class="line"><span class="comment">index 5837a96..fdcc993 100644</span></span><br><span class="line"><span class="comment">--- a/user/user.h</span></span><br><span class="line"><span class="comment">+++ b/user/user.h</span></span><br><span class="line"><span class="meta">@@ -22,6 +22,8 @@</span> int getpid(void);</span><br><span class="line"> char *sbrk(int);</span><br><span class="line"> int sleep(int);</span><br><span class="line"> int uptime(void);</span><br><span class="line"><span class="addition">+int sigalarm(int ticks, void (*handler)());</span></span><br><span class="line"><span class="addition">+int sigreturn(void);</span></span><br><span class="line"> </span><br><span class="line"> // ulib.c</span><br><span class="line"> int stat(const char *, struct stat *);</span><br><span class="line"><span class="comment">diff --git a/user/usys.pl b/user/usys.pl</span></span><br><span class="line"><span class="comment">index 01e426e..3c258dc 100755</span></span><br><span class="line"><span class="comment">--- a/user/usys.pl</span></span><br><span class="line"><span class="comment">+++ b/user/usys.pl</span></span><br><span class="line"><span class="meta">@@ -36,3 +36,5 @@</span> sub entry &#123;</span><br><span class="line"> entry(&quot;sbrk&quot;);</span><br><span class="line"> entry(&quot;sleep&quot;);</span><br><span class="line"> entry(&quot;uptime&quot;);</span><br><span class="line"><span class="addition">+entry(&quot;sigalarm&quot;);</span></span><br><span class="line"><span class="addition">+entry(&quot;sigreturn&quot;);</span></span><br><span class="line">\ No newline at end of file</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h2><p>最后，执行 <code>make grade</code> 查看结果，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">== Test answers-traps.txt ==</span><br><span class="line">answers-traps.txt: OK</span><br><span class="line">== Test backtrace test == backtrace test: OK (3.9s)</span><br><span class="line">== Test running alarmtest == (5.6s)</span><br><span class="line">== Test   alarmtest: test0 ==</span><br><span class="line">alarmtest: test0: OK</span><br><span class="line">== Test   alarmtest: test1 ==</span><br><span class="line">alarmtest: test1: OK</span><br><span class="line">== Test   alarmtest: test2 ==</span><br><span class="line">alarmtest: test2: OK</span><br><span class="line">== Test   alarmtest: test3 ==</span><br><span class="line">alarmtest: test3: OK</span><br><span class="line">== Test usertests ==</span><br><span class="line">usertests: OK (149.0s)</span><br><span class="line">== Test time ==</span><br><span class="line">time: OK</span><br><span class="line">Score: 95/95</span><br></pre></td></tr></table></figure>
+
+                    
+                </div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                    </div>
+                    <div>
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/xv6-lab5-cow.md/"
+                                   title="xv6 Lab5: COW"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">xv6 Lab5: COW</span>
+                                        <span class="post-nav-item">Prev posts</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/xv6-lab3-page-tables/"
+                                   title="xv6 Lab3: page tables"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">xv6 Lab3: page tables</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#RISC-V-assembly"><span class="nav-text">RISC-V assembly</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Backtrace"><span class="nav-text">Backtrace</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AE%9E%E7%8E%B0"><span class="nav-text">关键实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code"><span class="nav-text">Show me the code</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Alarm"><span class="nav-text">Alarm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AE%9E%E7%8E%B0-1"><span class="nav-text">关键实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code-1"><span class="nav-text">Show me the code</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-text">测试结果</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;<span>2022</span>&nbsp;-&nbsp;2025
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">Lapin Gris</a>
+        
+    </div>
+
+    <div class="theme-info info-item">
+        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div>
+
+    
+
+    
+
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#RISC-V-assembly"><span class="nav-text">RISC-V assembly</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Backtrace"><span class="nav-text">Backtrace</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AE%9E%E7%8E%B0"><span class="nav-text">关键实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code"><span class="nav-text">Show me the code</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Alarm"><span class="nav-text">Alarm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AE%9E%E7%8E%B0-1"><span class="nav-text">关键实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code-1"><span class="nav-text">Show me the code</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-text">测试结果</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/header-shrink.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/back2top.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/toggle-theme.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/code-block.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/main.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/libs/anime.min.js"></script>
+
+<!-- local search -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/local-search.min.js"></script>
+
+
+<!-- lazyload -->
+
+
+<div class="">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/post/post-helper.min.js"></script>
+
+        <!-- toc -->
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/post/toc.min.js"></script>
+        
+
+        <!-- copyright-info -->
+        
+
+        <!-- share -->
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+
+
+</body>
+</html>

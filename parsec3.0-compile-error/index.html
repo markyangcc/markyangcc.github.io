@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="Lapin Gris">
+    
+    <title>
+        
+            PARSEC 3.0 编译报错 |
+        
+        Lapin Gris
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/regular.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/solid.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/brands.min.css">
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"Lapin Gris","author":"Lapin Gris","avatar":"/images/Folklore.png","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":true,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":false},"social_contact":{"enable":false,"links":{"github":"https://github.com/markyangcc","weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":true,"percent":true,"hide_header":true},"home":{"announcement":null,"category":false,"tag":false,"post_datetime":"created"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":false,"min2read":false},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":false,"share":false,"reward":{"enable":false,"img_link":null,"text":null,"icon":null}},"code_block":{"tools":{"enable":false,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":false,"site_uv":false,"site_pv":false,"page_pv":false}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"gitalk","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":"markyangcc","github_admins":null,"repository":"markyangcc.github.io","client_id":"Ov23limODCqt0en2mPRD","client_secret":"6c276a6c1847f1f4663f172bc809e31d0cab1410","proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":false},"cdn":{"enable":true,"provider":"cdnjs"},"pjax":{"enable":false},"footer":{"since":2022,"word_count":true,"site_deploy":{"enable":false,"provider":"github","url":null},"record":{"enable":false,"list":[{"code":null,"link":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               Lapin Gris
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                HOME
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                ARCHIVES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                TAGS
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                CATEGORIES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                ABOUT
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                            HOME
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                            ARCHIVES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                            TAGS
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                            CATEGORIES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                            ABOUT
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        PARSEC 3.0 编译报错
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/Folklore.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">Lapin Gris</span>
+                                
+                                    <span class="author-badge">Lv3</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2023-05-05 01:52:23</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Sun Jan 12 2025 18:38:32 GMT+0800">2025-01-12 18:38:32</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/parsec/">parsec</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/parsec/">parsec</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/RHEL-9/">RHEL 9</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body ">
+                    
+
+                    
+                         <p>PARSEC 3.0(Parallel Applications Research for System Efficiency Collectio)是一个基准测试套件，用于评估多核处理器和系统的性能，也就是跑分软件。</p>
+<p>工作中需要使用到这个软件作为基准测试软件，因为 PARSEC 从官网下载下来是不能直接运行的，所以有了下面适配 RHEL 9 操作系统的内容。<br>文章末尾有所有修改的 patches 文件，里面记录详细的修改地方。</p>
+<h1 id="安装-PARSEC-3-0"><a href="#安装-PARSEC-3-0" class="headerlink" title="安装 PARSEC 3.0"></a>安装 PARSEC 3.0</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Full PARSEC 3.0 tarball</span></span><br><span class="line">wget http://parsec.cs.princeton.edu/download/3.0/parsec-3.0.tar.gz</span><br><span class="line"></span><br><span class="line">tar xvf parsec-3.0.tar.gz</span><br><span class="line">cd parsec-3.0</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">编译</span></span><br><span class="line">source env.sh</span><br><span class="line">parsecmgmt -a build</span><br></pre></td></tr></table></figure>
+
+<h1 id="编译错误合集"><a href="#编译错误合集" class="headerlink" title="编译错误合集"></a>编译错误合集</h1><h2 id="error-ISO-C-17-does-not-allow-dynamic-exception-specifications"><a href="#error-ISO-C-17-does-not-allow-dynamic-exception-specifications" class="headerlink" title="error: ISO C++17 does not allow dynamic exception specifications"></a>error: ISO C++17 does not allow dynamic exception specifications</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Thread.h:62:24: error: ISO C++17 does not allow dynamic exception specifications</span><br><span class="line">   62 |     Thread(Runnable &amp;) throw(ThreadCreationException);</span><br></pre></td></tr></table></figure>
+<p>在 C++17 标准中，将动态异常规范（Dynamic Exception Specification）声明为废弃（deprecated），也就是不推荐使用。在 RHEL 9 操作系统上默认的 C++ 标准是 17。所以会遇到这个编译报错，我们只需要使用老版本的 C++ 标准来编译代码可以规避这个问题。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">config/gcc.bldconf</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Arguments to use</span></span><br><span class="line">export CFLAGS=&quot; -O3 -g -funroll-loops -fprefetch-loop-arrays -std=gnu11 $&#123;PORTABILITY_FLAGS&#125;&quot;</span><br><span class="line">export CXXFLAGS=&quot;-O3 -g -funroll-loops -fprefetch-loop-arrays -fpermissive -fno-exceptions -std=gnu++11 $&#123;PORTABILITY_FLAGS&#125;&quot;</span><br></pre></td></tr></table></figure>
+<p>在 gcc.bldconf 里指明让 gcc 使用 gnu11&#x2F;gnu++11 标准编译代码。</p>
+<p>这里没有使用 c11、c++11 标准而是使用 gnu 版本实现的 C、C++  标准。<br>如果使用 c11&#x2F;c++11 标准，会遇到这个报错 <code>warning: implicit declaration of function &#39;strdup&#39;</code> gcc 编译器会申明 这个宏—— “<strong>STRICT_ANSI</strong>“，代表只使用 c11、 spec 里的标准 C 库。这会导致我们经常使用的一些像 strdup 这些库函数不能使用（parsec3 用到了这些库函数）</p>
+<h2 id="error-looser-exception-specification-on-overriding-virtual-function"><a href="#error-looser-exception-specification-on-overriding-virtual-function" class="headerlink" title="error: looser exception specification on overriding virtual function"></a>error: looser exception specification on overriding virtual function</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">WorkerGroup.h:88:5: error: looser exception specification on overriding virtual function &#x27;virtual threads::WorkerGroup::~WorkerGroup() throw (threads::CondException, threads::MutexException)&#x27;</span><br><span class="line">   88 |     ~WorkerGroup();</span><br></pre></td></tr></table></figure>
+<p>这个错误意思是子类 override 父类的虚函数时候，子类的异常规范比父类更宽松（looser），也就是说子类的异常规范允许抛出更多类型的异常，这与 C++ 的异常规范要求相违背。所以，我们要让子类的异常更严格，而不是更宽容。</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// WorkerGroup.h</span><br><span class="line"><span class="deletion">-    ~WorkerGroup();</span></span><br><span class="line"><span class="addition">+    ~WorkerGroup() throw();</span></span><br></pre></td></tr></table></figure>
+<p>显式指示不抛出异常即可。或者用 noexcept 也行。</p>
+<h2 id="multiple-definition"><a href="#multiple-definition" class="headerlink" title="multiple definition"></a>multiple definition</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/ld: encoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/encoder.c:65: multiple definition of `conf&#x27;; dedup.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/dedup.c:25: first defined here</span><br><span class="line">/usr/bin/ld: decoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/decoder.c:39: multiple definition of `conf&#x27;; dedup.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/dedup.c:25: first defined here</span><br><span class="line">/usr/bin/ld: decoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/decoder.c:42: multiple definition of `cache&#x27;; encoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/encoder.c:68: first defined here</span><br></pre></td></tr></table></figure>
+<p>gcc 10 后，默认使能了  -fno-common  选项，编译器检查更加严格了 <a class="link"   target="_blank" rel="noopener" href="https://gcc.gnu.org/gcc-10/porting_to.html" >https://gcc.gnu.org/gcc-10/porting_to.html<i class="fas fa-external-link-alt"></i></a>。最简单的办法是，rollback(指定使用 -fcommon 编译代码即可)</p>
+<h2 id="mismatched-comparison-between-std-ifstream-and-int"><a href="#mismatched-comparison-between-std-ifstream-and-int" class="headerlink" title="mismatched comparison between std::ifstream and int"></a>mismatched comparison between std::ifstream and int</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">FILE_UTILITIES.h:83:49: error: no match for ‘operator!=’ (operand types are ‘std::ofstream’ &#123;aka ‘std::basic_ofstream&lt;char&gt;’&#125; and ‘int’)</span><br><span class="line">   83 |         return std::ofstream (filename.c_str()) != 0;</span><br><span class="line">      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~ ~</span><br><span class="line">      |                     |                              |</span><br><span class="line">      |                     |                              int</span><br><span class="line">      |                     std::ofstream &#123;aka std::basic_ofstream&lt;char&gt;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>std::ofstream 和 int 之间无法直接比较，需要强转，举个栗子，</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// FILE_UTILITIES.h</span><br><span class="line"></span><br><span class="line"><span class="deletion">-	return std::ifstream (filename.c_str()) != 0;</span></span><br><span class="line"><span class="addition">+	return (bool)std::ifstream (filename.c_str()) != 0;</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="error-‘HUGE’-undeclared"><a href="#error-‘HUGE’-undeclared" class="headerlink" title="error: ‘HUGE’ undeclared"></a>error: ‘HUGE’ undeclared</h2><figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LSH_query.c:361:34: error: ‘HUGE’ undeclared (first use in this function)</span><br><span class="line">  361 |         TOPK_INIT(topk, dist, K, HUGE);</span><br></pre></td></tr></table></figure>
+<p>没有定义 <code>HUGE</code> 宏。我们将 C 数学库里的 HUGE_VAL 定义为 HUGE即可，<code>#define HUGE HUGE_VAL</code></p>
+<h2 id="conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib"><a href="#conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib" class="headerlink" title="conflicting type __mbstate_t, both provided by glibc and parsec lib"></a>conflicting type __mbstate_t, both provided by glibc and parsec lib</h2><figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/include/bits/types/__mbstate_t.h:21:3: error: conflicting types for ‘__mbstate_t’; have ‘struct &lt;anonymous&gt;’</span><br><span class="line">   21 | &#125; __mbstate_t;</span><br></pre></td></tr></table></figure>
+<p>C 库和 parsec 库同时提供了 __mbstate_t 的定义，二者冲突了，将 parsec 库提供的定义重命名。</p>
+<h2 id="POD-document-had-syntax-errors"><a href="#POD-document-had-syntax-errors" class="headerlink" title="POD document had syntax errors"></a>POD document had syntax errors</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">smime.pod around line 272: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 276: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 280: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 285: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 289: Expected text after =item, not a number</span><br><span class="line">POD document had syntax errors at /usr/bin/pod2man line 69.</span><br><span class="line">make: *** [Makefile:681: install_docs] Error 255</span><br></pre></td></tr></table></figure>
+<p>提示POD doc 有语法错误，应该是软件升级，语法变了导致的。使用下面的脚本一键修正过来就好了，</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#! /bin/bash</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> 0 1 2 3 4 5 6 7 8 9</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">&quot;Replacing &#x27;=item <span class="variable">$i</span>&#x27; to &#x27;=item C&lt;<span class="variable">$i</span>&gt;&#x27;&quot;</span></span><br><span class="line">	grep -rl <span class="string">&quot;=item <span class="variable">$i</span>&quot;</span> * | xargs sed -i <span class="string">&quot;s/=item <span class="variable">$i</span>/=item C&lt;<span class="variable">$i</span>&gt;/g&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+
+<h1 id="PATCHES"><a href="#PATCHES" class="headerlink" title="PATCHES"></a>PATCHES</h1><p>1、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0002-fix-error-looser-exception-specification-on-overridi.patch" >fix-error-looser-exception-specification-on-overridi.patch<i class="fas fa-external-link-alt"></i></a><br>2、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0001-use-gnu11-gnu-11-std-to-build-parsec.patch" >use-gnu11-gnu-11-std-to-build-parsec.patch<i class="fas fa-external-link-alt"></i></a><br>3、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0007-fix-multiple-definition-when-build-with-gcc-10-or-ab.patch" >fix-multiple-definition-when-build-with-gcc-10-or-ab.patch<i class="fas fa-external-link-alt"></i></a><br>4、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0004-fix-A-mismatched-comparison-between-std-ifstream-and.patch" >fix-A-mismatched-comparison-between-std-ifstream-and.patch<i class="fas fa-external-link-alt"></i></a><br>5、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0005-fix-HUGE-macro-undeclared-error.patch" >fix-HUGE-macro-undeclared-error.patch<i class="fas fa-external-link-alt"></i></a><br>6、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0006-fix-conflicting-type-__mbstate_t-both-provided-by-gl.patch" >fix-conflicting-type-__mbstate_t-both-provided-by-gl.patch<i class="fas fa-external-link-alt"></i></a><br>7、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0003-fix-POD-document-had-syntax-errors.patch" >fix-POD-document-had-syntax-errors.patch<i class="fas fa-external-link-alt"></i></a></p>
+
+                    
+                </div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/parsec/">parsec</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/RHEL-9/">RHEL 9</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/cmu-15-445-fall-2022-project0-cpp-primer/"
+                                   title="CMU 15-445 Fall 2022 Project0: C++ Primer"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">CMU 15-445 Fall 2022 Project0: C++ Primer</span>
+                                        <span class="post-nav-item">Prev posts</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/extend-system-ram-using-pmem/"
+                                   title="PMEM 扩展系统内存用法介绍"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">PMEM 扩展系统内存用法介绍</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-PARSEC-3-0"><span class="nav-text">安装 PARSEC 3.0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AF%E5%90%88%E9%9B%86"><span class="nav-text">编译错误合集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#error-ISO-C-17-does-not-allow-dynamic-exception-specifications"><span class="nav-text">error: ISO C++17 does not allow dynamic exception specifications</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-looser-exception-specification-on-overriding-virtual-function"><span class="nav-text">error: looser exception specification on overriding virtual function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#multiple-definition"><span class="nav-text">multiple definition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mismatched-comparison-between-std-ifstream-and-int"><span class="nav-text">mismatched comparison between std::ifstream and int</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-%E2%80%98HUGE%E2%80%99-undeclared"><span class="nav-text">error: ‘HUGE’ undeclared</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib"><span class="nav-text">conflicting type __mbstate_t, both provided by glibc and parsec lib</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#POD-document-had-syntax-errors"><span class="nav-text">POD document had syntax errors</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PATCHES"><span class="nav-text">PATCHES</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;<span>2022</span>&nbsp;-&nbsp;2025
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">Lapin Gris</a>
+        
+    </div>
+
+    <div class="theme-info info-item">
+        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div>
+
+    
+
+    
+
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-PARSEC-3-0"><span class="nav-text">安装 PARSEC 3.0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AF%E5%90%88%E9%9B%86"><span class="nav-text">编译错误合集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#error-ISO-C-17-does-not-allow-dynamic-exception-specifications"><span class="nav-text">error: ISO C++17 does not allow dynamic exception specifications</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-looser-exception-specification-on-overriding-virtual-function"><span class="nav-text">error: looser exception specification on overriding virtual function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#multiple-definition"><span class="nav-text">multiple definition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mismatched-comparison-between-std-ifstream-and-int"><span class="nav-text">mismatched comparison between std::ifstream and int</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-%E2%80%98HUGE%E2%80%99-undeclared"><span class="nav-text">error: ‘HUGE’ undeclared</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib"><span class="nav-text">conflicting type __mbstate_t, both provided by glibc and parsec lib</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#POD-document-had-syntax-errors"><span class="nav-text">POD document had syntax errors</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PATCHES"><span class="nav-text">PATCHES</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/header-shrink.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/back2top.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/toggle-theme.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/code-block.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/main.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/libs/anime.min.js"></script>
+
+<!-- local search -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/local-search.min.js"></script>
+
+
+<!-- lazyload -->
+
+
+<div class="">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/post/post-helper.min.js"></script>
+
+        <!-- toc -->
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/post/toc.min.js"></script>
+        
+
+        <!-- copyright-info -->
+        
+
+        <!-- share -->
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+
+
+</body>
+</html>

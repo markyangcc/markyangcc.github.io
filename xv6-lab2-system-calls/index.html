@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="Lapin Gris">
+    
+    <title>
+        
+            xv6 Lab2: system calls |
+        
+        Lapin Gris
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/logo.svg">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/regular.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/solid.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/font/css/brands.min.css">
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"Lapin Gris","author":"Lapin Gris","avatar":"/images/Folklore.png","logo":"/images/logo.svg","favicon":"/images/logo.svg"},"menu":{"home":"/","archives":"/archives","tags":"/tags","categories":"/categories","about":"/about"},"first_screen":{"enable":true,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":false},"social_contact":{"enable":false,"links":{"github":"https://github.com/markyangcc","weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":true,"percent":true,"hide_header":true},"home":{"announcement":null,"category":false,"tag":false,"post_datetime":"created"},"post":{"author_badge":{"enable":true,"level_badge":true,"custom_badge":["One","Two","Three"]},"word_count":{"wordcount":false,"min2read":false},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":false,"share":false,"reward":{"enable":false,"img_link":null,"text":null,"icon":null}},"code_block":{"tools":{"enable":false,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":false,"site_uv":false,"site_pv":false,"page_pv":false}},"local_search":{"enable":true,"preload":true},"comment":{"enable":false,"use":"gitalk","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":"markyangcc","github_admins":null,"repository":"markyangcc.github.io","client_id":"Ov23limODCqt0en2mPRD","client_secret":"6c276a6c1847f1f4663f172bc809e31d0cab1410","proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":false},"lazyload":{"enable":false},"cdn":{"enable":true,"provider":"cdnjs"},"pjax":{"enable":false},"footer":{"since":2022,"word_count":true,"site_deploy":{"enable":false,"provider":"github","url":null},"record":{"enable":false,"list":[{"code":null,"link":null}]}},"inject":{"enable":false,"css":[null],"js":[null]},"root":"","source_data":{},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original post title","author":"Original post author","link":"Original post link"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/logo.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               Lapin Gris
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                HOME
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                ARCHIVES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                TAGS
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                CATEGORIES
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                ABOUT
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                            HOME
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                            ARCHIVES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                            TAGS
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                            CATEGORIES
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                            ABOUT
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        xv6 Lab2: system calls
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/Folklore.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">Lapin Gris</span>
+                                
+                                    <span class="author-badge">Lv3</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2024-02-20 18:07:17</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Sun Jan 12 2025 18:38:32 GMT+0800">2025-01-12 18:38:32</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/xv6/">xv6</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+
+        
+        
+        
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body ">
+                    
+
+                    
+                         <p>Lab2 实现 2 个 syscall。</p>
+<h2 id="Using-gdb"><a href="#Using-gdb" class="headerlink" title="Using gdb"></a>Using gdb</h2><p>第一部分是了解使用 gdb 调试 xv6（我使用的是 Debian）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">其中一个窗口启动 qemu-gdb</span></span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">make qemu-gdb</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新开另一个窗口，连接 gdb</span></span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">gdb-multiarch</span><br></pre></td></tr></table></figure>
+
+<p> xv6 项目，为我们提供了便捷的 <code>.gdbinit</code> 脚本，默认情况下（下图）， GDB 好像不为我们自动加载这个脚本，<br><img   src="/../img/1708328101386-4416f785-08b3-481e-8d6a-618828bfe114.png"  alt="image.png"></p>
+<p>有两种方式可以让图中的提示消失，<br>第一种是将 xv6 的 .gdbinit 文件设置为 auto-load</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /root/.config/gdb</span><br><span class="line">echo &quot;add-auto-load-safe-path /root/xv6-labs-2023/.gdbinit&quot; &gt; /root/.config/gdb/gdbinit</span><br></pre></td></tr></table></figure>
+<p>第二种是直接执行 <code>source .gdbinit</code> 手动加载，第一种设置 auto-load 的方式一劳永逸，下次 gdb 的时候，不用敲 source 了。</p>
+<p><img   src="/../img/1708328293952-be1287b8-996a-465d-af29-a8122c891b13.png"  alt="image.png"></p>
+<p>下面查看一下.<code>gdbinit</code> 里写了什么，打开 <code>.gdbinit </code>发现它会帮我们，</p>
+<ul>
+<li>设置远端机器的架构 set architecture</li>
+<li>自动连接远端机器 target remote</li>
+<li>加载调试符号等操作 symbol-file</li>
+<li>其他</li>
+</ul>
+<p>这些配置对于 GDB 远端调试都是必要的。特别解释一下 set architecture 的原因，现在市面上没有厂家量产 riscv 架构的机器，我们通常都是用 x86&#x2F;aarch64 架构，存在一个跨架构调试的问题。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">set confirm off</span><br><span class="line">set architecture riscv:rv64</span><br><span class="line">target remote 127.0.0.1:1234</span><br><span class="line">symbol-file kernel/kernel</span><br><span class="line">set disassemble-next-line auto</span><br><span class="line">set riscv use-compressed-breakpoints yes</span><br></pre></td></tr></table></figure>
+
+<h2 id="System-call-tracing"><a href="#System-call-tracing" class="headerlink" title="System call tracing"></a>System call tracing</h2><h3 id="如何创建一个-syscall"><a href="#如何创建一个-syscall" class="headerlink" title="如何创建一个 syscall"></a>如何创建一个 syscall</h3><p><code>user/user.h</code> 中添加系统调用定义<br><code>user/usys.pl </code>中定义系统调用的入口，usys.pl 是一个脚本，会将所有的系统调用 entry 生成和对应的汇编 usys.S，将系统调用号存到 a7 寄存器，然后调用 ecall 指令进行系统调用，接着返回</p>
+<blockquote>
+<p>.global trace<br>trace:<br> li a7, SYS_trace<br> ecall<br> ret</p>
+</blockquote>
+<p><code>kernel/syscall.h</code> 中新增一个新的系统调用号。<br><code>kernel/syscall.c</code> 中 syscalls 数组新增 syscall 的响应函数，会在 syscall() 函数中以函数指针的方式被使用。<br><code>kernel/sysproc.c </code>中新增对应 syscall 的实际响应函数。以 sys_ 开头。 sys_ 开头的函数是个包装函数，先对应的寄存器中读取系统调用的参数，然后调用实际的函数完成系统调用。</p>
+<h3 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h3><p>先在 struct proc (代表进程 process) 中添加 tracemask 字段，代表当前进程需要跟踪的 syscall。</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">diff --git a/kernel/proc.h b/kernel/proc.h</span></span><br><span class="line"><span class="comment">index d021857..028a13a 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/proc.h</span></span><br><span class="line"><span class="comment">+++ b/kernel/proc.h</span></span><br><span class="line"><span class="meta">@@ -91,6 +91,7 @@</span> struct proc &#123;</span><br><span class="line">   int killed;                  // If non-zero, have been killed</span><br><span class="line">   int xstate;                  // Exit status to be returned to parent&#x27;s wait</span><br><span class="line">   int pid;                     // Process ID</span><br><span class="line"><span class="addition">+  int tracemask;               // trace mask syscall ID</span></span><br></pre></td></tr></table></figure>
+
+<p>当进程发起 syscall 时，会检测当前进程的发起的 syscall 的 tracemask 是否被置位。置位则代表当前进程被 trace，输出当前发起 syscall 进程的 pid，syscall_name，syscall 返回值。</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@@ -139,6 +167,9 @@</span> syscall(void)</span><br><span class="line">     // Use num to lookup the system call function for num, call it,</span><br><span class="line">     // and store its return value in p-&gt;trapframe-&gt;a0</span><br><span class="line">     p-&gt;trapframe-&gt;a0 = syscalls[num]();</span><br><span class="line"><span class="addition">+    if(p-&gt;tracemask &amp; (1 &lt;&lt; num)) &#123;</span></span><br><span class="line"><span class="addition">+      printf(&quot;%d: syscall %s -&gt; %d\n&quot;, p-&gt;pid, syscall_name[num], p-&gt;trapframe-&gt;a0);</span></span><br><span class="line"><span class="addition">+    &#125;</span></span><br><span class="line">   &#125; else &#123;</span><br><span class="line">     printf(&quot;%d %s: unknown sys call %d\n&quot;,</span><br><span class="line">             p-&gt;pid, p-&gt;name, num);</span><br></pre></td></tr></table></figure>
+
+<h3 id="调用路径"><a href="#调用路径" class="headerlink" title="调用路径"></a>调用路径</h3><p>用户态同名函数 trace -&gt; syscall -&gt; sys_trace -&gt; 内核态同名函数 trace</p>
+<ul>
+<li>trace(userspace)：发起 syscall</li>
+<li>syscall：系统调用函数，通过 syscalls 数组中定义的函数指针，根据系统调用号获得对应的函数指针，调用对应的 sys_ 函数</li>
+<li>sys_trace：包装函数，先通过寄存器读取用户态传入的系统调用参数，接着调用实际的 trace()</li>
+<li>trace(kernelspace)：设置当前进程的 tracemask 值为要追踪的系统调用号。</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">uint64</span><br><span class="line"><span class="title function_">sys_trace</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="type">int</span> syscall_id;</span><br><span class="line"></span><br><span class="line">    argint(<span class="number">0</span>, &amp;syscall_id);</span><br><span class="line">    trace(syscall_id);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// trace syscall</span></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">trace</span><span class="params">(<span class="type">int</span> syscall_id)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line"></span><br><span class="line">    p-&gt;tracemask = syscall_id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">syscall</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">int</span> num;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line"></span><br><span class="line">  num = p-&gt;trapframe-&gt;a7;</span><br><span class="line">  p-&gt;trapframe-&gt;a0 = syscalls[num]();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="tracemask-变量初始化、销毁"><a href="#tracemask-变量初始化、销毁" class="headerlink" title="tracemask 变量初始化、销毁"></a>tracemask 变量初始化、销毁</h3><p>在 <code>struct proc</code> 新增了 tracemask 字段需要正确初始化以及销毁，fork 也需要复制将字段复制到子进程里才能符合 fork 的语义。</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">diff --git a/kernel/proc.c b/kernel/proc.c</span></span><br><span class="line"><span class="comment">index 58a8a0b..c646f82 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/proc.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/proc.c</span></span><br><span class="line"><span class="meta">@@ -163,6 +163,7 @@</span> freeproc(struct proc *p)</span><br><span class="line">   p-&gt;pagetable = 0;</span><br><span class="line">   p-&gt;sz = 0;</span><br><span class="line">   p-&gt;pid = 0;</span><br><span class="line"><span class="addition">+  p-&gt;tracemask = 0;</span></span><br><span class="line">   p-&gt;parent = 0;</span><br><span class="line">   p-&gt;name[0] = 0;</span><br><span class="line">   p-&gt;chan = 0;</span><br><span class="line"><span class="meta">@@ -311,6 +312,7 @@</span> fork(void)</span><br><span class="line">   safestrcpy(np-&gt;name, p-&gt;name, sizeof(p-&gt;name));</span><br><span class="line"></span><br><span class="line">   pid = np-&gt;pid;</span><br><span class="line"><span class="addition">+  np-&gt;tracemask = p-&gt;tracemask;</span></span><br><span class="line"></span><br><span class="line">   release(&amp;np-&gt;lock);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="Show-me-the-code"><a href="#Show-me-the-code" class="headerlink" title="Show me the code"></a>Show me the code</h3><p>Talk is cheap. Show me the code.</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">diff --git a/Makefile b/Makefile</span></span><br><span class="line"><span class="comment">index 365c91b..ccf335b 100644</span></span><br><span class="line"><span class="comment">--- a/Makefile</span></span><br><span class="line"><span class="comment">+++ b/Makefile</span></span><br><span class="line"><span class="meta">@@ -188,6 +188,7 @@</span> UPROGS=\</span><br><span class="line"> 	$U/_grind\</span><br><span class="line"> 	$U/_wc\</span><br><span class="line"> 	$U/_zombie\</span><br><span class="line"><span class="addition">+	$U/_trace\</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment">diff --git a/kernel/defs.h b/kernel/defs.h</span></span><br><span class="line"><span class="comment">index a3c962b..9d10bf3 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/defs.h</span></span><br><span class="line"><span class="comment">+++ b/kernel/defs.h</span></span><br><span class="line"><span class="meta">@@ -106,6 +106,7 @@</span> void            yield(void);</span><br><span class="line"> int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);</span><br><span class="line"> int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);</span><br><span class="line"> void            procdump(void);</span><br><span class="line"><span class="addition">+int             trace(int);</span></span><br><span class="line"> </span><br><span class="line"> // swtch.S</span><br><span class="line"> void            swtch(struct context*, struct context*);</span><br><span class="line"><span class="comment">diff --git a/kernel/proc.c b/kernel/proc.c</span></span><br><span class="line"><span class="comment">index 58a8a0b..c646f82 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/proc.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/proc.c</span></span><br><span class="line"><span class="meta">@@ -163,6 +163,7 @@</span> freeproc(struct proc *p)</span><br><span class="line">   p-&gt;pagetable = 0;</span><br><span class="line">   p-&gt;sz = 0;</span><br><span class="line">   p-&gt;pid = 0;</span><br><span class="line"><span class="addition">+  p-&gt;tracemask = 0;</span></span><br><span class="line">   p-&gt;parent = 0;</span><br><span class="line">   p-&gt;name[0] = 0;</span><br><span class="line">   p-&gt;chan = 0;</span><br><span class="line"><span class="meta">@@ -311,6 +312,7 @@</span> fork(void)</span><br><span class="line">   safestrcpy(np-&gt;name, p-&gt;name, sizeof(p-&gt;name));</span><br><span class="line"> </span><br><span class="line">   pid = np-&gt;pid;</span><br><span class="line"><span class="addition">+  np-&gt;tracemask = p-&gt;tracemask;</span></span><br><span class="line"> </span><br><span class="line">   release(&amp;np-&gt;lock);</span><br><span class="line"> </span><br><span class="line"><span class="meta">@@ -627,6 +629,19 @@</span> killed(struct proc *p)</span><br><span class="line">   return k;</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+// trace syscall</span></span><br><span class="line"><span class="addition">+int</span></span><br><span class="line"><span class="addition">+trace(int syscall_id)</span></span><br><span class="line"><span class="addition">+&#123;</span></span><br><span class="line"><span class="addition">+  struct proc *p = myproc();</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  p-&gt;tracemask = syscall_id;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  return 0;</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"> // Copy to either a user address, or kernel address,</span><br><span class="line"> // depending on usr_dst.</span><br><span class="line"> // Returns 0 on success, -1 on error.</span><br><span class="line"><span class="comment">diff --git a/kernel/proc.h b/kernel/proc.h</span></span><br><span class="line"><span class="comment">index d021857..028a13a 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/proc.h</span></span><br><span class="line"><span class="comment">+++ b/kernel/proc.h</span></span><br><span class="line"><span class="meta">@@ -91,6 +91,7 @@</span> struct proc &#123;</span><br><span class="line">   int killed;                  // If non-zero, have been killed</span><br><span class="line">   int xstate;                  // Exit status to be returned to parent&#x27;s wait</span><br><span class="line">   int pid;                     // Process ID</span><br><span class="line"><span class="addition">+  int tracemask;               // trace mask syscall ID</span></span><br><span class="line"> </span><br><span class="line">   // wait_lock must be held when using this:</span><br><span class="line">   struct proc *parent;         // Parent process</span><br><span class="line"><span class="comment">diff --git a/kernel/syscall.c b/kernel/syscall.c</span></span><br><span class="line"><span class="comment">index ed65409..bf84a9c 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/syscall.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/syscall.c</span></span><br><span class="line"><span class="meta">@@ -101,6 +101,7 @@</span> extern uint64 sys_unlink(void);</span><br><span class="line"> extern uint64 sys_link(void);</span><br><span class="line"> extern uint64 sys_mkdir(void);</span><br><span class="line"> extern uint64 sys_close(void);</span><br><span class="line"><span class="addition">+extern uint64 sys_trace(void);</span></span><br><span class="line"> </span><br><span class="line"> // An array mapping syscall numbers from syscall.h</span><br><span class="line"> // to the function that handles the system call.</span><br><span class="line"><span class="meta">@@ -126,6 +127,33 @@</span> static uint64 (*syscalls[])(void) = &#123;</span><br><span class="line"> [SYS_link]    sys_link,</span><br><span class="line"> [SYS_mkdir]   sys_mkdir,</span><br><span class="line"> [SYS_close]   sys_close,</span><br><span class="line"><span class="addition">+[SYS_trace]   sys_trace,</span></span><br><span class="line"><span class="addition">+&#125;;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+// Array of syscall name</span></span><br><span class="line"><span class="addition">+static char *syscall_name[]= &#123;</span></span><br><span class="line"><span class="addition">+[SYS_fork]    &quot;fork&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_exit]    &quot;exit&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_wait]    &quot;wait&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_pipe]    &quot;pipe&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_read]    &quot;read&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_kill]    &quot;kill&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_exec]    &quot;exec&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_fstat]   &quot;fstat&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_chdir]   &quot;chdir&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_dup]     &quot;dup&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_getpid]  &quot;getpid&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_sbrk]    &quot;sbrk&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_sleep]   &quot;sleep&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_uptime]  &quot;uptime&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_open]    &quot;open&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_write]   &quot;write&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_mknod]   &quot;mknod&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_unlink]  &quot;unlink&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_link]    &quot;link&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_mkdir]   &quot;mkdir&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_close]   &quot;close&quot;,</span></span><br><span class="line"><span class="addition">+[SYS_trace]   &quot;trace&quot;,</span></span><br><span class="line"> &#125;;</span><br><span class="line"> </span><br><span class="line"> void</span><br><span class="line"><span class="meta">@@ -139,6 +167,9 @@</span> syscall(void)</span><br><span class="line">     // Use num to lookup the system call function for num, call it,</span><br><span class="line">     // and store its return value in p-&gt;trapframe-&gt;a0</span><br><span class="line">     p-&gt;trapframe-&gt;a0 = syscalls[num]();</span><br><span class="line"><span class="addition">+    if(p-&gt;tracemask &amp; (1 &lt;&lt; num)) &#123;</span></span><br><span class="line"><span class="addition">+      printf(&quot;%d: syscall %s -&gt; %d\n&quot;, p-&gt;pid, syscall_name[num], p-&gt;trapframe-&gt;a0);</span></span><br><span class="line"><span class="addition">+    &#125;</span></span><br><span class="line">   &#125; else &#123;</span><br><span class="line">     printf(&quot;%d %s: unknown sys call %d\n&quot;,</span><br><span class="line">             p-&gt;pid, p-&gt;name, num);</span><br><span class="line"><span class="comment">diff --git a/kernel/syscall.h b/kernel/syscall.h</span></span><br><span class="line"><span class="comment">index bc5f356..cc112b9 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/syscall.h</span></span><br><span class="line"><span class="comment">+++ b/kernel/syscall.h</span></span><br><span class="line"><span class="meta">@@ -20,3 +20,4 @@</span></span><br><span class="line"> #define SYS_link   19</span><br><span class="line"> #define SYS_mkdir  20</span><br><span class="line"> #define SYS_close  21</span><br><span class="line"><span class="addition">+#define SYS_trace  22</span></span><br><span class="line"><span class="comment">diff --git a/kernel/sysproc.c b/kernel/sysproc.c</span></span><br><span class="line"><span class="comment">index 3b4d5bd..2804c7d 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/sysproc.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/sysproc.c</span></span><br><span class="line"><span class="meta">@@ -91,3 +91,12 @@</span> sys_uptime(void)</span><br><span class="line">   release(&amp;tickslock);</span><br><span class="line">   return xticks;</span><br><span class="line"> &#125;</span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+uint64</span></span><br><span class="line"><span class="addition">+sys_trace(void) &#123;</span></span><br><span class="line"><span class="addition">+  int syscall_id;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  argint(0, &amp;syscall_id);</span></span><br><span class="line"><span class="addition">+  trace(syscall_id);</span></span><br><span class="line"><span class="addition">+  return 0;</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"><span class="comment">diff --git a/user/user.h b/user/user.h</span></span><br><span class="line"><span class="comment">index 4d398d5..0bf4333 100644</span></span><br><span class="line"><span class="comment">--- a/user/user.h</span></span><br><span class="line"><span class="comment">+++ b/user/user.h</span></span><br><span class="line"><span class="meta">@@ -22,6 +22,7 @@</span> int getpid(void);</span><br><span class="line"> char* sbrk(int);</span><br><span class="line"> int sleep(int);</span><br><span class="line"> int uptime(void);</span><br><span class="line"><span class="addition">+int trace(int);</span></span><br><span class="line"> </span><br><span class="line"> // ulib.c</span><br><span class="line"> int stat(const char*, struct stat*);</span><br><span class="line"><span class="comment">diff --git a/user/usys.pl b/user/usys.pl</span></span><br><span class="line"><span class="comment">index 01e426e..9c97b05 100755</span></span><br><span class="line"><span class="comment">--- a/user/usys.pl</span></span><br><span class="line"><span class="comment">+++ b/user/usys.pl</span></span><br><span class="line"><span class="meta">@@ -36,3 +36,4 @@</span> sub entry &#123;</span><br><span class="line"> entry(&quot;sbrk&quot;);</span><br><span class="line"> entry(&quot;sleep&quot;);</span><br><span class="line"> entry(&quot;uptime&quot;);</span><br><span class="line"><span class="addition">+entry(&quot;trace&quot;);</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h3><p>实现完 trace syscall 后，总觉得好像少点什么，不完整。仔细想想，我们实现的 trace 只能 trace 进程本身以及子进程？<br>Q： 那我们在现有的基础设施上，能否实现 trace 别的进程，也就是说给 trace 命令添加一个 -p 参数，能 trace 别的进程？<br>A： 实际上是可以的，而且在现有的基础设施上支持 -p 参数没有工作量，只需要重新实现 trace，将其中 myproc() 替换为遍历所有的进程，将其中某个 pid 进程的 tracemask 置位即可。</p>
+<h2 id="Sysinfo"><a href="#Sysinfo" class="headerlink" title="Sysinfo"></a>Sysinfo</h2><p>实现一个 sysinfo 系统调用，获取 xv6 内核的空闲内存以及当前进程数，将数据从内核态拷贝到用户态。</p>
+<h3 id="sysinfo-系统调用"><a href="#sysinfo-系统调用" class="headerlink" title="sysinfo 系统调用"></a>sysinfo 系统调用</h3><p>有两点需要注意，<br>第一点是向用户态拷贝数据时候，只需要将结构体的地址传进来，内核从首地址往后写数据，用户态收到数据后根据定义的结构体解析数据。所以，只需要一个地址 addr 就行了。<br>第二点是返回值，当 copyout 失败的时候，需要返回 -1。sysinfotest.c 里测试用例会构造一个错误的 addr 作为 sysinfo 的参数传进来，此时 sysinfo 会失败，测试用例会对比返回值是不是 <code>0xffffffffffffffff</code> ，也就是 -1 。这里涉及的是 C 语言负数的存储方式，补码。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sysinfo syscall</span></span><br><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">sysinfo</span><span class="params">(uint64 addr)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> ret;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sysinfo</span> <span class="title">info</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span> =</span> myproc();</span><br><span class="line"></span><br><span class="line">    info.freemem = nr_freemem();</span><br><span class="line">    info.nproc = nr_processes();</span><br><span class="line"></span><br><span class="line">    ret = copyout(p-&gt;pagetable, addr, (<span class="type">char</span> *)&amp;info, <span class="keyword">sizeof</span>(info));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ret &lt; <span class="number">0</span> ? <span class="number">-1</span> : <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>nr_freemem 和 nr_processes 两个函数的定义写在 kernel&#x2F;defs.h 就行了， xv6 内核态所有的函数定义都放在此文件里。</p>
+<h3 id="获取空闲内存"><a href="#获取空闲内存" class="headerlink" title="获取空闲内存"></a>获取空闲内存</h3><p>xv6 的空闲内存使用链表管理的，通过将指针 r 指向当前 kmem.freelist 即空闲内存的头部，遍历直到访问为 NULL 时，期间访问的总数及空闲内存的个数。再乘上每页的大小可得空闲内存容量。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">nr_freemem</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">run</span> *<span class="title">r</span>;</span></span><br><span class="line">    uint64 amount = <span class="number">0</span>;</span><br><span class="line">    r = kmem.freelist;</span><br><span class="line">    <span class="keyword">while</span>(r) &#123;</span><br><span class="line">        r= r-&gt;next;</span><br><span class="line">        amount +=<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> amount * PGSIZE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="获取进程数"><a href="#获取进程数" class="headerlink" title="获取进程数"></a>获取进程数</h3><p>xv6 内核进程使用全局维护的 proc 数组来表示，遍历它即可。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">nr_processes</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span>;</span></span><br><span class="line">    <span class="type">int</span> nr_p = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(p = proc; p &lt; &amp;proc[NPROC]; p++) &#123;</span><br><span class="line">        <span class="keyword">if</span>(p-&gt;state != UNUSED)</span><br><span class="line">            nr_p++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> nr_p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="Show-me-the-code-1"><a href="#Show-me-the-code-1" class="headerlink" title="Show me the code"></a>Show me the code</h3><p>Talk is cheap. Show me the code.</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">diff --git a/Makefile b/Makefile</span></span><br><span class="line"><span class="comment">index ccf335b..0e12e1e 100644</span></span><br><span class="line"><span class="comment">--- a/Makefile</span></span><br><span class="line"><span class="comment">+++ b/Makefile</span></span><br><span class="line"><span class="meta">@@ -189,6 +189,7 @@</span> UPROGS=\</span><br><span class="line"> 	$U/_wc\</span><br><span class="line"> 	$U/_zombie\</span><br><span class="line"> 	$U/_trace\</span><br><span class="line"><span class="addition">+	$U/_sysinfotest\</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="comment">diff --git a/kernel/defs.h b/kernel/defs.h</span></span><br><span class="line"><span class="comment">index 9d10bf3..5e2867a 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/defs.h</span></span><br><span class="line"><span class="comment">+++ b/kernel/defs.h</span></span><br><span class="line"><span class="meta">@@ -63,6 +63,7 @@</span> void            ramdiskrw(struct buf*);</span><br><span class="line"> void*           kalloc(void);</span><br><span class="line"> void            kfree(void *);</span><br><span class="line"> void            kinit(void);</span><br><span class="line"><span class="addition">+int             nr_freemem(void);</span></span><br><span class="line"> </span><br><span class="line"> // log.c</span><br><span class="line"> void            initlog(int, struct superblock*);</span><br><span class="line"><span class="meta">@@ -107,6 +108,8 @@</span> int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);</span><br><span class="line"> int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);</span><br><span class="line"> void            procdump(void);</span><br><span class="line"> int             trace(int);</span><br><span class="line"><span class="addition">+int             sysinfo(uint64);</span></span><br><span class="line"><span class="addition">+int             nr_processes(void);</span></span><br><span class="line"> </span><br><span class="line"> // swtch.S</span><br><span class="line"> void            swtch(struct context*, struct context*);</span><br><span class="line"><span class="comment">diff --git a/kernel/kalloc.c b/kernel/kalloc.c</span></span><br><span class="line"><span class="comment">index 0699e7e..c953886 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/kalloc.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/kalloc.c</span></span><br><span class="line"><span class="meta">@@ -80,3 +80,16 @@</span> kalloc(void)</span><br><span class="line">     memset((char*)r, 5, PGSIZE); // fill with junk</span><br><span class="line">   return (void*)r;</span><br><span class="line"> &#125;</span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+int</span></span><br><span class="line"><span class="addition">+nr_freemem(void) &#123;</span></span><br><span class="line"><span class="addition">+  struct run *r;</span></span><br><span class="line"><span class="addition">+  uint64 amount = 0;</span></span><br><span class="line"><span class="addition">+  r = kmem.freelist;</span></span><br><span class="line"><span class="addition">+  while(r) &#123;</span></span><br><span class="line"><span class="addition">+    r= r-&gt;next;</span></span><br><span class="line"><span class="addition">+    amount +=1;</span></span><br><span class="line"><span class="addition">+  &#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  return amount * PGSIZE;</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"><span class="comment">diff --git a/kernel/proc.c b/kernel/proc.c</span></span><br><span class="line"><span class="comment">index c646f82..3ddb18c 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/proc.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/proc.c</span></span><br><span class="line"><span class="meta">@@ -5,6 +5,7 @@</span></span><br><span class="line"> #include &quot;spinlock.h&quot;</span><br><span class="line"> #include &quot;proc.h&quot;</span><br><span class="line"> #include &quot;defs.h&quot;</span><br><span class="line"><span class="addition">+#include &quot;sysinfo.h&quot;</span></span><br><span class="line"> </span><br><span class="line"> struct cpu cpus[NCPU];</span><br><span class="line"> </span><br><span class="line"><span class="meta">@@ -641,6 +642,22 @@</span> trace(int syscall_id)</span><br><span class="line">   return 0;</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"><span class="addition">+// sysinfo syscall</span></span><br><span class="line"><span class="addition">+int</span></span><br><span class="line"><span class="addition">+sysinfo(uint64 addr)</span></span><br><span class="line"><span class="addition">+&#123;</span></span><br><span class="line"><span class="addition">+  int ret;</span></span><br><span class="line"><span class="addition">+  struct sysinfo info;</span></span><br><span class="line"><span class="addition">+  struct proc *p = myproc();</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  info.freemem = nr_freemem();</span></span><br><span class="line"><span class="addition">+  info.nproc = nr_processes();</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  ret = copyout(p-&gt;pagetable, addr, (char *)&amp;info, sizeof(info));</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  return ret &lt; 0 ? -1 : 0;</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"> </span><br><span class="line"> // Copy to either a user address, or kernel address,</span><br><span class="line"> // depending on usr_dst.</span><br><span class="line"><span class="meta">@@ -701,3 +718,16 @@</span> procdump(void)</span><br><span class="line">     printf(&quot;\n&quot;);</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+int</span></span><br><span class="line"><span class="addition">+nr_processes(void) &#123;</span></span><br><span class="line"><span class="addition">+  struct proc *p;</span></span><br><span class="line"><span class="addition">+  int nr_p = 0;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  for(p = proc; p &lt; &amp;proc[NPROC]; p++) &#123;</span></span><br><span class="line"><span class="addition">+      if(p-&gt;state != UNUSED)</span></span><br><span class="line"><span class="addition">+        nr_p++;</span></span><br><span class="line"><span class="addition">+  &#125;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  return nr_p;</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"><span class="comment">diff --git a/kernel/syscall.c b/kernel/syscall.c</span></span><br><span class="line"><span class="comment">index bf84a9c..726635a 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/syscall.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/syscall.c</span></span><br><span class="line"><span class="meta">@@ -102,6 +102,7 @@</span> extern uint64 sys_link(void);</span><br><span class="line"> extern uint64 sys_mkdir(void);</span><br><span class="line"> extern uint64 sys_close(void);</span><br><span class="line"> extern uint64 sys_trace(void);</span><br><span class="line"><span class="addition">+extern uint64 sys_sysinfo(void);</span></span><br><span class="line"> </span><br><span class="line"> // An array mapping syscall numbers from syscall.h</span><br><span class="line"> // to the function that handles the system call.</span><br><span class="line"><span class="meta">@@ -128,6 +129,7 @@</span> static uint64 (*syscalls[])(void) = &#123;</span><br><span class="line"> [SYS_mkdir]   sys_mkdir,</span><br><span class="line"> [SYS_close]   sys_close,</span><br><span class="line"> [SYS_trace]   sys_trace,</span><br><span class="line"><span class="addition">+[SYS_sysinfo] sys_sysinfo,</span></span><br><span class="line"> &#125;;</span><br><span class="line"> </span><br><span class="line"> // Array of syscall name</span><br><span class="line"><span class="meta">@@ -154,6 +156,7 @@</span> static char *syscall_name[]= &#123;</span><br><span class="line"> [SYS_mkdir]   &quot;mkdir&quot;,</span><br><span class="line"> [SYS_close]   &quot;close&quot;,</span><br><span class="line"> [SYS_trace]   &quot;trace&quot;,</span><br><span class="line"><span class="addition">+[SYS_sysinfo] &quot;sysinfo&quot;,</span></span><br><span class="line"> &#125;;</span><br><span class="line"> </span><br><span class="line"> void</span><br><span class="line"><span class="comment">diff --git a/kernel/syscall.h b/kernel/syscall.h</span></span><br><span class="line"><span class="comment">index cc112b9..7961890 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/syscall.h</span></span><br><span class="line"><span class="comment">+++ b/kernel/syscall.h</span></span><br><span class="line"><span class="meta">@@ -21,3 +21,4 @@</span></span><br><span class="line"> #define SYS_mkdir  20</span><br><span class="line"> #define SYS_close  21</span><br><span class="line"> #define SYS_trace  22</span><br><span class="line"><span class="addition">+#define SYS_sysinfo  23</span></span><br><span class="line"><span class="comment">diff --git a/kernel/sysproc.c b/kernel/sysproc.c</span></span><br><span class="line"><span class="comment">index 2804c7d..b36a4e0 100644</span></span><br><span class="line"><span class="comment">--- a/kernel/sysproc.c</span></span><br><span class="line"><span class="comment">+++ b/kernel/sysproc.c</span></span><br><span class="line"><span class="meta">@@ -100,3 +100,14 @@</span> sys_trace(void) &#123;</span><br><span class="line">   trace(syscall_id);</span><br><span class="line">   return 0;</span><br><span class="line"> &#125;</span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+uint64</span></span><br><span class="line"><span class="addition">+sys_sysinfo(void) &#123;</span></span><br><span class="line"><span class="addition">+  uint64 addr;</span></span><br><span class="line"><span class="addition">+  int ret;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  argaddr(0, &amp;addr);</span></span><br><span class="line"><span class="addition">+  ret = sysinfo(addr);</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"><span class="addition">+  return ret &lt; 0 ? -1 : 0;</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"><span class="comment">diff --git a/user/user.h b/user/user.h</span></span><br><span class="line"><span class="comment">index 0bf4333..1645956 100644</span></span><br><span class="line"><span class="comment">--- a/user/user.h</span></span><br><span class="line"><span class="comment">+++ b/user/user.h</span></span><br><span class="line"><span class="meta">@@ -1,4 +1,5 @@</span></span><br><span class="line"> struct stat;</span><br><span class="line"><span class="addition">+struct sysinfo;</span></span><br><span class="line"> </span><br><span class="line"> // system calls</span><br><span class="line"> int fork(void);</span><br><span class="line"><span class="meta">@@ -23,6 +24,7 @@</span> char* sbrk(int);</span><br><span class="line"> int sleep(int);</span><br><span class="line"> int uptime(void);</span><br><span class="line"> int trace(int);</span><br><span class="line"><span class="addition">+int sysinfo(struct sysinfo *);</span></span><br><span class="line"> </span><br><span class="line"> // ulib.c</span><br><span class="line"> int stat(const char*, struct stat*);</span><br><span class="line"><span class="comment">diff --git a/user/usys.pl b/user/usys.pl</span></span><br><span class="line"><span class="comment">index 9c97b05..bc109fd 100755</span></span><br><span class="line"><span class="comment">--- a/user/usys.pl</span></span><br><span class="line"><span class="comment">+++ b/user/usys.pl</span></span><br><span class="line"><span class="meta">@@ -37,3 +37,4 @@</span> sub entry &#123;</span><br><span class="line"> entry(&quot;sleep&quot;);</span><br><span class="line"> entry(&quot;uptime&quot;);</span><br><span class="line"> entry(&quot;trace&quot;);</span><br><span class="line"><span class="addition">+entry(&quot;sysinfo&quot;);</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h2><p>最后 <code>make grade</code> 查看结果,</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">== Test answers-syscall.txt ==</span><br><span class="line">answers-syscall.txt: OK</span><br><span class="line">== Test trace 32 grep ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">trace 32 grep: OK (3.0s)</span><br><span class="line">== Test trace all grep ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">trace all grep: OK (0.9s)</span><br><span class="line">== Test trace nothing ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">trace nothing: OK (0.8s)</span><br><span class="line">== Test trace children ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">trace children: OK (32.3s)</span><br><span class="line">== Test sysinfotest ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">sysinfotest: OK (3.6s)</span><br><span class="line">== Test time ==</span><br><span class="line">time: OK</span><br><span class="line">Score: 40/40</span><br></pre></td></tr></table></figure>
+
+                    
+                </div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                    </div>
+                    <div>
+                        
+                    </div>
+                </div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/xv6-lab3-page-tables/"
+                                   title="xv6 Lab3: page tables"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">xv6 Lab3: page tables</span>
+                                        <span class="post-nav-item">Prev posts</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/xv6-lab1-xv6-and-unix-utilities/"
+                                   title="xv6 Lab1: Xv6 and Unix utilities"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">xv6 Lab1: Xv6 and Unix utilities</span>
+                                        <span class="post-nav-item">Next posts</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-gdb"><span class="nav-text">Using gdb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#System-call-tracing"><span class="nav-text">System call tracing</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA-syscall"><span class="nav-text">如何创建一个 syscall</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E7%94%A8%E8%B7%AF%E5%BE%84"><span class="nav-text">调用路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tracemask-%E5%8F%98%E9%87%8F%E5%88%9D%E5%A7%8B%E5%8C%96%E3%80%81%E9%94%80%E6%AF%81"><span class="nav-text">tracemask 变量初始化、销毁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code"><span class="nav-text">Show me the code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E8%80%83"><span class="nav-text">思考</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sysinfo"><span class="nav-text">Sysinfo</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sysinfo-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8"><span class="nav-text">sysinfo 系统调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E7%A9%BA%E9%97%B2%E5%86%85%E5%AD%98"><span class="nav-text">获取空闲内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E8%BF%9B%E7%A8%8B%E6%95%B0"><span class="nav-text">获取进程数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code-1"><span class="nav-text">Show me the code</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-text">测试结果</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;<span>2022</span>&nbsp;-&nbsp;2025
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">Lapin Gris</a>
+        
+    </div>
+
+    <div class="theme-info info-item">
+        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div>
+
+    
+
+    
+
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-gdb"><span class="nav-text">Using gdb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#System-call-tracing"><span class="nav-text">System call tracing</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA-syscall"><span class="nav-text">如何创建一个 syscall</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E7%94%A8%E8%B7%AF%E5%BE%84"><span class="nav-text">调用路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tracemask-%E5%8F%98%E9%87%8F%E5%88%9D%E5%A7%8B%E5%8C%96%E3%80%81%E9%94%80%E6%AF%81"><span class="nav-text">tracemask 变量初始化、销毁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code"><span class="nav-text">Show me the code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E8%80%83"><span class="nav-text">思考</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sysinfo"><span class="nav-text">Sysinfo</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sysinfo-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8"><span class="nav-text">sysinfo 系统调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E7%A9%BA%E9%97%B2%E5%86%85%E5%AD%98"><span class="nav-text">获取空闲内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E8%BF%9B%E7%A8%8B%E6%95%B0"><span class="nav-text">获取进程数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Show-me-the-code-1"><span class="nav-text">Show me the code</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-text">测试结果</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/utils.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/header-shrink.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/back2top.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/toggle-theme.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/code-block.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/main.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/libs/anime.min.js"></script>
+
+<!-- local search -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/local-search.min.js"></script>
+
+
+<!-- lazyload -->
+
+
+<div class="">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/post/post-helper.min.js"></script>
+
+        <!-- toc -->
+        
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-theme-keep/4.2.5/js/post/toc.min.js"></script>
+        
+
+        <!-- copyright-info -->
+        
+
+        <!-- share -->
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+
+
+</body>
+</html>
