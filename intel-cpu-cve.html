@@ -321,7 +321,7 @@
 <li>MCU：代表需要更新微码</li>
 <li>Software：代表需要升级软件</li>
 </ul>
-<h2 id="如何查看我的-CPU-的型号？"><a href="#如何查看我的-CPU-的型号？" class="headerlink" title="如何查看我的 CPU 的型号？"></a>如何查看我的 CPU 的型号？</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">lscpu | grep -E <span class="string">&quot;CPU family:|Model:|Stepping:&quot;</span></span></span><br><span class="line">CPU family:          6</span><br><span class="line">Model:               85</span><br><span class="line">Stepping:            4</span><br></pre></td></tr></table></figure>
+<h2 id="如何查看我的-CPU-的型号？"><a href="#如何查看我的-CPU-的型号？" class="headerlink" title="如何查看我的 CPU 的型号？"></a>如何查看我的 CPU 的型号？</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">lscpu | grep -E <span class="string">&quot;CPU family:|Model:|Stepping:&quot;</span></span></span><br><span class="line">CPU family:          6</span><br><span class="line">Model:               85</span><br><span class="line">Stepping:            4</span><br></pre></td></tr></table></figure>
 <p>其中 Model 输出结果都是 10 进制，Intel 处理器漏洞表面里使用的是 16 进制（后缀是 H，代表是 16 进制），85 的 16 进制表示 55H，所以这款 CPU 的 Family_Model 是 06_55H, Steeping 是 4。</p>
 
                     

@@ -316,7 +316,7 @@
 <p>这个问题很常见，是指令集不兼容造成的。AMD 虽然是 x86 厂商，即使是同一代其生产的 CPU 也不是和 Intel 的 CPU 是指令集完全兼容的。两家厂商的 CPU 会有一些对方不支持的指令集。</p>
 <p>出现问题的原因也很简单，这个 RPM 包是在一台编译机器上编译的，这台编译机器是 Intel 机器，正好支持部分 AVX512 指令集。但线上的 AMD 机器是不支持 AVX512 指令集的。解决这个问题很简单，只要使用 I 家 和 A 家 这两款 CPU 共同支持的指令集即可。实际上，是不需要我们手动对比指令集的差异，寻找交集。因为 CPU 指令集之间的差异会对软件的移植性造成重大影响，所以业界早早就有了对应的指令集基线(baseline)。</p>
 <h2 id="指令集的演进"><a href="#指令集的演进" class="headerlink" title="指令集的演进"></a>指令集的演进</h2><p>gcc 编译器执行 <code>gcc -Q --help=target</code>，输出会包含如下部分,</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Known valid arguments <span class="keyword">for</span> -march= option:</span><br><span class="line">  i386 i486 i586 pentium lakemont pentium-mmx [...]</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">Known valid arguments <span class="keyword">for</span> -march= option:</span><br><span class="line">  i386 i486 i586 pentium lakemont pentium-mmx [...]</span><br></pre></td></tr></table></figure>
 <p>其中 march option 下面罗列的就是 gcc 的支持的各种指令集，重点关注其中 <code>x86-64/x86-64-v2/x86-64-v3/x86-64-v4</code> 这几个，这几个是 x86 平台最常用的指令集了。绝大多数软件都会使用这几个指令集进行编译，保证不同 CPU 之间的指令集兼容。<br>指令集从 x86-64 到 x86-64-v4 ，每一个版本都往 baseline 中加入了新的指令集，性能会更好，但移植会变差，一些比较老的 CPU 可能跑不了使用 x86-64-v4 指令集编译的软件了。</p>
 <ul>
 <li>x86-64-v2 brings support (among other things) for vector instructions up to Streaming SIMD Extensions 4.2 (SSE4.2)  and Supplemental Streaming SIMD Extensions 3 (SSSE3), the POPCNT instruction (useful for data analysis and bit-fiddling in some data structures), and CMPXCHG16B (a two-word compare-and-swap instruction useful for concurrent algorithms).</li>
@@ -324,7 +324,7 @@
 <li>x86-64-v4 includes vector instructions from some of the AVX-512 variants.</li>
 </ul>
 <h2 id="对比-Intel-与-AMD-指令集差异"><a href="#对比-Intel-与-AMD-指令集差异" class="headerlink" title="对比 Intel 与 AMD 指令集差异"></a>对比 Intel 与 AMD 指令集差异</h2><p>查看两款 CPU 支持的指令集之间的差异</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -Q -march=native --help=target | grep enabled</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gcc -Q -march=native --help=target | grep enabled</span><br></pre></td></tr></table></figure>
 <p>当 march 为 native 可以获得当前 CPU 支持的所有指令集。</p>
 <p>表格中是 AMD EPYC 和 Intel Ice Lake CPU 的其中一款 CPU 指令集差异图， 两家的 CPU 每一代都会有各种各样的型号，这里是其中两款的对比，<br>从图中看到，这个两款 CPU 都是比较新的，均支持 AVX512 系列指令集。两款 CPU 支持的指令集大部分都是重合的，一小部分是自家 CPU 独有的。如果我们使用 <code>-march=native </code> 在其中一款 CPU 上编译软件，计划运行在这两款 CPU 上，那么编译器使用到了任何一家的独有的指令集，软件在这两款 CPU 上就存在移植性问题了。</p>
 <table>
@@ -760,7 +760,7 @@
 <h2 id="指令集的基线-baseline"><a href="#指令集的基线-baseline" class="headerlink" title="指令集的基线 baseline"></a>指令集的基线 baseline</h2><p>不同 CPU 指令集之间的差异，会导致软件的移植性产生重大影响。通常的情况下，我们希望我在 x86 平台编译的软件，能在任意 x86 机器（无论 Intel 还是 AMD）上运行，而不是在每一 款 CPU 上都要重新编译。这种问题就是指令集的移植性问题。</p>
 <p>目前已经有解决方案了，那就是 gcc 的 <code>-march</code> 选项，通过在编译的时候指定 <code>-march</code> 实现一次编译，任意运行。<br>gcc 编译的 <code>-march</code> 选项会限定是编译过程可以使用的指令集，目前这个阶段 <code>x86-64-v2</code> 架构是当前推荐的 <code>-march</code> 选项，在性能和移植性之间取得了比较好的平衡。</p>
 <p>感兴趣的小伙伴可以在不同 CPU 平台上查询 <code>x86-64-v2</code> 指令集是否存在差异，结论肯定是不存在差异，因为这是一个 baseline，已经被标准化了。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -Q -march=x86<span class="number">-64</span>-v2 --help=target | grep enabled</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">gcc -Q -march=x86<span class="number">-64</span>-v2 --help=target | grep enabled</span><br></pre></td></tr></table></figure>
 
 <p>那这些指令集的 baseline 是怎么标准化的？<br>有些同学可能会对标准的由来感兴趣，通俗来说，是 CPU&#x2F;OS&#x2F;Compiler (具有影响力的头部)厂商大家一起坐下来开个会，在会上确定下一代指令集标准，也就是 baseline，确定后，软件厂商按照这个指令集标准编译软件，CPU 厂商按照这个标准设计 CPU。共同保证软件的移植性。其他非头部厂商也会跟进这个标准。</p>
 <p><a class="link"   target="_blank" rel="noopener" href="https://developers.redhat.com/blog/2021/01/05/building-red-hat-enterprise-linux-9-for-the-x86-64-v2-microarchitecture-level#" >https://developers.redhat.com/blog/2021/01/05/building-red-hat-enterprise-linux-9-for-the-x86-64-v2-microarchitecture-level#<i class="fas fa-external-link-alt"></i></a></p>

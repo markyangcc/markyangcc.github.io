@@ -1319,14 +1319,14 @@ img[lazyload]::after {
   --highlight-aqua: #3e999f;
   --highlight-blue: #4271ae;
   --highlight-purple: #8959a8;
-  --highlight-deletion: #fdd;
-  --highlight-addition: #dfd;
+  --highlight-deletion: #ec685e;
+  --highlight-addition: #509c35;
   --highlight-gutter-color: #585865;
   --highlight-gutter-bg-color: #f2f2f2;
-  --mac-toolbar-background-color: #21252b;
+  --mac-toolbar-background-color: #e0dfde;
   --shrink-line-foreground: #808091;
-  --shrink-line-background-1: rgba(210,210,210,0.9);
-  --shrink-line-background-2: rgba(225,225,225,0.6);
+  --shrink-line-background-1: rgba(255,255,255,0.9);
+  --shrink-line-background-2: rgba(210,210,210,0.7);
 }
 @media (prefers-color-scheme: light) {
   :root {
@@ -1345,14 +1345,14 @@ img[lazyload]::after {
     --highlight-aqua: #3e999f;
     --highlight-blue: #4271ae;
     --highlight-purple: #8959a8;
-    --highlight-deletion: #fdd;
-    --highlight-addition: #dfd;
+    --highlight-deletion: #ec685e;
+    --highlight-addition: #509c35;
     --highlight-gutter-color: #585865;
     --highlight-gutter-bg-color: #f2f2f2;
-    --mac-toolbar-background-color: #21252b;
+    --mac-toolbar-background-color: #e0dfde;
     --shrink-line-foreground: #808091;
-    --shrink-line-background-1: rgba(210,210,210,0.9);
-    --shrink-line-background-2: rgba(225,225,225,0.6);
+    --shrink-line-background-1: rgba(255,255,255,0.9);
+    --shrink-line-background-2: rgba(210,210,210,0.7);
   }
 }
 @media (prefers-color-scheme: dark) {
@@ -1372,8 +1372,8 @@ img[lazyload]::after {
     --highlight-aqua: #8abeb7;
     --highlight-blue: #81a2be;
     --highlight-purple: #b294bb;
-    --highlight-deletion: #700;
-    --highlight-addition: #005f00;
+    --highlight-deletion: #ec685e;
+    --highlight-addition: #509c35;
     --highlight-gutter-color: #b1bdc8;
     --highlight-gutter-bg-color: #1f2329;
     --mac-toolbar-background-color: #1f2021;
@@ -1398,14 +1398,14 @@ img[lazyload]::after {
   --highlight-aqua: #3e999f;
   --highlight-blue: #4271ae;
   --highlight-purple: #8959a8;
-  --highlight-deletion: #fdd;
-  --highlight-addition: #dfd;
+  --highlight-deletion: #ec685e;
+  --highlight-addition: #509c35;
   --highlight-gutter-color: #585865;
   --highlight-gutter-bg-color: #f2f2f2;
-  --mac-toolbar-background-color: #21252b;
+  --mac-toolbar-background-color: #e0dfde;
   --shrink-line-foreground: #808091;
-  --shrink-line-background-1: rgba(210,210,210,0.9);
-  --shrink-line-background-2: rgba(225,225,225,0.6);
+  --shrink-line-background-1: rgba(255,255,255,0.9);
+  --shrink-line-background-2: rgba(210,210,210,0.7);
 }
 .dark-mode {
   --toolbar-foreground: #adbac5;
@@ -1423,8 +1423,8 @@ img[lazyload]::after {
   --highlight-aqua: #8abeb7;
   --highlight-blue: #81a2be;
   --highlight-purple: #b294bb;
-  --highlight-deletion: #700;
-  --highlight-addition: #005f00;
+  --highlight-deletion: #ec685e;
+  --highlight-addition: #509c35;
   --highlight-gutter-color: #b1bdc8;
   --highlight-gutter-bg-color: #1f2329;
   --mac-toolbar-background-color: #1f2021;
@@ -1547,12 +1547,10 @@ pre code {
   border: none;
 }
 pre .deletion {
-  color: var(--highlight-foreground);
-  background: var(--highlight-deletion);
+  color: var(--highlight-deletion);
 }
 pre .addition {
-  color: var(--highlight-foreground);
-  background: var(--highlight-addition);
+  color: var(--highlight-addition);
 }
 pre .meta {
   color: var(--highlight-purple);
@@ -1766,14 +1764,14 @@ figure.highlight .shrink-line:hover::before {
   --highlight-aqua: #3e999f;
   --highlight-blue: #4271ae;
   --highlight-purple: #8959a8;
-  --highlight-deletion: #fdd;
-  --highlight-addition: #dfd;
+  --highlight-deletion: #ec685e;
+  --highlight-addition: #509c35;
   --highlight-gutter-color: #585865;
   --highlight-gutter-bg-color: #f2f2f2;
-  --mac-toolbar-background-color: #21252b;
+  --mac-toolbar-background-color: #e0dfde;
   --shrink-line-foreground: #808091;
-  --shrink-line-background-1: rgba(210,210,210,0.9);
-  --shrink-line-background-2: rgba(225,225,225,0.6);
+  --shrink-line-background-1: rgba(255,255,255,0.9);
+  --shrink-line-background-2: rgba(210,210,210,0.7);
 }
 @media (prefers-color-scheme: light) {
   :root {
@@ -1792,14 +1790,14 @@ figure.highlight .shrink-line:hover::before {
     --highlight-aqua: #3e999f;
     --highlight-blue: #4271ae;
     --highlight-purple: #8959a8;
-    --highlight-deletion: #fdd;
-    --highlight-addition: #dfd;
+    --highlight-deletion: #ec685e;
+    --highlight-addition: #509c35;
     --highlight-gutter-color: #585865;
     --highlight-gutter-bg-color: #f2f2f2;
-    --mac-toolbar-background-color: #21252b;
+    --mac-toolbar-background-color: #e0dfde;
     --shrink-line-foreground: #808091;
-    --shrink-line-background-1: rgba(210,210,210,0.9);
-    --shrink-line-background-2: rgba(225,225,225,0.6);
+    --shrink-line-background-1: rgba(255,255,255,0.9);
+    --shrink-line-background-2: rgba(210,210,210,0.7);
   }
 }
 @media (prefers-color-scheme: dark) {
@@ -1819,8 +1817,8 @@ figure.highlight .shrink-line:hover::before {
     --highlight-aqua: #8abeb7;
     --highlight-blue: #81a2be;
     --highlight-purple: #b294bb;
-    --highlight-deletion: #700;
-    --highlight-addition: #005f00;
+    --highlight-deletion: #ec685e;
+    --highlight-addition: #509c35;
     --highlight-gutter-color: #b1bdc8;
     --highlight-gutter-bg-color: #1f2329;
     --mac-toolbar-background-color: #1f2021;
@@ -1845,14 +1843,14 @@ figure.highlight .shrink-line:hover::before {
   --highlight-aqua: #3e999f;
   --highlight-blue: #4271ae;
   --highlight-purple: #8959a8;
-  --highlight-deletion: #fdd;
-  --highlight-addition: #dfd;
+  --highlight-deletion: #ec685e;
+  --highlight-addition: #509c35;
   --highlight-gutter-color: #585865;
   --highlight-gutter-bg-color: #f2f2f2;
-  --mac-toolbar-background-color: #21252b;
+  --mac-toolbar-background-color: #e0dfde;
   --shrink-line-foreground: #808091;
-  --shrink-line-background-1: rgba(210,210,210,0.9);
-  --shrink-line-background-2: rgba(225,225,225,0.6);
+  --shrink-line-background-1: rgba(255,255,255,0.9);
+  --shrink-line-background-2: rgba(210,210,210,0.7);
 }
 .dark-mode {
   --toolbar-foreground: #adbac5;
@@ -1870,8 +1868,8 @@ figure.highlight .shrink-line:hover::before {
   --highlight-aqua: #8abeb7;
   --highlight-blue: #81a2be;
   --highlight-purple: #b294bb;
-  --highlight-deletion: #700;
-  --highlight-addition: #005f00;
+  --highlight-deletion: #ec685e;
+  --highlight-addition: #509c35;
   --highlight-gutter-color: #b1bdc8;
   --highlight-gutter-bg-color: #1f2329;
   --mac-toolbar-background-color: #1f2021;
