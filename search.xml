@@ -467,13 +467,8 @@
 <p>实际上往往只有像 C 语言会考虑指令集的兼容性，因为为了性能，编译器应该使用所有支持的指令集进行编译期优化，但是为了可移植性，又不能使用独有指令集。这本身就是一个矛盾。举个例子，像 DPDK&#x2F;SPDK 这种专门为了性能而生的软件框架，他们在编译的时候，默认采用 native 进行编译，实际上为了可移植性，我么在编译时会使用 x86-64-v2&#x2F;corei7 这些指令集，牺牲一些性能，提高可移植性。</p>
 <p>在现实场景中，如果 CPU 型号是可控的，那么在编译时候，可以激进一些。如果 CPU 型号不可控的，那么还是保守一些。</p>
 ]]></content>
-      <categories>
-        <category>ISA</category>
-      </categories>
       <tags>
-        <tag>isa</tag>
-        <tag>compile</tag>
-        <tag>arch</tag>
+        <tag>ISA</tag>
       </tags>
   </entry>
   <entry>
@@ -499,7 +494,6 @@
       </categories>
       <tags>
         <tag>cmu15445</tag>
-        <tag>c++ Primer</tag>
         <tag>Trie</tag>
       </tags>
   </entry>
@@ -631,7 +625,7 @@
 <p>2、<a class="link"   href="https://blog.k8s.li/rebuild-iso-image.html" >使用 overlay2 或 bind 重新构建 ISO 镜像<i class="fas fa-external-link-alt"></i></a> <strong>适用于 ISO CICD 方案的一种加速方案</strong></p>
 ]]></content>
       <tags>
-        <tag>iso</tag>
+        <tag>ISO</tag>
       </tags>
   </entry>
   <entry>
@@ -731,30 +725,6 @@
       </tags>
   </entry>
   <entry>
-    <title>查询 Intel 处理器安全漏洞</title>
-    <url>/intel-cpu-cve.html</url>
-    <content><![CDATA[<h2 id="Intel-处理器安全漏洞表"><a href="#Intel-处理器安全漏洞表" class="headerlink" title="Intel 处理器安全漏洞表"></a>Intel 处理器安全漏洞表</h2><p><a class="link"   href="https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html" >https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html<i class="fas fa-external-link-alt"></i></a></p>
-<p><img   src="/../img/1701078889956-2908e693-214c-4762-9897-53c5924ec88c.png"  alt="image.png"></p>
-<h2 id="处理器安全漏洞只需要关注这两个方面"><a href="#处理器安全漏洞只需要关注这两个方面" class="headerlink" title="处理器安全漏洞只需要关注这两个方面"></a>处理器安全漏洞只需要关注这两个方面</h2><p>Intel 处理器的漏洞表，包含了所有漏洞，每个漏洞一列（图中右上角），漏洞描述包含 CVE 名称，编号以及 Intel 的编号。新披露的漏洞靠左，老披露的靠右。</p>
-<p>1、我用的是哪一款 CPU？<br>通过 <code>Family</code>、<code>Model</code> 、<code>Stepping</code> 三项就可以定位到列表中的特定型号所在行（<strong>图中左上角</strong>），查看 CPU 型号通过 lscpu 命令。<br>2、我是否受到此次 CVE 的影响？<br>观察<strong>图中右下角</strong>的字段，</p>
-<ul>
-<li>Not Affected: 代表不受影响</li>
-<li>MCU：代表需要更新微码</li>
-<li>Software：代表需要升级软件</li>
-</ul>
-<h2 id="如何查看我的-CPU-的型号？"><a href="#如何查看我的-CPU-的型号？" class="headerlink" title="如何查看我的 CPU 的型号？"></a>如何查看我的 CPU 的型号？</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">lscpu | grep -E <span class="string">&quot;CPU family:|Model:|Stepping:&quot;</span></span></span><br><span class="line">CPU family:          6</span><br><span class="line">Model:               85</span><br><span class="line">Stepping:            4</span><br></pre></td></tr></table></figure>
-<p>其中 Model 输出结果都是 10 进制，Intel 处理器漏洞表面里使用的是 16 进制（后缀是 H，代表是 16 进制），85 的 16 进制表示 55H，所以这款 CPU 的 Family_Model 是 06_55H, Steeping 是 4。</p>
-]]></content>
-      <categories>
-        <category>Intel</category>
-      </categories>
-      <tags>
-        <tag>CVE</tag>
-        <tag>processor</tag>
-        <tag>lscpu</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>如何为 RPM 包签名</title>
     <url>/how-to-sign-rpm-package.html</url>
     <content><![CDATA[<h2 id="Generate-GPG-keyring"><a href="#Generate-GPG-keyring" class="headerlink" title="Generate GPG keyring"></a>Generate GPG keyring</h2><p>使用下面的命令生成 GPG keyring。输入 Name 和 Email 。输入 o 确认后，passphrase 可以不输入（保留为空即可），passphrase 保留为空代表不需要密码保护（公钥和私钥需要确认两次）。</p>
@@ -808,11 +778,27 @@
 <p>4、<a class="link"   href="https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually" >https://stackoverflow.com/questions/53886734/how-to-trust-a-bunch-of-public-pgp-keys-you-trust-without-doing-it-manually<i class="fas fa-external-link-alt"></i></a></p>
 <p>5、<a class="link"   href="https://www.gnupg.org/documentation/manuals/gnupg/GPG-Configuration.html" >https://www.gnupg.org/documentation/manuals/gnupg/GPG-Configuration.html<i class="fas fa-external-link-alt"></i></a></p>
 ]]></content>
-      <categories>
-        <category>rpm</category>
-      </categories>
       <tags>
         <tag>rpm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>查询 Intel 处理器安全漏洞</title>
+    <url>/intel-cpu-cve.html</url>
+    <content><![CDATA[<h2 id="Intel-处理器安全漏洞表"><a href="#Intel-处理器安全漏洞表" class="headerlink" title="Intel 处理器安全漏洞表"></a>Intel 处理器安全漏洞表</h2><p><a class="link"   href="https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html" >https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html<i class="fas fa-external-link-alt"></i></a></p>
+<p><img   src="/../img/1701078889956-2908e693-214c-4762-9897-53c5924ec88c.png"  alt="image.png"></p>
+<h2 id="处理器安全漏洞只需要关注这两个方面"><a href="#处理器安全漏洞只需要关注这两个方面" class="headerlink" title="处理器安全漏洞只需要关注这两个方面"></a>处理器安全漏洞只需要关注这两个方面</h2><p>Intel 处理器的漏洞表，包含了所有漏洞，每个漏洞一列（图中右上角），漏洞描述包含 CVE 名称，编号以及 Intel 的编号。新披露的漏洞靠左，老披露的靠右。</p>
+<p>1、我用的是哪一款 CPU？<br>通过 <code>Family</code>、<code>Model</code> 、<code>Stepping</code> 三项就可以定位到列表中的特定型号所在行（<strong>图中左上角</strong>），查看 CPU 型号通过 lscpu 命令。<br>2、我是否受到此次 CVE 的影响？<br>观察<strong>图中右下角</strong>的字段，</p>
+<ul>
+<li>Not Affected: 代表不受影响</li>
+<li>MCU：代表需要更新微码</li>
+<li>Software：代表需要升级软件</li>
+</ul>
+<h2 id="如何查看我的-CPU-的型号？"><a href="#如何查看我的-CPU-的型号？" class="headerlink" title="如何查看我的 CPU 的型号？"></a>如何查看我的 CPU 的型号？</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">lscpu | grep -E <span class="string">&quot;CPU family:|Model:|Stepping:&quot;</span></span></span><br><span class="line">CPU family:          6</span><br><span class="line">Model:               85</span><br><span class="line">Stepping:            4</span><br></pre></td></tr></table></figure>
+<p>其中 Model 输出结果都是 10 进制，Intel 处理器漏洞表面里使用的是 16 进制（后缀是 H，代表是 16 进制），85 的 16 进制表示 55H，所以这款 CPU 的 Family_Model 是 06_55H, Steeping 是 4。</p>
+]]></content>
+      <tags>
+        <tag>CVE</tag>
       </tags>
   </entry>
   <entry>
@@ -922,7 +908,6 @@
       <tags>
         <tag>kubeadm</tag>
         <tag>cluster</tag>
-        <tag>public</tag>
       </tags>
   </entry>
   <entry>
@@ -960,46 +945,10 @@
 
 <h1 id="PATCHES"><a href="#PATCHES" class="headerlink" title="PATCHES"></a>PATCHES</h1><p>1、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0002-fix-error-looser-exception-specification-on-overridi.patch" >fix-error-looser-exception-specification-on-overridi.patch<i class="fas fa-external-link-alt"></i></a><br>2、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0001-use-gnu11-gnu-11-std-to-build-parsec.patch" >use-gnu11-gnu-11-std-to-build-parsec.patch<i class="fas fa-external-link-alt"></i></a><br>3、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0007-fix-multiple-definition-when-build-with-gcc-10-or-ab.patch" >fix-multiple-definition-when-build-with-gcc-10-or-ab.patch<i class="fas fa-external-link-alt"></i></a><br>4、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0004-fix-A-mismatched-comparison-between-std-ifstream-and.patch" >fix-A-mismatched-comparison-between-std-ifstream-and.patch<i class="fas fa-external-link-alt"></i></a><br>5、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0005-fix-HUGE-macro-undeclared-error.patch" >fix-HUGE-macro-undeclared-error.patch<i class="fas fa-external-link-alt"></i></a><br>6、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0006-fix-conflicting-type-__mbstate_t-both-provided-by-gl.patch" >fix-conflicting-type-__mbstate_t-both-provided-by-gl.patch<i class="fas fa-external-link-alt"></i></a><br>7、<a class="link"   href="https://github.com/markyangcc/parsec3-patch/blob/main/0003-fix-POD-document-had-syntax-errors.patch" >fix-POD-document-had-syntax-errors.patch<i class="fas fa-external-link-alt"></i></a></p>
 ]]></content>
-      <categories>
-        <category>parsec</category>
-      </categories>
       <tags>
         <tag>parsec</tag>
         <tag>RHEL 9</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Reboot 命令实际是 systemctl ？</title>
-    <url>/reboot_is_link_to_systemctl.html</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在一次查问题的过程中，偶然发现 reboot 命令是<strong>直接链接</strong>到 systemctl 的（划重点：直接链接到），看下面的演示，</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># which reboot</span></span><br><span class="line">/sbin/reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># file /sbin/reboot</span></span><br><span class="line">/sbin/reboot: symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
-
-<p>第一直觉就是这是不是不合理，直接把 reboot 软链到 systemctl ，不就相当于直接执行 systemctl 命令，这怎么会起到 reboot 的作用的呢？</p>
-<p>继续看，</p>
-<p>发现 <code>/sbin</code> 目录下很多命令都是直接软链到 <code>systemctl</code>，没有参数来区分，而且这些命令是 100% 工作的，当数量多起来的时候，事情逐渐合理起来了。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># file /sbin/* | grep symbolic | grep systemctl</span></span><br><span class="line">/sbin/halt:                  symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/poweroff:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/reboot:                symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/runlevel:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/shutdown:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/telinit:               symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
-
-<p>那 systemctl 是如何区分出这些命令的？</p>
-<p>熟悉 C 编程的同学大概率可以猜到了，systemctl 可能是通过进程名来区分的，也就是 <code>argv[0]</code> 这个参数，C 语言里 <code>argv[0]</code> 保存的是程序的名称（其他语言也有类似的参数）。</p>
-<h2 id="那拿-systemctl-测试一下？"><a href="#那拿-systemctl-测试一下？" class="headerlink" title="那拿 systemctl 测试一下？"></a>那拿 systemctl 测试一下？</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@cs8 ~]# <span class="built_in">ln</span> -sf /usr/bin/systemctl testcmd</span><br><span class="line">[root@cs8 ~]# ./testcmd</span><br><span class="line">UNIT                                                                                LOAD   ACTIVE SUB       DESCRIPTION</span><br><span class="line">proc-sys-fs-binfmt_misc.automount                                                   loaded active waiting   Arbitrary Executable File Formats File System Automount Point</span><br><span class="line">sys-devices-pci0000:00-0000:00:05.0-virtio0-net-eth0.device                         loaded active plugged   Virtio network device</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda-vda1.device                   loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda/vda1</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda.device                        loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda</span><br></pre></td></tr></table></figure>
-
-<p>可以看到 systemctl 并不识别 testcmd 命令，而是打印了所有 uints，等价 <code>systemctl</code> 直接执行。</p>
-<h2 id="看代码"><a href="#看代码" class="headerlink" title="看代码"></a>看代码</h2><p>和我们预想的一样，systemctl 内部通过 argv 来判断由谁调用的</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// systemd/src/systemctl/systemctl.c</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">systemctl_dispatch_parse_argv</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">        assert(argc &gt;= <span class="number">0</span>);</span><br><span class="line">        assert(argv);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;halt&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_HALT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;poweroff&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;reboot&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (kexec_loaded())</span><br><span class="line">                        arg_action = ACTION_KEXEC;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                        arg_action = ACTION_REBOOT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;shutdown&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> shutdown_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;init&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (sd_booted() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        arg_action = _ACTION_INVALID;</span><br><span class="line">                        <span class="keyword">return</span> telinit_parse_argv(argc, argv);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        arg_action = ACTION_TELINIT;</span><br><span class="line">                        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;runlevel&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_RUNLEVEL;</span><br><span class="line">                <span class="keyword">return</span> runlevel_parse_argv(argc, argv);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        arg_action = ACTION_SYSTEMCTL;</span><br><span class="line">        <span class="keyword">return</span> systemctl_parse_argv(argc, argv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="自己实现一个"><a href="#自己实现一个" class="headerlink" title="自己实现一个"></a>自己实现一个</h2><p>实现也很简单，几行代码就行。只需要实现通过 argv[0] 识别调用方是谁，然后根据不同的调用方执行不同的逻辑即可。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;string.h&gt;</span></span><br><span class="line"></span><br><span class="line">int main(int argc, char *argv[]) &#123;</span><br><span class="line">    // 提取程序名（最后一个斜杠后的内容）</span><br><span class="line">    char *programName = strrchr(argv[0], <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">    <span class="keyword">if</span> (programName != NULL) &#123;</span><br><span class="line">        programName++; // 移动到斜杠后的第一个字符</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        programName = argv[0]; // 如果没有斜杠，直接使用整个参数</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 根据程序名执行不同的逻辑</span><br><span class="line">    <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programA&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 A 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programB&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 B 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;未知程序，执行默认逻辑\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">return</span> 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>完结撒花</p>
-]]></content>
-      <categories>
-        <category>linux</category>
-      </categories>
-      <tags>
-        <tag>reboot</tag>
-        <tag>systemd</tag>
-        <tag>sbin</tag>
-        <tag>link</tag>
+        <tag>benchmark</tag>
       </tags>
   </entry>
   <entry>
@@ -1141,10 +1090,36 @@
       <tags>
         <tag>ebpf</tag>
         <tag>usdt</tag>
-        <tag>sdt</tag>
-        <tag>tracing</tag>
-        <tag>userspace</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>xv6 Lab0: Prepare for the Lab</title>
+    <url>/xv6-lab0-prepare-workspace.html</url>
+    <content><![CDATA[<p>再开始 lab 之前，我们先进行环境配置。</p>
+<h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>看 xv6 网站上的教程，安装依赖软件包<br><a class="link"   href="https://pdos.csail.mit.edu/6.828/2023/tools.html" >https://pdos.csail.mit.edu/6.828/2023/tools.html<i class="fas fa-external-link-alt"></i></a></p>
+<p>使用 Debina&#x2F;Ubuntu 系统, </p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt-get update</span><br><span class="line">apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu </span><br></pre></td></tr></table></figure>
+
+<p>依赖安装完成后，编译运行 xv6，</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone git://g.csail.mit.edu/xv6-labs-2023</span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">make qemu</span><br></pre></td></tr></table></figure>
+<p><strong>特别备注： 执行 <code>make qemu</code>  会进入 xv6 系统里，想退出 qemu， 先按 ctrl + a, 紧接着按 x 即可退出 qemu。</strong></p>
+<h3 id="配置-vscode-自动代码跳转"><a href="#配置-vscode-自动代码跳转" class="headerlink" title="配置 vscode 自动代码跳转"></a>配置 vscode 自动代码跳转</h3><p>当使用 vscode 编写 xv6 代码时候，即使安装 clangd，也是没有代码自动跳转的。因为 clangd 需要<br><code>compile_commands.json</code> 理解项目代码，才能实现正确的代码跳转。对于 xv6 项目，我们使用 bear 将整个项目完整编译一遍，bear 会为我们生成需要的 <code>compile_commands.json</code>。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt install bear</span><br><span class="line"></span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">bear -- make</span><br></pre></td></tr></table></figure>
+
+<p>More: <a class="link"   href="https://clangd.llvm.org/installation.html#compile_commandsjson" >https://clangd.llvm.org/installation.html#compile_commandsjson<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="禁用-vscode-clangd-插件自动插入头文件"><a href="#禁用-vscode-clangd-插件自动插入头文件" class="headerlink" title="禁用 vscode clangd 插件自动插入头文件"></a>禁用 vscode clangd 插件自动插入头文件</h3><p>有时候，vscode 的 clagnd 会自动为我们加入 glibc 的头文件，<br><strong>因为 xv6 不是 linux，也不使用 glibc，所以 clangd 自动加入的头文件也是错误的</strong>。 在 vscode 设置的 clangd 插件添加 <code>--header-insertion=never</code> 命令行选项，禁用自动插入头文件。重启 vscode 生效。<br>路径：<br><code>Settings -&gt; Extensions -&gt; clagnd -&gt; Clangd: Arguments -&gt; Add Item</code></p>
+<h3 id="配置-clang-format-代码格式化"><a href="#配置-clang-format-代码格式化" class="headerlink" title="配置 clang-format 代码格式化"></a>配置 clang-format 代码格式化</h3><p>clang-format 可以用于自动格式化 C&#x2F;C++ 代码，为我们 xv6 写一个 .clang-format 文件后，使用 vscode 的快捷键可以自动格式化代码。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt install clang-format</span><br></pre></td></tr></table></figure>
+
+<p>使用如下配置，此配置的风格和 xv6 代码风格最为相似，</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">BasedOnStyle: LLVM</span><br><span class="line">SortIncludes: Never</span><br><span class="line"></span><br><span class="line">BreakBeforeBraces: Stroustrup</span><br><span class="line"></span><br><span class="line">SpaceBeforeParensOptions:</span><br><span class="line">  AfterControlStatements: true</span><br><span class="line">  AfterFunctionDefinitionName: true</span><br><span class="line"></span><br><span class="line">AlwaysBreakAfterReturnType: None</span><br><span class="line">AlwaysBreakAfterDefinitionReturnType: All</span><br></pre></td></tr></table></figure>
+
+<p>clang-format 支持很多配置项，自定义一个自己的喜欢代码风格也不是一件难事。</p>
+<p>More: <a class="link"   href="https://clang.llvm.org/docs/ClangFormatStyleOptions.html" >https://clang.llvm.org/docs/ClangFormatStyleOptions.html<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>xv6</category>
+      </categories>
   </entry>
   <entry>
     <title>xv6 Lab1: Xv6 and Unix utilities</title>
@@ -1171,6 +1146,35 @@
       <categories>
         <category>xv6</category>
       </categories>
+  </entry>
+  <entry>
+    <title>Reboot 命令实际是 systemctl？</title>
+    <url>/reboot_is_link_to_systemctl.html</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在一次查问题的过程中，偶然发现 reboot 命令是<strong>直接链接</strong>到 systemctl 的（划重点：直接链接到），看下面的演示，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># which reboot</span></span><br><span class="line">/sbin/reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># file /sbin/reboot</span></span><br><span class="line">/sbin/reboot: symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
+
+<p>第一直觉就是这是不是不合理，直接把 reboot 软链到 systemctl ，不就相当于直接执行 systemctl 命令，这怎么会起到 reboot 的作用的呢？</p>
+<p>继续看，</p>
+<p>发现 <code>/sbin</code> 目录下很多命令都是直接软链到 <code>systemctl</code>，没有参数来区分，而且这些命令是 100% 工作的，当数量多起来的时候，事情逐渐合理起来了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># file /sbin/* | grep symbolic | grep systemctl</span></span><br><span class="line">/sbin/halt:                  symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/poweroff:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/reboot:                symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/runlevel:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/shutdown:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/telinit:               symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
+
+<p>那 systemctl 是如何区分出这些命令的？</p>
+<p>熟悉 C 编程的同学大概率可以猜到了，systemctl 可能是通过进程名来区分的，也就是 <code>argv[0]</code> 这个参数，C 语言里 <code>argv[0]</code> 保存的是程序的名称（其他语言也有类似的参数）。</p>
+<h2 id="那拿-systemctl-测试一下？"><a href="#那拿-systemctl-测试一下？" class="headerlink" title="那拿 systemctl 测试一下？"></a>那拿 systemctl 测试一下？</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@cs8 ~]# <span class="built_in">ln</span> -sf /usr/bin/systemctl testcmd</span><br><span class="line">[root@cs8 ~]# ./testcmd</span><br><span class="line">UNIT                                                                                LOAD   ACTIVE SUB       DESCRIPTION</span><br><span class="line">proc-sys-fs-binfmt_misc.automount                                                   loaded active waiting   Arbitrary Executable File Formats File System Automount Point</span><br><span class="line">sys-devices-pci0000:00-0000:00:05.0-virtio0-net-eth0.device                         loaded active plugged   Virtio network device</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda-vda1.device                   loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda/vda1</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda.device                        loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 systemctl 并不识别 testcmd 命令，而是打印了所有 uints，等价 <code>systemctl</code> 直接执行。</p>
+<h2 id="看代码"><a href="#看代码" class="headerlink" title="看代码"></a>看代码</h2><p>和我们预想的一样，systemctl 内部通过 argv 来判断由谁调用的</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// systemd/src/systemctl/systemctl.c</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">systemctl_dispatch_parse_argv</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">        assert(argc &gt;= <span class="number">0</span>);</span><br><span class="line">        assert(argv);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;halt&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_HALT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;poweroff&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;reboot&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (kexec_loaded())</span><br><span class="line">                        arg_action = ACTION_KEXEC;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                        arg_action = ACTION_REBOOT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;shutdown&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> shutdown_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;init&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (sd_booted() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        arg_action = _ACTION_INVALID;</span><br><span class="line">                        <span class="keyword">return</span> telinit_parse_argv(argc, argv);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        arg_action = ACTION_TELINIT;</span><br><span class="line">                        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;runlevel&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_RUNLEVEL;</span><br><span class="line">                <span class="keyword">return</span> runlevel_parse_argv(argc, argv);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        arg_action = ACTION_SYSTEMCTL;</span><br><span class="line">        <span class="keyword">return</span> systemctl_parse_argv(argc, argv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="自己实现一个"><a href="#自己实现一个" class="headerlink" title="自己实现一个"></a>自己实现一个</h2><p>实现也很简单，几行代码就行。只需要实现通过 argv[0] 识别调用方是谁，然后根据不同的调用方执行不同的逻辑即可。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;string.h&gt;</span></span><br><span class="line"></span><br><span class="line">int main(int argc, char *argv[]) &#123;</span><br><span class="line">    // 提取程序名（最后一个斜杠后的内容）</span><br><span class="line">    char *programName = strrchr(argv[0], <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">    <span class="keyword">if</span> (programName != NULL) &#123;</span><br><span class="line">        programName++; // 移动到斜杠后的第一个字符</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        programName = argv[0]; // 如果没有斜杠，直接使用整个参数</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 根据程序名执行不同的逻辑</span><br><span class="line">    <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programA&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 A 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programB&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 B 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;未知程序，执行默认逻辑\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">return</span> 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>完结撒花</p>
+]]></content>
+      <tags>
+        <tag>reboot</tag>
+        <tag>systemd</tag>
+      </tags>
   </entry>
   <entry>
     <title>xv6 Lab2: system calls</title>
@@ -1240,35 +1244,6 @@
 
 <h2 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h2><p>最后 <code>make grade</code> 查看结果,</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">== Test answers-syscall.txt ==</span><br><span class="line">answers-syscall.txt: OK</span><br><span class="line">== Test trace 32 grep ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">trace 32 grep: OK (3.0s)</span><br><span class="line">== Test trace all grep ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">trace all grep: OK (0.9s)</span><br><span class="line">== Test trace nothing ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">trace nothing: OK (0.8s)</span><br><span class="line">== Test trace children ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">trace children: OK (32.3s)</span><br><span class="line">== Test sysinfotest ==</span><br><span class="line">$ make qemu-gdb</span><br><span class="line">sysinfotest: OK (3.6s)</span><br><span class="line">== Test time ==</span><br><span class="line">time: OK</span><br><span class="line">Score: 40/40</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>xv6</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>xv6 Lab0: Prepare for the Lab</title>
-    <url>/xv6-lab0-prepare-workspace.html</url>
-    <content><![CDATA[<p>再开始 lab 之前，我们先进行环境配置。</p>
-<h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>看 xv6 网站上的教程，安装依赖软件包<br><a class="link"   href="https://pdos.csail.mit.edu/6.828/2023/tools.html" >https://pdos.csail.mit.edu/6.828/2023/tools.html<i class="fas fa-external-link-alt"></i></a></p>
-<p>使用 Debina&#x2F;Ubuntu 系统, </p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt-get update</span><br><span class="line">apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu </span><br></pre></td></tr></table></figure>
-
-<p>依赖安装完成后，编译运行 xv6，</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone git://g.csail.mit.edu/xv6-labs-2023</span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">make qemu</span><br></pre></td></tr></table></figure>
-<p><strong>特别备注： 执行 <code>make qemu</code>  会进入 xv6 系统里，想退出 qemu， 先按 ctrl + a, 紧接着按 x 即可退出 qemu。</strong></p>
-<h3 id="配置-vscode-自动代码跳转"><a href="#配置-vscode-自动代码跳转" class="headerlink" title="配置 vscode 自动代码跳转"></a>配置 vscode 自动代码跳转</h3><p>当使用 vscode 编写 xv6 代码时候，即使安装 clangd，也是没有代码自动跳转的。因为 clangd 需要<br><code>compile_commands.json</code> 理解项目代码，才能实现正确的代码跳转。对于 xv6 项目，我们使用 bear 将整个项目完整编译一遍，bear 会为我们生成需要的 <code>compile_commands.json</code>。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt install bear</span><br><span class="line"></span><br><span class="line">cd xv6-labs-2023</span><br><span class="line">bear -- make</span><br></pre></td></tr></table></figure>
-
-<p>More: <a class="link"   href="https://clangd.llvm.org/installation.html#compile_commandsjson" >https://clangd.llvm.org/installation.html#compile_commandsjson<i class="fas fa-external-link-alt"></i></a></p>
-<h3 id="禁用-vscode-clangd-插件自动插入头文件"><a href="#禁用-vscode-clangd-插件自动插入头文件" class="headerlink" title="禁用 vscode clangd 插件自动插入头文件"></a>禁用 vscode clangd 插件自动插入头文件</h3><p>有时候，vscode 的 clagnd 会自动为我们加入 glibc 的头文件，<br><strong>因为 xv6 不是 linux，也不使用 glibc，所以 clangd 自动加入的头文件也是错误的</strong>。 在 vscode 设置的 clangd 插件添加 <code>--header-insertion=never</code> 命令行选项，禁用自动插入头文件。重启 vscode 生效。<br>路径：<br><code>Settings -&gt; Extensions -&gt; clagnd -&gt; Clangd: Arguments -&gt; Add Item</code></p>
-<h3 id="配置-clang-format-代码格式化"><a href="#配置-clang-format-代码格式化" class="headerlink" title="配置 clang-format 代码格式化"></a>配置 clang-format 代码格式化</h3><p>clang-format 可以用于自动格式化 C&#x2F;C++ 代码，为我们 xv6 写一个 .clang-format 文件后，使用 vscode 的快捷键可以自动格式化代码。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">apt install clang-format</span><br></pre></td></tr></table></figure>
-
-<p>使用如下配置，此配置的风格和 xv6 代码风格最为相似，</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">BasedOnStyle: LLVM</span><br><span class="line">SortIncludes: Never</span><br><span class="line"></span><br><span class="line">BreakBeforeBraces: Stroustrup</span><br><span class="line"></span><br><span class="line">SpaceBeforeParensOptions:</span><br><span class="line">  AfterControlStatements: true</span><br><span class="line">  AfterFunctionDefinitionName: true</span><br><span class="line"></span><br><span class="line">AlwaysBreakAfterReturnType: None</span><br><span class="line">AlwaysBreakAfterDefinitionReturnType: All</span><br></pre></td></tr></table></figure>
-
-<p>clang-format 支持很多配置项，自定义一个自己的喜欢代码风格也不是一件难事。</p>
-<p>More: <a class="link"   href="https://clang.llvm.org/docs/ClangFormatStyleOptions.html" >https://clang.llvm.org/docs/ClangFormatStyleOptions.html<i class="fas fa-external-link-alt"></i></a></p>
 ]]></content>
       <categories>
         <category>xv6</category>
