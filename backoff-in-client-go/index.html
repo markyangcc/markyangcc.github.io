@@ -373,7 +373,7 @@ mjx-container[display="true"] + br {
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Sun Sep 07 2025 02:17:47 GMT+0800">2025-09-07 02:17:47</span>
+                    <span class="datetime" data-updated="Sun Sep 07 2025 03:26:52 GMT+0800">2025-09-07 03:26:52</span>
                 </span>
             
         
@@ -453,7 +453,7 @@ mjx-container[display="true"] + br {
 <h2 id="稳定的实体标识符"><a href="#稳定的实体标识符" class="headerlink" title="稳定的实体标识符"></a>稳定的实体标识符</h2><p>容器, 使用 PODNAME_PODNAMESPACE_PODUID_CONTAINERNAME_CONTAINERHASH 作为容器的稳定标识符</p>
 <figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetStableKey</span><span class="params">(pod *v1.Pod, container *v1.Container)</span></span> <span class="type">string</span> {</span><br><span class="line">	hash := strconv.FormatUint(kubecontainer.HashContainer(container), <span class="number">16</span>)</span><br><span class="line">	<span class="keyword">return</span> fmt.Sprintf(<span class="string">"%s_%s_%s_%s_%s"</span>, pod.Name, pod.Namespace, <span class="type">string</span>(pod.UID), container.Name, hash)</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
 
-<p>镜像, 使用 PODUID_IMGREF 作为镜像的稳定标识符(imgref: <code>quay.io/cilium/cilium:latest</code>)</p>
+<p>镜像, 使用 PODUID_IMGREF 作为镜像的稳定标识符(imgref 示例 <code>quay.io/cilium/cilium:v1.18.1</code>)</p>
 <figure class="highlight go"><table><tr><td class="code"><pre><span class="line">backOffKey := fmt.Sprintf(<span class="string">"%s_%s"</span>, pod.UID, imgRef)</span><br></pre></td></tr></table></figure>
 
 
