@@ -9,7 +9,7 @@
     
     <title>
         
-            CMU 15-445 Fall 2022 Project0: C++ Primer |
+            修改重新封装 Linux ISO |
         
         Lapin Gris
     </title>
@@ -227,7 +227,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        CMU 15-445 Fall 2022 Project0: C++ Primer
+                        修改重新封装 Linux ISO
                     </div>
                 
 
@@ -255,36 +255,24 @@
         
             <span class="meta-info-item post-create-date">
                 <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2023-06-04 03:08:21</span>
+                <span class="datetime">2024-06-24 11:31:44</span>
             </span>
 
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Fri Sep 05 2025 14:34:48 GMT+0800">2025-09-05 14:34:48</span>
+                    <span class="datetime" data-updated="Thu Feb 06 2025 19:55:44 GMT+0800">2025-02-06 19:55:44</span>
                 </span>
             
         
 
-        
-            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
-                <ul class="post-category-ul">
-                    
-                            <li class="category-item"><a href="/categories/cmu15445/">cmu15445</a></li>
-                        
-                    
-                </ul>
-            </span>
         
 
         
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/cmu15445/">cmu15445</a></li>
-                        
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/Trie/">Trie</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/ISO/">ISO</a></li>
                         
                     
                 </ul>
@@ -309,20 +297,32 @@
                     
 
                     
-                         <p>这个项目是使用 Modern C++ 17 实现一个 字典树（<code>Trie</code>）<br>项目难点在于理解项目里如何使用 TrieNode 和 TrieTerminalNode 来组合实现一个 Trie Tree。另外一个难点是对 unique_ptr 的理解。理解 unique_ptr 智能指针对生命周期的管理。</p>
-<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>项目提供了图对 Trie Tree 介绍的，理解这两张图，基本理解了这个项目里我们需要实现什么了。<br>下面这张图是我们最终实现的 Trie Tree。图中红色的格子是要实现的 Terminal Node（TrieNodeWithValue），<br>图中包含字母的格子是要实现的 Trie Node。其中 Terminal Node 算是 Trie Node 的一个特殊情况。</p>
-<p>回来继续介绍 TrieNode，他有三个成员</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">char</span> key_char_;</span><br><span class="line"><span class="type">bool</span> is_end_&#123;<span class="literal">false</span>&#125;;</span><br><span class="line">std::unordered_map&lt;<span class="type">char</span>, std::unique_ptr&lt;TrieNode&gt;&gt; children_;</span><br></pre></td></tr></table></figure>
-<p><code>key_char_</code> 是路径的字符，比如 H，A，E<br><code>is_end_</code> 是表示当前 Node 是否是 Terminal Node，默认初始化为 false<br><code>children_</code> 是一个 hashmap，key 是当前节点的 <code>key_char_</code> ，value 是一个指向下一个节点的独占指针 unique_ptr 。图中代表 <code>children_</code> 是 T 和 V 的那一部分。T 和 V 都是 A 节点的子节点。<br><img   src="/../img/cmu15445-fall2022-p0-trie-tree.png"  alt="image.png"></p>
-<p>为什么说 Terminal Node 是 Trie Node 的特殊情况，因为项目中TrieNodeWithValue 是从 TrieNode 继承过来的，算是子类了。<br>比如，我们现在要用 Trie Tree 存储N个键值对，其中两个键值对是 (ab, 1) (ac, “val”) 。那么他们存放在书上就是下图展示的样子，因为我们要实现的 TrieNodeWithValue 的 value 被设计成支持任意类型的 value 存储，所以 TrieNodeWithValue 是一个模板类。<br><img   src="/../img/cmu15445-fall2022-p0-TrieNodeWithValue.png"  alt="image.png"></p>
-<h1 id="实现-TrieNode"><a href="#实现-TrieNode" class="headerlink" title="实现 TrieNode"></a>实现 TrieNode</h1><h2 id="InsertChildNode-GetChildNode-RemoveChildNode"><a href="#InsertChildNode-GetChildNode-RemoveChildNode" class="headerlink" title="InsertChildNode &amp; GetChildNode &amp; RemoveChildNode"></a>InsertChildNode &amp; GetChildNode &amp; RemoveChildNode</h2><p>实现 ChildNode 相关操作就是玩 unordered_map 。C++ 里面是 unordered_map 就是通常所说的 hashmap。<br><img   src="/../img/cmu15445-fall2022-p0-figure-3.png"  alt="image.png"><br><img   src="/../img/cmu15445-fall2022-p0-figure-4.png"  alt="image.png"><br><img   src="/../img/cmu15445-fall2022-p0-figure-5.png"  alt="image.png"></p>
-<h1 id="实现-TrieNodeWithValue"><a href="#实现-TrieNodeWithValue" class="headerlink" title="实现 TrieNodeWithValue"></a>实现 TrieNodeWithValue</h1><h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p>第一次碰到这个函数，有一点懵，没明白子类怎么移动构造，现在想想其实很简单，利用初始化列表将父类 move，然后在大括号里最定制化修改。果然， C++ 好久不用就容易忘。<br><img   src="/../img/cmu15445-fall2022-p0-figure-6.png"  alt="image.png"></p>
-<h1 id="实现-Trie"><a href="#实现-Trie" class="headerlink" title="实现 Trie"></a>实现 Trie</h1><h2 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h2><p>我们 <code>root_</code> Node 是一个空节点，而且要是一个由 unique_ptr 管理的 TrieNode。最初时候没想到使用 make_unique 来构造一个，想了挺久的（蠢哭了……）<br><img   src="/../img/cmu15445-fall2022-p0-figure-7.png"  alt="image.png"></p>
-<h2 id="Insert"><a href="#Insert" class="headerlink" title="Insert"></a>Insert</h2><p>项目要求要支持并发访问，加锁是必须的了。当然在实现的视线可以先实现不加锁版本的 Insert 保证代码没有逻辑错误，然后再为代码加锁。<br>其实我的最初版本，我的逻辑代码和加锁是混合在一起的，各种 for loop 中间 return，有了 return 就需要在 return 之前把之前加的锁释放掉。。。就挺混乱的，另外因为多个 return 位置，容易忘记解锁。<br>后来，我参考内核调度器那块代码，把解锁放到函数末尾做，当代码中需要 return 的时候，用 goto 跳转到 out label，这样也就统一了解锁的位置，代码看起来舒服多了。<br>其实更好的办法是像 DPDK 那样实现一个 unsafe 版本的函数，在实现一个 safe 版本的，锁加在 safe 版本的函数里，在 safe 调用 unsafe 函数，这样实现了逻辑代码和加锁代码分离。唯一的缺点可能是锁的粒度大，不容易优化锁的粒度吧。</p>
-<p>首先从 <code>root_</code> 的指针，开始遍历 Tree，执行插入操作<br>我们选择是遍历整个 string，我们把 string 分成两部分，[0, key.size()-1) 和 [key.size()-1] 两部分来实现。这样写的代码更加简单，感觉项目里的注释描述稍微有点引导学生将字符串分成两部分处理。其实完全没有必要，这样作为一个整体处理逻辑也更简单。<br>遍历整个 string 会把整个路径所有节点类型设置为 TrieNode，所以最后需要将 Terminal Node move 一下，转为  TrieNodeWithValue 类型。然后让 unique_ptr 指针指向 TrieNodeWithValue即可。<br><img   src="/../img/cmu15445-fall2022-p0-figure-8.png"  alt="image.png"></p>
-<h2 id="Remove"><a href="#Remove" class="headerlink" title="Remove"></a>Remove</h2><p>删除要求如果需要中间节点没有 child 节点，这个节点也需要被 remove 掉。这就说明在遍历的时候我们要记录父节点的指针，但是指针一旦调到下一个节点，就回不去了，我们用的也不是双向版本的指针。所有，我们要记录我们的遍历的路径，我们用 vector 存，其实用 stack 也没问题。<br>最终，我们先遍历一遍 string，走到底部。然后开始反向遍历，检查节点有没有子节点，没有就将节点删除。<br><img   src="/../img/cmu15445-fall2022-p0-figure-9.png"  alt="image.png"></p>
-<h2 id="GetValue"><a href="#GetValue" class="headerlink" title="GetValue"></a>GetValue</h2><p>从 <code>root_</code> 开始遍历,项目要求检查存储在 Terminal Node 的 value 类型。这里借助 <code>dynamic_cast</code>  来判断。<br><img   src="/../img/cmu15445-fall2022-p0-figure-10.png"  alt="image.png"></p>
-<h1 id="Gradescope"><a href="#Gradescope" class="headerlink" title="Gradescope"></a>Gradescope</h1><p><img   src="/../img/cmu15445-fall2022-p0-figure-11.png"  alt="image.png"></p>
+                         <blockquote>
+<p>请注意：本文档旨在帮助您根据现有的 ISO 来创建一个 自定义的ISO文件。如果您希望从零开始，可以参考OpenCloudOS ISO镜像构建项目，</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://gitee.com/OpenCloudOS/ocs_lorax_build_image" >https://gitee.com/OpenCloudOS/ocs_lorax_build_image<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<p>以 Rocky-9.4-x86_64-dvd.iso 为例，</p>
+<h2 id="挂载-ISO"><a href="#挂载-ISO" class="headerlink" title="挂载 ISO"></a>挂载 ISO</h2><p>挂载 ISO 到 &#x2F;mnt 目录, 因为 ISO 镜像挂载后是只读的，因为我们需要先将 ISO 里的文件复制到新的目录，后续对 ISO 的修改在这个新的目录中进行。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 挂载 iso</span></span><br><span class="line">mount -o loop Rocky-9.4-x86_64-dvd.iso /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将 ISO 文件拷贝到工作目录，本示例使用的工作目录为 /opt/iso</span></span><br><span class="line"><span class="built_in">cp</span> -a /mnt /opt/iso</span><br><span class="line"></span><br><span class="line"><span class="comment"># umount iso</span></span><br><span class="line">umount /mnt</span><br></pre></td></tr></table></figure>
+
+<h2 id="新增-删除-RPM-包"><a href="#新增-删除-RPM-包" class="headerlink" title="新增&#x2F;删除 RPM 包"></a>新增&#x2F;删除 RPM 包</h2><p>大多是时候，修改 ISO 是新增&#x2F;删除 RPM 包，比如更换内核包，添加自定义包等等。</p>
+<p>Rocky 9.4 ISO RPM 存放目录在 AppStream 和 BaseOS 两个目录下, 与其 yum 源的目录结构相同。</p>
+<p>RPM 以及 repodata, 目录结构如下：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tree -d 1 AppStream/</span></span><br><span class="line">AppStream/</span><br><span class="line">├── Packages</span><br><span class="line">└── repodata</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tree -d 1 BaseOS/</span></span><br><span class="line">BaseOS/</span><br><span class="line">├── Packages</span><br><span class="line">└── repodata</span><br></pre></td></tr></table></figure>
+
+<p>子目录 Packages 存放 RPM 包文件，repodata 存放 RPM 包的元数据。在 Packages 目录下放入新的包或者删除不需要的包后，需要重新生成 repodata。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">createrepo --update AppStream/</span><br><span class="line">createrepo --update BaseOS/</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="ISO-换标"><a href="#ISO-换标" class="headerlink" title="ISO 换标"></a>ISO 换标</h2><p>修改 Rocky 为 CustomizedRocky，</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sed -i &#x27;s/Rocky/CustomizedRocky/g&#x27; EFI/BOOT/grub.cfg</span><br><span class="line">sed -i &#x27;s/Rocky/CustomizedRocky/g&#x27; isolinux/grub.conf</span><br><span class="line">sed -i &#x27;s/Rocky/CustomizedRocky/g&#x27; isolinux/isolinux.cfg</span><br></pre></td></tr></table></figure>
+
+<h2 id="封装-ISO"><a href="#封装-ISO" class="headerlink" title="封装 ISO"></a>封装 ISO</h2><p>完成修改后，重新封装 ISO, 命令如下，</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">genisoimage -U -r -v -J -joliet-long -V &quot;CustomizedRocky-9-4-x86_64-dvd&quot; -volset &quot;CustomizedRocky-9-4-x86_64-dvd&quot; \</span><br><span class="line">	-A &quot;CustomizedRocky-9-4-x86_64-dvd&quot; -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 \</span><br><span class="line">	-boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot \</span><br><span class="line">	-o /Rocky-9.4-x86_64-customized.iso .</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，确保命令中 -V, -volset 和 -A 选项的值与 ISO 里的引导加载程序配置匹配。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>1、<a class="link"   target="_blank" rel="noopener" href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/anaconda_customization_guide/sect-iso-images#sect-iso-images" >Working with ISO Images<i class="fas fa-external-link-alt"></i></a></p>
+<p>2、<a class="link"   target="_blank" rel="noopener" href="https://blog.k8s.li/rebuild-iso-image.html" >使用 overlay2 或 bind 重新构建 ISO 镜像<i class="fas fa-external-link-alt"></i></a> <strong>适用于 ISO CICD 方案的一种加速方案</strong></p>
 
                     
                 </div>
@@ -335,11 +335,7 @@
                             <ul class="post-tags-box border-box">
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/cmu15445/">cmu15445</a>
-                                    </li>
-                                
-                                    <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/Trie/">Trie</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/ISO/">ISO</a>
                                     </li>
                                 
                             </ul>
@@ -358,14 +354,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/cmu-15-445-fall-2022-project1-buffer-pool"
-                                   title="CMU 15-445 Fall 2022 Project1: Buffer Pool"
+                                   href="/debug-the-linux-kernel-libvirt/"
+                                   title="调试 libvirt 启动的 VM"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">CMU 15-445 Fall 2022 Project1: Buffer Pool</span>
+                                        <span class="post-nav-title-item text-ellipsis">调试 libvirt 启动的 VM</span>
                                         <span class="post-nav-item">Prev posts</span>
                                     </span>
                                 </a>
@@ -375,11 +371,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/parsec3.0-compile-error"
-                                   title="PARSEC 3.0 编译报错"
+                                   href="/xv6-lab6-multithreading/"
+                                   title="xv6 Lab6: Multithreading"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">PARSEC 3.0 编译报错</span>
+                                        <span class="post-nav-title-item text-ellipsis">xv6 Lab6: Multithreading</span>
                                         <span class="post-nav-item">Next posts</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">
@@ -407,7 +403,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-TrieNode"><span class="nav-text">实现 TrieNode</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InsertChildNode-GetChildNode-RemoveChildNode"><span class="nav-text">InsertChildNode &amp; GetChildNode &amp; RemoveChildNode</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-TrieNodeWithValue"><span class="nav-text">实现 TrieNodeWithValue</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">构造函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-Trie"><span class="nav-text">实现 Trie</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0-1"><span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Insert"><span class="nav-text">Insert</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Remove"><span class="nav-text">Remove</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GetValue"><span class="nav-text">GetValue</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradescope"><span class="nav-text">Gradescope</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD-ISO"><span class="nav-text">挂载 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E-%E5%88%A0%E9%99%A4-RPM-%E5%8C%85"><span class="nav-text">新增&#x2F;删除 RPM 包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ISO-%E6%8D%A2%E6%A0%87"><span class="nav-text">ISO 换标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%81%E8%A3%85-ISO"><span class="nav-text">封装 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-text">参考链接</span></a></li></ol>
     </div>
 </div>
 
@@ -567,7 +563,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-TrieNode"><span class="nav-text">实现 TrieNode</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InsertChildNode-GetChildNode-RemoveChildNode"><span class="nav-text">InsertChildNode &amp; GetChildNode &amp; RemoveChildNode</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-TrieNodeWithValue"><span class="nav-text">实现 TrieNodeWithValue</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">构造函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-Trie"><span class="nav-text">实现 Trie</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0-1"><span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Insert"><span class="nav-text">Insert</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Remove"><span class="nav-text">Remove</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GetValue"><span class="nav-text">GetValue</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradescope"><span class="nav-text">Gradescope</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD-ISO"><span class="nav-text">挂载 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E-%E5%88%A0%E9%99%A4-RPM-%E5%8C%85"><span class="nav-text">新增&#x2F;删除 RPM 包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ISO-%E6%8D%A2%E6%A0%87"><span class="nav-text">ISO 换标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%81%E8%A3%85-ISO"><span class="nav-text">封装 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-text">参考链接</span></a></li></ol>
     </div>
 </div>
 

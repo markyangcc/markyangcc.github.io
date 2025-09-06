@@ -9,7 +9,7 @@
     
     <title>
         
-            修改重新封装 Linux ISO |
+            Hexo-Next主题配置 |
         
         Lapin Gris
     </title>
@@ -227,7 +227,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        修改重新封装 Linux ISO
+                        Hexo-Next主题配置
                     </div>
                 
 
@@ -255,24 +255,33 @@
         
             <span class="meta-info-item post-create-date">
                 <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2024-06-24 11:31:44</span>
+                <span class="datetime">2022-01-02 04:40:37</span>
             </span>
 
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Feb 06 2025 19:55:44 GMT+0800">2025-02-06 19:55:44</span>
+                    <span class="datetime" data-updated="Thu Feb 06 2025 19:51:06 GMT+0800">2025-02-06 19:51:06</span>
                 </span>
             
         
 
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/hexo/">hexo</a></li>
+                        
+                    
+                </ul>
+            </span>
         
 
         
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/ISO/">ISO</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/hexo/">hexo</a></li>
                         
                     
                 </ul>
@@ -297,32 +306,28 @@
                     
 
                     
-                         <blockquote>
-<p>请注意：本文档旨在帮助您根据现有的 ISO 来创建一个 自定义的ISO文件。如果您希望从零开始，可以参考OpenCloudOS ISO镜像构建项目，</p>
-<p><a class="link"   target="_blank" rel="noopener" href="https://gitee.com/OpenCloudOS/ocs_lorax_build_image" >https://gitee.com/OpenCloudOS/ocs_lorax_build_image<i class="fas fa-external-link-alt"></i></a></p>
+                         <h1 id="一、图片配置"><a href="#一、图片配置" class="headerlink" title="一、图片配置"></a>一、图片配置</h1><p>hexo 本地引入图片无法被markdown渲染，导致本地看不见，云端经过hexo 渲染后看得见。其实就是个路径问题。</p>
+<p><strong>修改引入图片路径即可解决，</strong></p>
+<p>我们只需要在 <code>_posts</code> 的同级目录下新建一个 <code>img</code> 文件夹专门用来存放所有的图片，markdown里面引用使用相对格式</p>
+<p><code>../img/gris.png</code> (后面有效果展示)。其实非常简单，引用的时候加两个点即可，这样本地和云端都可以正常预览&#x2F;显示图片，<strong>但是文件名不要有空格</strong>，有空格云端显示不出来。</p>
+<p><img   src="/../img/gris.png"  alt="Gris"></p>
+<p><strong>结构展示</strong></p>
+<p>如果没有理解的话，看看这张结构图</p>
+<p><img   src="/../img/dict_tree.png" ></p>
+<h1 id="二、插件"><a href="#二、插件" class="headerlink" title="二、插件"></a>二、插件</h1><p>安装插件的时候要多搜索，寻找最近的文章看，如果你也是使用Next 主题，尽量找Hexo Next 官方最近更新的文档看，因为随着<code>Hexo/Next</code>的版本更新，很多功能都被开发者集成进去了，只需要修改一下主题配置文件即可，<strong>简而言之，找最新的文章&#x2F;文档参考。</strong></p>
+<blockquote>
+<p>Hexo-Next 文档地址</p>
+<p>Hexo-Next: <a class="link"   target="_blank" rel="noopener" href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
 </blockquote>
-<p>以 Rocky-9.4-x86_64-dvd.iso 为例，</p>
-<h2 id="挂载-ISO"><a href="#挂载-ISO" class="headerlink" title="挂载 ISO"></a>挂载 ISO</h2><p>挂载 ISO 到 &#x2F;mnt 目录, 因为 ISO 镜像挂载后是只读的，因为我们需要先将 ISO 里的文件复制到新的目录，后续对 ISO 的修改在这个新的目录中进行。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 挂载 iso</span></span><br><span class="line">mount -o loop Rocky-9.4-x86_64-dvd.iso /mnt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将 ISO 文件拷贝到工作目录，本示例使用的工作目录为 /opt/iso</span></span><br><span class="line"><span class="built_in">cp</span> -a /mnt /opt/iso</span><br><span class="line"></span><br><span class="line"><span class="comment"># umount iso</span></span><br><span class="line">umount /mnt</span><br></pre></td></tr></table></figure>
-
-<h2 id="新增-删除-RPM-包"><a href="#新增-删除-RPM-包" class="headerlink" title="新增&#x2F;删除 RPM 包"></a>新增&#x2F;删除 RPM 包</h2><p>大多是时候，修改 ISO 是新增&#x2F;删除 RPM 包，比如更换内核包，添加自定义包等等。</p>
-<p>Rocky 9.4 ISO RPM 存放目录在 AppStream 和 BaseOS 两个目录下, 与其 yum 源的目录结构相同。</p>
-<p>RPM 以及 repodata, 目录结构如下：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tree -d 1 AppStream/</span></span><br><span class="line">AppStream/</span><br><span class="line">├── Packages</span><br><span class="line">└── repodata</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tree -d 1 BaseOS/</span></span><br><span class="line">BaseOS/</span><br><span class="line">├── Packages</span><br><span class="line">└── repodata</span><br></pre></td></tr></table></figure>
-
-<p>子目录 Packages 存放 RPM 包文件，repodata 存放 RPM 包的元数据。在 Packages 目录下放入新的包或者删除不需要的包后，需要重新生成 repodata。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">createrepo --update AppStream/</span><br><span class="line">createrepo --update BaseOS/</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="ISO-换标"><a href="#ISO-换标" class="headerlink" title="ISO 换标"></a>ISO 换标</h2><p>修改 Rocky 为 CustomizedRocky，</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sed -i &#x27;s/Rocky/CustomizedRocky/g&#x27; EFI/BOOT/grub.cfg</span><br><span class="line">sed -i &#x27;s/Rocky/CustomizedRocky/g&#x27; isolinux/grub.conf</span><br><span class="line">sed -i &#x27;s/Rocky/CustomizedRocky/g&#x27; isolinux/isolinux.cfg</span><br></pre></td></tr></table></figure>
-
-<h2 id="封装-ISO"><a href="#封装-ISO" class="headerlink" title="封装 ISO"></a>封装 ISO</h2><p>完成修改后，重新封装 ISO, 命令如下，</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">genisoimage -U -r -v -J -joliet-long -V &quot;CustomizedRocky-9-4-x86_64-dvd&quot; -volset &quot;CustomizedRocky-9-4-x86_64-dvd&quot; \</span><br><span class="line">	-A &quot;CustomizedRocky-9-4-x86_64-dvd&quot; -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 \</span><br><span class="line">	-boot-info-table -eltorito-alt-boot -e images/efiboot.img -no-emul-boot \</span><br><span class="line">	-o /Rocky-9.4-x86_64-customized.iso .</span><br></pre></td></tr></table></figure>
-
-<p>需要注意的是，确保命令中 -V, -volset 和 -A 选项的值与 ISO 里的引导加载程序配置匹配。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>1、<a class="link"   target="_blank" rel="noopener" href="https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/anaconda_customization_guide/sect-iso-images#sect-iso-images" >Working with ISO Images<i class="fas fa-external-link-alt"></i></a></p>
-<p>2、<a class="link"   target="_blank" rel="noopener" href="https://blog.k8s.li/rebuild-iso-image.html" >使用 overlay2 或 bind 重新构建 ISO 镜像<i class="fas fa-external-link-alt"></i></a> <strong>适用于 ISO CICD 方案的一种加速方案</strong></p>
+<h2 id="安装的插件"><a href="#安装的插件" class="headerlink" title="安装的插件"></a>安装的插件</h2><p>安装的插件并不多，主要是够用即可</p>
+<p>hexo-symbols-count-time</p>
+<p>hexo-excerpt —— Because, auto_excerpt not working</p>
+<p>hexo-generator-searchdb——站内搜索</p>
+<p>大家都喜欢的插件，Next 文档都已经列出来了，去找就行了🤣</p>
+<blockquote>
+<p>Hexo-Next: <a class="link"   target="_blank" rel="noopener" href="https://hexo-next.readthedocs.io/zh_CN/latest" >https://hexo-next.readthedocs.io/zh_CN/latest<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<p><img   src="/../img/Next_dos_advanced.png" ></p>
 
                     
                 </div>
@@ -335,7 +340,7 @@
                             <ul class="post-tags-box border-box">
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/ISO/">ISO</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/hexo/">hexo</a>
                                     </li>
                                 
                             </ul>
@@ -354,35 +359,19 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/debug-the-linux-kernel-libvirt"
-                                   title="调试 libvirt 启动的 VM"
+                                   href="/how-to-sign-rpm-package/"
+                                   title="如何为 RPM 包签名"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">调试 libvirt 启动的 VM</span>
+                                        <span class="post-nav-title-item text-ellipsis">如何为 RPM 包签名</span>
                                         <span class="post-nav-item">Prev posts</span>
                                     </span>
                                 </a>
                             </div>
                         
-                        
-                            <div class="next-post">
-                                <a class="next"
-                                   rel="next"
-                                   href="/xv6-lab6-multithreading"
-                                   title="xv6 Lab6: Multithreading"
-                                >
-                                    <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">xv6 Lab6: Multithreading</span>
-                                        <span class="post-nav-item">Next posts</span>
-                                    </span>
-                                    <span class="right arrow-icon flex-center">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </span>
-                                </a>
-                            </div>
                         
                     </div>
                 
@@ -403,7 +392,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD-ISO"><span class="nav-text">挂载 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E-%E5%88%A0%E9%99%A4-RPM-%E5%8C%85"><span class="nav-text">新增&#x2F;删除 RPM 包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ISO-%E6%8D%A2%E6%A0%87"><span class="nav-text">ISO 换标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%81%E8%A3%85-ISO"><span class="nav-text">封装 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-text">参考链接</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9B%BE%E7%89%87%E9%85%8D%E7%BD%AE"><span class="nav-text">一、图片配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8F%92%E4%BB%B6"><span class="nav-text">二、插件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%9A%84%E6%8F%92%E4%BB%B6"><span class="nav-text">安装的插件</span></a></li></ol></li></ol>
     </div>
 </div>
 
@@ -563,7 +552,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD-ISO"><span class="nav-text">挂载 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E-%E5%88%A0%E9%99%A4-RPM-%E5%8C%85"><span class="nav-text">新增&#x2F;删除 RPM 包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ISO-%E6%8D%A2%E6%A0%87"><span class="nav-text">ISO 换标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%81%E8%A3%85-ISO"><span class="nav-text">封装 ISO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-text">参考链接</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9B%BE%E7%89%87%E9%85%8D%E7%BD%AE"><span class="nav-text">一、图片配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8F%92%E4%BB%B6"><span class="nav-text">二、插件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%9A%84%E6%8F%92%E4%BB%B6"><span class="nav-text">安装的插件</span></a></li></ol></li></ol>
     </div>
 </div>
 

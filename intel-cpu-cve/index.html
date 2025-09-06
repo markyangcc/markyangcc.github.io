@@ -9,7 +9,7 @@
     
     <title>
         
-            PARSEC 3.0 编译报错 |
+            查询 Intel 处理器安全漏洞 |
         
         Lapin Gris
     </title>
@@ -227,7 +227,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        PARSEC 3.0 编译报错
+                        查询 Intel 处理器安全漏洞
                     </div>
                 
 
@@ -255,13 +255,13 @@
         
             <span class="meta-info-item post-create-date">
                 <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2023-05-05 01:52:23</span>
+                <span class="datetime">2023-11-27 19:24:00</span>
             </span>
 
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Feb 06 2025 19:55:10 GMT+0800">2025-02-06 19:55:10</span>
+                    <span class="datetime" data-updated="Fri Sep 05 2025 14:41:49 GMT+0800">2025-09-05 14:41:49</span>
                 </span>
             
         
@@ -272,13 +272,7 @@
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/parsec/">parsec</a></li>
-                        
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/RHEL-9/">RHEL 9</a></li>
-                        
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/benchmark/">benchmark</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/CVE/">CVE</a></li>
                         
                     
                 </ul>
@@ -303,37 +297,17 @@
                     
 
                     
-                         <p>PARSEC 3.0(Parallel Applications Research for System Efficiency Collectio)是一个基准测试套件，用于评估多核处理器和系统的性能，也就是跑分软件。</p>
-<p>工作中需要使用到这个软件作为基准测试软件，因为 PARSEC 从官网下载下来是不能直接运行的，所以有了下面适配 RHEL 9 操作系统的内容。<br>文章末尾有所有修改的 patches 文件，里面记录详细的修改地方。</p>
-<h1 id="安装-PARSEC-3-0"><a href="#安装-PARSEC-3-0" class="headerlink" title="安装 PARSEC 3.0"></a>安装 PARSEC 3.0</h1><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Full PARSEC 3.0 tarball</span></span><br><span class="line">wget http://parsec.cs.princeton.edu/download/3.0/parsec-3.0.tar.gz</span><br><span class="line"></span><br><span class="line">tar xvf parsec-3.0.tar.gz</span><br><span class="line">cd parsec-3.0</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">编译</span></span><br><span class="line">source env.sh</span><br><span class="line">parsecmgmt -a build</span><br></pre></td></tr></table></figure>
-
-<h1 id="编译错误合集"><a href="#编译错误合集" class="headerlink" title="编译错误合集"></a>编译错误合集</h1><h2 id="error-ISO-C-17-does-not-allow-dynamic-exception-specifications"><a href="#error-ISO-C-17-does-not-allow-dynamic-exception-specifications" class="headerlink" title="error: ISO C++17 does not allow dynamic exception specifications"></a>error: ISO C++17 does not allow dynamic exception specifications</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Thread.h:62:24: error: ISO C++17 does not allow dynamic exception specifications</span><br><span class="line">   62 |     Thread(Runnable &amp;) throw(ThreadCreationException);</span><br></pre></td></tr></table></figure>
-<p>在 C++17 标准中，将动态异常规范（Dynamic Exception Specification）声明为废弃（deprecated），也就是不推荐使用。在 RHEL 9 操作系统上默认的 C++ 标准是 17。所以会遇到这个编译报错，我们只需要使用老版本的 C++ 标准来编译代码可以规避这个问题。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">config/gcc.bldconf</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Arguments to use</span></span><br><span class="line">export CFLAGS=&quot; -O3 -g -funroll-loops -fprefetch-loop-arrays -std=gnu11 $&#123;PORTABILITY_FLAGS&#125;&quot;</span><br><span class="line">export CXXFLAGS=&quot;-O3 -g -funroll-loops -fprefetch-loop-arrays -fpermissive -fno-exceptions -std=gnu++11 $&#123;PORTABILITY_FLAGS&#125;&quot;</span><br></pre></td></tr></table></figure>
-<p>在 gcc.bldconf 里指明让 gcc 使用 gnu11&#x2F;gnu++11 标准编译代码。</p>
-<p>这里没有使用 c11、c++11 标准而是使用 gnu 版本实现的 C、C++  标准。<br>如果使用 c11&#x2F;c++11 标准，会遇到这个报错 <code>warning: implicit declaration of function &#39;strdup&#39;</code> gcc 编译器会申明 这个宏—— “<strong>STRICT_ANSI</strong>“，代表只使用 c11、 spec 里的标准 C 库。这会导致我们经常使用的一些像 strdup 这些库函数不能使用（parsec3 用到了这些库函数）</p>
-<h2 id="error-looser-exception-specification-on-overriding-virtual-function"><a href="#error-looser-exception-specification-on-overriding-virtual-function" class="headerlink" title="error: looser exception specification on overriding virtual function"></a>error: looser exception specification on overriding virtual function</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">WorkerGroup.h:88:5: error: looser exception specification on overriding virtual function &#x27;virtual threads::WorkerGroup::~WorkerGroup() throw (threads::CondException, threads::MutexException)&#x27;</span><br><span class="line">   88 |     ~WorkerGroup();</span><br></pre></td></tr></table></figure>
-<p>这个错误意思是子类 override 父类的虚函数时候，子类的异常规范比父类更宽松（looser），也就是说子类的异常规范允许抛出更多类型的异常，这与 C++ 的异常规范要求相违背。所以，我们要让子类的异常更严格，而不是更宽容。</p>
-<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">// WorkerGroup.h</span><br><span class="line"><span class="deletion">-    ~WorkerGroup();</span></span><br><span class="line"><span class="addition">+    ~WorkerGroup() throw();</span></span><br></pre></td></tr></table></figure>
-<p>显式指示不抛出异常即可。或者用 noexcept 也行。</p>
-<h2 id="multiple-definition"><a href="#multiple-definition" class="headerlink" title="multiple definition"></a>multiple definition</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/usr/bin/ld: encoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/encoder.c:65: multiple definition of `conf&#x27;; dedup.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/dedup.c:25: first defined here</span><br><span class="line">/usr/bin/ld: decoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/decoder.c:39: multiple definition of `conf&#x27;; dedup.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/dedup.c:25: first defined here</span><br><span class="line">/usr/bin/ld: decoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/decoder.c:42: multiple definition of `cache&#x27;; encoder.o:/root/parsec-3.0/pkgs/kernels/dedup/obj/amd64-linux.gcc/encoder.c:68: first defined here</span><br></pre></td></tr></table></figure>
-<p>gcc 10 后，默认使能了  -fno-common  选项，编译器检查更加严格了 <a class="link"   target="_blank" rel="noopener" href="https://gcc.gnu.org/gcc-10/porting_to.html" >https://gcc.gnu.org/gcc-10/porting_to.html<i class="fas fa-external-link-alt"></i></a>。最简单的办法是，rollback(指定使用 -fcommon 编译代码即可)</p>
-<h2 id="mismatched-comparison-between-std-ifstream-and-int"><a href="#mismatched-comparison-between-std-ifstream-and-int" class="headerlink" title="mismatched comparison between std::ifstream and int"></a>mismatched comparison between std::ifstream and int</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FILE_UTILITIES.h:83:49: error: no match for ‘operator!=’ (operand types are ‘std::ofstream’ &#123;aka ‘std::basic_ofstream&lt;char&gt;’&#125; and ‘int’)</span><br><span class="line">   83 |         return std::ofstream (filename.c_str()) != 0;</span><br><span class="line">      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~ ~</span><br><span class="line">      |                     |                              |</span><br><span class="line">      |                     |                              int</span><br><span class="line">      |                     std::ofstream &#123;aka std::basic_ofstream&lt;char&gt;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>std::ofstream 和 int 之间无法直接比较，需要强转，举个栗子，</p>
-<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">// FILE_UTILITIES.h</span><br><span class="line"></span><br><span class="line"><span class="deletion">-	return std::ifstream (filename.c_str()) != 0;</span></span><br><span class="line"><span class="addition">+	return (bool)std::ifstream (filename.c_str()) != 0;</span></span><br></pre></td></tr></table></figure>
-
-
-<h2 id="error-‘HUGE’-undeclared"><a href="#error-‘HUGE’-undeclared" class="headerlink" title="error: ‘HUGE’ undeclared"></a>error: ‘HUGE’ undeclared</h2><figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">LSH_query.c:361:34: error: ‘HUGE’ undeclared (first use in this function)</span><br><span class="line">  361 |         TOPK_INIT(topk, dist, K, HUGE);</span><br></pre></td></tr></table></figure>
-<p>没有定义 <code>HUGE</code> 宏。我们将 C 数学库里的 HUGE_VAL 定义为 HUGE即可，<code>#define HUGE HUGE_VAL</code></p>
-<h2 id="conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib"><a href="#conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib" class="headerlink" title="conflicting type __mbstate_t, both provided by glibc and parsec lib"></a>conflicting type __mbstate_t, both provided by glibc and parsec lib</h2><figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">/usr/include/bits/types/__mbstate_t.h:21:3: error: conflicting types for ‘__mbstate_t’; have ‘struct &lt;anonymous&gt;’</span><br><span class="line">   21 | &#125; __mbstate_t;</span><br></pre></td></tr></table></figure>
-<p>C 库和 parsec 库同时提供了 __mbstate_t 的定义，二者冲突了，将 parsec 库提供的定义重命名。</p>
-<h2 id="POD-document-had-syntax-errors"><a href="#POD-document-had-syntax-errors" class="headerlink" title="POD document had syntax errors"></a>POD document had syntax errors</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">smime.pod around line 272: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 276: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 280: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 285: Expected text after =item, not a number</span><br><span class="line">smime.pod around line 289: Expected text after =item, not a number</span><br><span class="line">POD document had syntax errors at /usr/bin/pod2man line 69.</span><br><span class="line">make: *** [Makefile:681: install_docs] Error 255</span><br></pre></td></tr></table></figure>
-<p>提示POD doc 有语法错误，应该是软件升级，语法变了导致的。使用下面的脚本一键修正过来就好了，</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#! /bin/bash</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> 0 1 2 3 4 5 6 7 8 9</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">&quot;Replacing &#x27;=item <span class="variable">$i</span>&#x27; to &#x27;=item C&lt;<span class="variable">$i</span>&gt;&#x27;&quot;</span></span><br><span class="line">	grep -rl <span class="string">&quot;=item <span class="variable">$i</span>&quot;</span> * | xargs sed -i <span class="string">&quot;s/=item <span class="variable">$i</span>/=item C&lt;<span class="variable">$i</span>&gt;/g&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
-
-
-<h1 id="PATCHES"><a href="#PATCHES" class="headerlink" title="PATCHES"></a>PATCHES</h1><p>1、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0002-fix-error-looser-exception-specification-on-overridi.patch" >fix-error-looser-exception-specification-on-overridi.patch<i class="fas fa-external-link-alt"></i></a><br>2、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0001-use-gnu11-gnu-11-std-to-build-parsec.patch" >use-gnu11-gnu-11-std-to-build-parsec.patch<i class="fas fa-external-link-alt"></i></a><br>3、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0007-fix-multiple-definition-when-build-with-gcc-10-or-ab.patch" >fix-multiple-definition-when-build-with-gcc-10-or-ab.patch<i class="fas fa-external-link-alt"></i></a><br>4、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0004-fix-A-mismatched-comparison-between-std-ifstream-and.patch" >fix-A-mismatched-comparison-between-std-ifstream-and.patch<i class="fas fa-external-link-alt"></i></a><br>5、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0005-fix-HUGE-macro-undeclared-error.patch" >fix-HUGE-macro-undeclared-error.patch<i class="fas fa-external-link-alt"></i></a><br>6、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0006-fix-conflicting-type-__mbstate_t-both-provided-by-gl.patch" >fix-conflicting-type-__mbstate_t-both-provided-by-gl.patch<i class="fas fa-external-link-alt"></i></a><br>7、<a class="link"   target="_blank" rel="noopener" href="https://github.com/markyangcc/parsec3-patch/blob/main/0003-fix-POD-document-had-syntax-errors.patch" >fix-POD-document-had-syntax-errors.patch<i class="fas fa-external-link-alt"></i></a></p>
+                         <h2 id="Intel-处理器安全漏洞表"><a href="#Intel-处理器安全漏洞表" class="headerlink" title="Intel 处理器安全漏洞表"></a>Intel 处理器安全漏洞表</h2><p><a class="link"   target="_blank" rel="noopener" href="https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html" >https://www.intel.com/content/www/us/en/developer/topic-technology/software-security-guidance/processors-affected-consolidated-product-cpu-model.html<i class="fas fa-external-link-alt"></i></a></p>
+<p><img   src="/../img/intel-cpu-cve-figure-1.png"  alt="image.png"></p>
+<h2 id="处理器安全漏洞只需要关注这两个方面"><a href="#处理器安全漏洞只需要关注这两个方面" class="headerlink" title="处理器安全漏洞只需要关注这两个方面"></a>处理器安全漏洞只需要关注这两个方面</h2><p>Intel 处理器的漏洞表，包含了所有漏洞，每个漏洞一列（图中右上角），漏洞描述包含 CVE 名称，编号以及 Intel 的编号。新披露的漏洞靠左，老披露的靠右。</p>
+<p>1、我用的是哪一款 CPU？<br>通过 <code>Family</code>、<code>Model</code> 、<code>Stepping</code> 三项就可以定位到列表中的特定型号所在行（<strong>图中左上角</strong>），查看 CPU 型号通过 lscpu 命令。<br>2、我是否受到此次 CVE 的影响？<br>观察<strong>图中右下角</strong>的字段，</p>
+<ul>
+<li>Not Affected: 代表不受影响</li>
+<li>MCU：代表需要更新微码</li>
+<li>Software：代表需要升级软件</li>
+</ul>
+<h2 id="如何查看我的-CPU-的型号？"><a href="#如何查看我的-CPU-的型号？" class="headerlink" title="如何查看我的 CPU 的型号？"></a>如何查看我的 CPU 的型号？</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">lscpu | grep -E <span class="string">&quot;CPU family:|Model:|Stepping:&quot;</span></span></span><br><span class="line">CPU family:          6</span><br><span class="line">Model:               85</span><br><span class="line">Stepping:            4</span><br></pre></td></tr></table></figure>
+<p>其中 Model 输出结果都是 10 进制，Intel 处理器漏洞表面里使用的是 16 进制（后缀是 H，代表是 16 进制），85 的 16 进制表示 55H，所以这款 CPU 的 Family_Model 是 06_55H, Steeping 是 4。</p>
 
                     
                 </div>
@@ -346,15 +320,7 @@
                             <ul class="post-tags-box border-box">
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/parsec/">parsec</a>
-                                    </li>
-                                
-                                    <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/RHEL-9/">RHEL 9</a>
-                                    </li>
-                                
-                                    <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/benchmark/">benchmark</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/CVE/">CVE</a>
                                     </li>
                                 
                             </ul>
@@ -373,14 +339,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/cmu-15-445-fall-2022-project0-cpp-primer"
-                                   title="CMU 15-445 Fall 2022 Project0: C++ Primer"
+                                   href="/tracing-userspace-process-ebpf-usdt/"
+                                   title="使用 ebpf USDT 追踪用户态程序"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">CMU 15-445 Fall 2022 Project0: C++ Primer</span>
+                                        <span class="post-nav-title-item text-ellipsis">使用 ebpf USDT 追踪用户态程序</span>
                                         <span class="post-nav-item">Prev posts</span>
                                     </span>
                                 </a>
@@ -390,11 +356,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/extend-system-ram-using-pmem"
-                                   title="PMEM 扩展系统内存用法介绍"
+                                   href="/reboot_is_link_to_systemctl/"
+                                   title="Reboot 命令实际是 systemctl？"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">PMEM 扩展系统内存用法介绍</span>
+                                        <span class="post-nav-title-item text-ellipsis">Reboot 命令实际是 systemctl？</span>
                                         <span class="post-nav-item">Next posts</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">
@@ -422,7 +388,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-PARSEC-3-0"><span class="nav-text">安装 PARSEC 3.0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AF%E5%90%88%E9%9B%86"><span class="nav-text">编译错误合集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#error-ISO-C-17-does-not-allow-dynamic-exception-specifications"><span class="nav-text">error: ISO C++17 does not allow dynamic exception specifications</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-looser-exception-specification-on-overriding-virtual-function"><span class="nav-text">error: looser exception specification on overriding virtual function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#multiple-definition"><span class="nav-text">multiple definition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mismatched-comparison-between-std-ifstream-and-int"><span class="nav-text">mismatched comparison between std::ifstream and int</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-%E2%80%98HUGE%E2%80%99-undeclared"><span class="nav-text">error: ‘HUGE’ undeclared</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib"><span class="nav-text">conflicting type __mbstate_t, both provided by glibc and parsec lib</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#POD-document-had-syntax-errors"><span class="nav-text">POD document had syntax errors</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PATCHES"><span class="nav-text">PATCHES</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Intel-%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E8%A1%A8"><span class="nav-text">Intel 处理器安全漏洞表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E5%8F%AA%E9%9C%80%E8%A6%81%E5%85%B3%E6%B3%A8%E8%BF%99%E4%B8%A4%E4%B8%AA%E6%96%B9%E9%9D%A2"><span class="nav-text">处理器安全漏洞只需要关注这两个方面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%9F%A5%E7%9C%8B%E6%88%91%E7%9A%84-CPU-%E7%9A%84%E5%9E%8B%E5%8F%B7%EF%BC%9F"><span class="nav-text">如何查看我的 CPU 的型号？</span></a></li></ol>
     </div>
 </div>
 
@@ -582,7 +548,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-PARSEC-3-0"><span class="nav-text">安装 PARSEC 3.0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E9%94%99%E8%AF%AF%E5%90%88%E9%9B%86"><span class="nav-text">编译错误合集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#error-ISO-C-17-does-not-allow-dynamic-exception-specifications"><span class="nav-text">error: ISO C++17 does not allow dynamic exception specifications</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-looser-exception-specification-on-overriding-virtual-function"><span class="nav-text">error: looser exception specification on overriding virtual function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#multiple-definition"><span class="nav-text">multiple definition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mismatched-comparison-between-std-ifstream-and-int"><span class="nav-text">mismatched comparison between std::ifstream and int</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#error-%E2%80%98HUGE%E2%80%99-undeclared"><span class="nav-text">error: ‘HUGE’ undeclared</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conflicting-type-mbstate-t-both-provided-by-glibc-and-parsec-lib"><span class="nav-text">conflicting type __mbstate_t, both provided by glibc and parsec lib</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#POD-document-had-syntax-errors"><span class="nav-text">POD document had syntax errors</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PATCHES"><span class="nav-text">PATCHES</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Intel-%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E8%A1%A8"><span class="nav-text">Intel 处理器安全漏洞表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E5%99%A8%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E5%8F%AA%E9%9C%80%E8%A6%81%E5%85%B3%E6%B3%A8%E8%BF%99%E4%B8%A4%E4%B8%AA%E6%96%B9%E9%9D%A2"><span class="nav-text">处理器安全漏洞只需要关注这两个方面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E6%9F%A5%E7%9C%8B%E6%88%91%E7%9A%84-CPU-%E7%9A%84%E5%9E%8B%E5%8F%B7%EF%BC%9F"><span class="nav-text">如何查看我的 CPU 的型号？</span></a></li></ol>
     </div>
 </div>
 

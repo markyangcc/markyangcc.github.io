@@ -9,7 +9,7 @@
     
     <title>
         
-            使用 ebpf USDT 追踪用户态程序 |
+            Reboot 命令实际是 systemctl？ |
         
         Lapin Gris
     </title>
@@ -227,7 +227,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        使用 ebpf USDT 追踪用户态程序
+                        Reboot 命令实际是 systemctl？
                     </div>
                 
 
@@ -255,13 +255,13 @@
         
             <span class="meta-info-item post-create-date">
                 <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2024-01-23 05:53:55</span>
+                <span class="datetime">2023-08-24 12:31:00</span>
             </span>
 
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Fri Sep 05 2025 14:42:53 GMT+0800">2025-09-05 14:42:53</span>
+                    <span class="datetime" data-updated="Thu Feb 06 2025 19:53:14 GMT+0800">2025-02-06 19:53:14</span>
                 </span>
             
         
@@ -272,10 +272,10 @@
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/ebpf/">ebpf</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/reboot/">reboot</a></li>
                         
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/usdt/">usdt</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/systemd/">systemd</a></li>
                         
                     
                 </ul>
@@ -300,31 +300,26 @@
                     
 
                     
-                         <p>USDT 是一种探针技术，让用户态程序也支持使用 perf&#x2F;ebpf 性能分析工具进行 tracing&#x2F;profiling。做性能分析通常听过 perf&#x2F;ebpf 这些工具，这些工具通常用在内核上，用于分析内核的一些性能问题，如果是用户态程序也遇到性能问题了，我们希望用户态程序也能使用 perf&#x2F;ebpf 工具进行 tracing&#x2F;profiling。那么就需要 USDT 技术了。</p>
-<p>简单来说，USDT 就是探针技术，我们在源码里插入一个固定的探针。当我们 tracing 这个探针的时候，就获取我们埋点的数据了。</p>
-<h2 id="USDT-如何插入探针？"><a href="#USDT-如何插入探针？" class="headerlink" title="USDT  如何插入探针？"></a>USDT  如何插入探针？</h2><p>插入探针，有时候也叫做埋点。只需要包含 &lt;sys&#x2F;sdt.h&gt; 头文件，然后利用 DTRACE_PROBE 系列函数埋点即可。</p>
-<p>DTRACE_PROBE 系列函数定义在  <code>/usr/include/sys/sdt.h</code></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* DTrace compatible macro names.  */</span></span><br><span class="line">DTRACE_PROBE(provider,probe)</span><br><span class="line">DTRACE_PROBE1(provider,probe,parm1)</span><br><span class="line">DTRACE_PROBE2(provider,probe,parm1,parm2)</span><br><span class="line">DTRACE_PROBE3(provider,probe,parm1,parm2,parm3)</span><br><span class="line">[...]</span><br></pre></td></tr></table></figure>
-<p>第一次看到DTRACE_PROBE1, 2, 3, 4 … 可能会有些懵，这都是啥呀？！</p>
-<p>实际上很简单，而且用法也很简单，我用 DPDK l2fwd 举个例子，<br><a class="link"   target="_blank" rel="noopener" href="https://git.dpdk.org/dpdk/tree/examples/l2fwd" >https://git.dpdk.org/dpdk/tree/examples/l2fwd<i class="fas fa-external-link-alt"></i></a></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line">        </span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line">        </span><br><span class="line">    	<span class="built_in">printf</span>(<span class="string">&quot;portid: %d, queueid: %d, rcvd: %d\n&quot;</span>, portid, <span class="number">0</span>, nb_rx);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>上面的代码是一个利用 DPDK l2 fwd 里的示例代码， rte_eth_rx_burst 函数从网卡收包，我们想知道本次收包收了多少个，于是我们打了一条 log。</p>
-<p>这样实现很不优雅，<strong>首先是在 datapath 打 log 是错误的决定</strong>。其次，我们只希望在 tracing 的时候打印结果，不 tracing 的时候不打印结果。使用 打 log 的方式是无法实现这种效果的，我们需要一个开关，能动态打开和关闭 tracing 的开关，当我们 attach 到这个探针时候，我们可以观测到数据，当我们 detach 的时候，就去掉这个探针，不增加额外的观测消耗。</p>
-<p>USDT 可以实现动态开关的功能。我们只需要添加 &lt;sys&#x2F;sdt.h&gt; 头文件，将 log 语句替换为 DTRACE_PROBE3 语句即可。DTRACE_PROBE5 的数字 3 代表 3 个观测参数，前两个是标识参数，第一个通常用 appname 填充,第二个通常用函数名称填充。当我们使用 perf、ebpf 等观测工具时，通过这两个参数定位我们预先埋下的观测点。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/sdt.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">l2fwd_main_loop</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; qconf-&gt;n_rx_port; i++) &#123;</span><br><span class="line"></span><br><span class="line">		portid = qconf-&gt;rx_port_list[i];</span><br><span class="line">		nb_rx = rte_eth_rx_burst(portid, <span class="number">0</span>, pkts_burst, MAX_PKT_BURST);</span><br><span class="line"></span><br><span class="line">		DTRACE_PROBE3(l2fwd, l2fwd_main_loop, portid, <span class="number">0</span>, rcvd);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="查看可用的探针"><a href="#查看可用的探针" class="headerlink" title="查看可用的探针"></a>查看可用的探针</h2><p>查看可用探针</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -l <span class="string">&quot;usdt:/usr/bin/l2fwd:*&quot;</span></span><br></pre></td></tr></table></figure>
+                         <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在一次查问题的过程中，偶然发现 reboot 命令是<strong>直接链接</strong>到 systemctl 的（划重点：直接链接到），看下面的演示，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># which reboot</span></span><br><span class="line">/sbin/reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># file /sbin/reboot</span></span><br><span class="line">/sbin/reboot: symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
 
-<p>查看正在运行的进程的可用探针，会同时展示其链接的动态库的可用探针</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">bpftrace -lp $(pidof l2fwd) <span class="string">&quot;usdt:*&quot;</span></span><br></pre></td></tr></table></figure>
-<h2 id="USDT-使用"><a href="#USDT-使用" class="headerlink" title="USDT 使用"></a>USDT 使用</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bpftrace -e &#x27;usdt:/usr/bin/l2fwd:l2fwd_main_loop &#123; printf(&quot;%d,%d,%d\n&quot;,arg0,arg1,arg2); &#125;&#x27;</span><br></pre></td></tr></table></figure>
-<p>bpftrace 内置许多参数，比如 comm, pid, cpu, elapsed，利用这些参数可以实现更高级的 tracing。<br>还可以通过 bcc&#x2F;libbpf 将一段时间的数据收集起来，进行统计，得出更宏观的指标，这样有一定的代码量。bpftrace 的优势就是一行，很简单。</p>
-<h2 id="USDT-原理"><a href="#USDT-原理" class="headerlink" title="USDT 原理"></a>USDT 原理</h2><p>包含 USDT 的代码经过编译后生成的二进制文件将有一个名为 .stapsdt.base 的 ELF 段。这个 .stapsdt.base 有助于 tracing 工具在二进制文件加载到内存后计算探针的内存地址。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">readelf -S l2fwd | grep sdt</span></span><br><span class="line">  [17] .stapsdt.base     PROGBITS         00000000004053d0  000053d0</span><br><span class="line">  [28] .note.stapsdt     NOTE             0000000000000000  000061fc</span><br></pre></td></tr></table></figure>
+<p>第一直觉就是这是不是不合理，直接把 reboot 软链到 systemctl ，不就相当于直接执行 systemctl 命令，这怎么会起到 reboot 的作用的呢？</p>
+<p>继续看，</p>
+<p>发现 <code>/sbin</code> 目录下很多命令都是直接软链到 <code>systemctl</code>，没有参数来区分，而且这些命令是 100% 工作的，当数量多起来的时候，事情逐渐合理起来了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># file /sbin/* | grep symbolic | grep systemctl</span></span><br><span class="line">/sbin/halt:                  symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/poweroff:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/reboot:                symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/runlevel:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/shutdown:              symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br><span class="line">/sbin/telinit:               symbolic <span class="built_in">link</span> to ../bin/systemctl</span><br></pre></td></tr></table></figure>
 
-<p>还有一个 ELF note，note 记录了探针的相关信息（名称、地址、信号量、参数）。用户态进程可以读取这个段获得探针的信息。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Displaying notes found in: .note.stapsdt</span><br><span class="line">  Owner                Data size 	Description</span><br><span class="line">  stapsdt              0x00000042	NT_STAPSDT (SystemTap probe descriptors)</span><br><span class="line">    Provider: l2fwd</span><br><span class="line">    Name: l2fwd_main_loop</span><br><span class="line">    Location: 0x0000000000402596, Base: 0x00000000004053d0, Semaphore: 0x0000000000000000</span><br><span class="line">    Arguments: 4@%ebp -4@$0 4@%ecx</span><br></pre></td></tr></table></figure>
-<h2 id="USDT-动态开关"><a href="#USDT-动态开关" class="headerlink" title="USDT 动态开关"></a>USDT 动态开关</h2><p>反汇编二进制，发现 DTRACE_PROBE 被编译为一条 nop 指令，当不进行 probe 时候，就是执行一条 nop 指令，当进行 probe 的时候替换为 int3 进行跳转到 hook 函数。<br><img   src="/../img/tracing-usdt-asm-figure-1.png"  alt="image.png"></p>
+<p>那 systemctl 是如何区分出这些命令的？</p>
+<p>熟悉 C 编程的同学大概率可以猜到了，systemctl 可能是通过进程名来区分的，也就是 <code>argv[0]</code> 这个参数，C 语言里 <code>argv[0]</code> 保存的是程序的名称（其他语言也有类似的参数）。</p>
+<h2 id="那拿-systemctl-测试一下？"><a href="#那拿-systemctl-测试一下？" class="headerlink" title="那拿 systemctl 测试一下？"></a>那拿 systemctl 测试一下？</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@cs8 ~]# <span class="built_in">ln</span> -sf /usr/bin/systemctl testcmd</span><br><span class="line">[root@cs8 ~]# ./testcmd</span><br><span class="line">UNIT                                                                                LOAD   ACTIVE SUB       DESCRIPTION</span><br><span class="line">proc-sys-fs-binfmt_misc.automount                                                   loaded active waiting   Arbitrary Executable File Formats File System Automount Point</span><br><span class="line">sys-devices-pci0000:00-0000:00:05.0-virtio0-net-eth0.device                         loaded active plugged   Virtio network device</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda-vda1.device                   loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda/vda1</span><br><span class="line">sys-devices-pci0000:00-0000:00:06.0-virtio1-block-vda.device                        loaded active plugged   /sys/devices/pci0000:00/0000:00:06.0/virtio1/block/vda</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 systemctl 并不识别 testcmd 命令，而是打印了所有 uints，等价 <code>systemctl</code> 直接执行。</p>
+<h2 id="看代码"><a href="#看代码" class="headerlink" title="看代码"></a>看代码</h2><p>和我们预想的一样，systemctl 内部通过 argv 来判断由谁调用的</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// systemd/src/systemctl/systemctl.c</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">systemctl_dispatch_parse_argv</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span> &#123;</span><br><span class="line">        assert(argc &gt;= <span class="number">0</span>);</span><br><span class="line">        assert(argv);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;halt&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_HALT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;poweroff&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;reboot&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (kexec_loaded())</span><br><span class="line">                        arg_action = ACTION_KEXEC;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                        arg_action = ACTION_REBOOT;</span><br><span class="line">                <span class="keyword">return</span> halt_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;shutdown&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_POWEROFF;</span><br><span class="line">                <span class="keyword">return</span> shutdown_parse_argv(argc, argv);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;init&quot;</span>)) &#123;</span><br><span class="line">                <span class="keyword">if</span> (sd_booted() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        arg_action = _ACTION_INVALID;</span><br><span class="line">                        <span class="keyword">return</span> telinit_parse_argv(argc, argv);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        arg_action = ACTION_TELINIT;</span><br><span class="line">                        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (invoked_as(argv, <span class="string">&quot;runlevel&quot;</span>)) &#123;</span><br><span class="line">                arg_action = ACTION_RUNLEVEL;</span><br><span class="line">                <span class="keyword">return</span> runlevel_parse_argv(argc, argv);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        arg_action = ACTION_SYSTEMCTL;</span><br><span class="line">        <span class="keyword">return</span> systemctl_parse_argv(argc, argv);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="自己实现一个"><a href="#自己实现一个" class="headerlink" title="自己实现一个"></a>自己实现一个</h2><p>实现也很简单，几行代码就行。只需要实现通过 argv[0] 识别调用方是谁，然后根据不同的调用方执行不同的逻辑即可。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#include &lt;stdio.h&gt;</span></span><br><span class="line"><span class="comment">#include &lt;string.h&gt;</span></span><br><span class="line"></span><br><span class="line">int main(int argc, char *argv[]) &#123;</span><br><span class="line">    // 提取程序名（最后一个斜杠后的内容）</span><br><span class="line">    char *programName = strrchr(argv[0], <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">    <span class="keyword">if</span> (programName != NULL) &#123;</span><br><span class="line">        programName++; // 移动到斜杠后的第一个字符</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        programName = argv[0]; // 如果没有斜杠，直接使用整个参数</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 根据程序名执行不同的逻辑</span><br><span class="line">    <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programA&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 A 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (strcmp(programName, <span class="string">&quot;programB&quot;</span>) == 0) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;执行程序 B 的逻辑\n&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;未知程序，执行默认逻辑\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">return</span> 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>完结撒花</p>
 
                     
                 </div>
@@ -337,11 +332,11 @@
                             <ul class="post-tags-box border-box">
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/ebpf/">ebpf</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/reboot/">reboot</a>
                                     </li>
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/usdt/">usdt</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/systemd/">systemd</a>
                                     </li>
                                 
                             </ul>
@@ -360,14 +355,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/Intel_AMD_ISA_difference"
-                                   title="Intel &amp; AMD 指令集之间的差异"
+                                   href="/intel-cpu-cve/"
+                                   title="查询 Intel 处理器安全漏洞"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">Intel &amp; AMD 指令集之间的差异</span>
+                                        <span class="post-nav-title-item text-ellipsis">查询 Intel 处理器安全漏洞</span>
                                         <span class="post-nav-item">Prev posts</span>
                                     </span>
                                 </a>
@@ -377,11 +372,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/intel-cpu-cve"
-                                   title="查询 Intel 处理器安全漏洞"
+                                   href="/cmu-15-445-fall-2022-project1-buffer-pool/"
+                                   title="CMU 15-445 Fall 2022 Project1: Buffer Pool"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">查询 Intel 处理器安全漏洞</span>
+                                        <span class="post-nav-title-item text-ellipsis">CMU 15-445 Fall 2022 Project1: Buffer Pool</span>
                                         <span class="post-nav-item">Next posts</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">
@@ -409,7 +404,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E5%A6%82%E4%BD%95%E6%8F%92%E5%85%A5%E6%8E%A2%E9%92%88%EF%BC%9F"><span class="nav-text">USDT  如何插入探针？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%8F%AF%E7%94%A8%E7%9A%84%E6%8E%A2%E9%92%88"><span class="nav-text">查看可用的探针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E4%BD%BF%E7%94%A8"><span class="nav-text">USDT 使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E5%8E%9F%E7%90%86"><span class="nav-text">USDT 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E5%8A%A8%E6%80%81%E5%BC%80%E5%85%B3"><span class="nav-text">USDT 动态开关</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%82%A3%E6%8B%BF-systemctl-%E6%B5%8B%E8%AF%95%E4%B8%80%E4%B8%8B%EF%BC%9F"><span class="nav-text">那拿 systemctl 测试一下？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%8B%E4%BB%A3%E7%A0%81"><span class="nav-text">看代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%B7%B1%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA"><span class="nav-text">自己实现一个</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol>
     </div>
 </div>
 
@@ -569,7 +564,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E5%A6%82%E4%BD%95%E6%8F%92%E5%85%A5%E6%8E%A2%E9%92%88%EF%BC%9F"><span class="nav-text">USDT  如何插入探针？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%8F%AF%E7%94%A8%E7%9A%84%E6%8E%A2%E9%92%88"><span class="nav-text">查看可用的探针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E4%BD%BF%E7%94%A8"><span class="nav-text">USDT 使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E5%8E%9F%E7%90%86"><span class="nav-text">USDT 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#USDT-%E5%8A%A8%E6%80%81%E5%BC%80%E5%85%B3"><span class="nav-text">USDT 动态开关</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%82%A3%E6%8B%BF-systemctl-%E6%B5%8B%E8%AF%95%E4%B8%80%E4%B8%8B%EF%BC%9F"><span class="nav-text">那拿 systemctl 测试一下？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%8B%E4%BB%A3%E7%A0%81"><span class="nav-text">看代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%B7%B1%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA"><span class="nav-text">自己实现一个</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol>
     </div>
 </div>
 

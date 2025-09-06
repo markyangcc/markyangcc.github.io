@@ -9,7 +9,7 @@
     
     <title>
         
-            Intel &amp; AMD 指令集之间的差异 |
+            CMU 15-445 Fall 2022 Project0: C++ Primer |
         
         Lapin Gris
     </title>
@@ -227,7 +227,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        Intel &amp; AMD 指令集之间的差异
+                        CMU 15-445 Fall 2022 Project0: C++ Primer
                     </div>
                 
 
@@ -255,24 +255,36 @@
         
             <span class="meta-info-item post-create-date">
                 <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2024-02-05 17:46:00</span>
+                <span class="datetime">2023-06-04 03:08:21</span>
             </span>
 
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Feb 06 2025 19:54:40 GMT+0800">2025-02-06 19:54:40</span>
+                    <span class="datetime" data-updated="Fri Sep 05 2025 14:34:48 GMT+0800">2025-09-05 14:34:48</span>
                 </span>
             
         
 
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/cmu15445/">cmu15445</a></li>
+                        
+                    
+                </ul>
+            </span>
         
 
         
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/ISA/">ISA</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/cmu15445/">cmu15445</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/Trie/">Trie</a></li>
                         
                     
                 </ul>
@@ -297,469 +309,20 @@
                     
 
                     
-                         <p>促进我写这篇文章的起因是，线上机器会使用基于 SPDK 的云盘存储方案，需要编译一个 RPM 包。<br>这个包在 Intel 机器是运行正常的，在 AMD 的机器上无法运行报不支持 AVX512 指令。</p>
-<p>这个问题很常见，是指令集不兼容造成的。AMD 虽然是 x86 厂商，即使是同一代其生产的 CPU 也不是和 Intel 的 CPU 是指令集完全兼容的。两家厂商的 CPU 会有一些对方不支持的指令集。</p>
-<p>出现问题的原因也很简单，这个 RPM 包是在一台编译机器上编译的，这台编译机器是 Intel 机器，正好支持部分 AVX512 指令集。但线上的 AMD 机器是不支持 AVX512 指令集的。解决这个问题很简单，只要使用 I 家 和 A 家 这两款 CPU 共同支持的指令集即可。实际上，是不需要我们手动对比指令集的差异，寻找交集。因为 CPU 指令集之间的差异会对软件的移植性造成重大影响，所以业界早早就有了对应的指令集基线(baseline)。</p>
-<h2 id="指令集的演进"><a href="#指令集的演进" class="headerlink" title="指令集的演进"></a>指令集的演进</h2><p>gcc 编译器执行 <code>gcc -Q --help=target</code>，输出会包含如下部分,</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">Known valid arguments <span class="keyword">for</span> -march= option:</span><br><span class="line">  i386 i486 i586 pentium lakemont pentium-mmx [...]</span><br></pre></td></tr></table></figure>
-<p>其中 march option 下面罗列的就是 gcc 的支持的各种指令集，重点关注其中 <code>x86-64/x86-64-v2/x86-64-v3/x86-64-v4</code> 这几个，这几个是 x86 平台最常用的指令集了。绝大多数软件都会使用这几个指令集进行编译，保证不同 CPU 之间的指令集兼容。<br>指令集从 x86-64 到 x86-64-v4 ，每一个版本都往 baseline 中加入了新的指令集，性能会更好，但移植会变差，一些比较老的 CPU 可能跑不了使用 x86-64-v4 指令集编译的软件了。</p>
-<ul>
-<li>x86-64-v2 brings support (among other things) for vector instructions up to Streaming SIMD Extensions 4.2 (SSE4.2)  and Supplemental Streaming SIMD Extensions 3 (SSSE3), the POPCNT instruction (useful for data analysis and bit-fiddling in some data structures), and CMPXCHG16B (a two-word compare-and-swap instruction useful for concurrent algorithms).</li>
-<li>x86-64-v3 adds vector instructions up to AVX2, MOVBE (for big-endian data access), and additional bit-manipulation instructions.</li>
-<li>x86-64-v4 includes vector instructions from some of the AVX-512 variants.</li>
-</ul>
-<h2 id="对比-Intel-与-AMD-指令集差异"><a href="#对比-Intel-与-AMD-指令集差异" class="headerlink" title="对比 Intel 与 AMD 指令集差异"></a>对比 Intel 与 AMD 指令集差异</h2><p>查看两款 CPU 支持的指令集之间的差异</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gcc -Q -march=native --help=target | grep enabled</span><br></pre></td></tr></table></figure>
-<p>当 march 为 native 可以获得当前 CPU 支持的所有指令集。</p>
-<p>表格中是 AMD EPYC 和 Intel Ice Lake CPU 的其中一款 CPU 指令集差异图， 两家的 CPU 每一代都会有各种各样的型号，这里是其中两款的对比，<br>从图中看到，这个两款 CPU 都是比较新的，均支持 AVX512 系列指令集。两款 CPU 支持的指令集大部分都是重合的，一小部分是自家 CPU 独有的。如果我们使用 <code>-march=native </code> 在其中一款 CPU 上编译软件，计划运行在这两款 CPU 上，那么编译器使用到了任何一家的独有的指令集，软件在这两款 CPU 上就存在移植性问题了。</p>
-<table>
-<thead>
-<tr>
-<th><strong>AMD EPYC Bergamo</strong></th>
-<th>仅 AMD 支持</th>
-<th>仅 Intel 支持</th>
-<th><strong>Intel Ice Lake</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>-m128bit-long-double</td>
-<td></td>
-<td></td>
-<td>-m128bit-long-double</td>
-</tr>
-<tr>
-<td>-m64</td>
-<td></td>
-<td></td>
-<td>-m64</td>
-</tr>
-<tr>
-<td>-m80387</td>
-<td></td>
-<td></td>
-<td>-m80387</td>
-</tr>
-<tr>
-<td>-mabm</td>
-<td></td>
-<td></td>
-<td>-mabm</td>
-</tr>
-<tr>
-<td>-madx</td>
-<td></td>
-<td></td>
-<td>-madx</td>
-</tr>
-<tr>
-<td>-maes</td>
-<td></td>
-<td></td>
-<td>-maes</td>
-</tr>
-<tr>
-<td>-malign-stringops</td>
-<td></td>
-<td></td>
-<td>-malign-stringops</td>
-</tr>
-<tr>
-<td>-mavx</td>
-<td></td>
-<td></td>
-<td>-mavx</td>
-</tr>
-<tr>
-<td>-mavx2</td>
-<td></td>
-<td></td>
-<td>-mavx2</td>
-</tr>
-<tr>
-<td>-mavx512bf16</td>
-<td><strong>AMD ONLY</strong></td>
-<td></td>
-<td>-mavx512bitalg</td>
-</tr>
-<tr>
-<td>-mavx512bitalg</td>
-<td></td>
-<td></td>
-<td>-mavx512bw</td>
-</tr>
-<tr>
-<td>-mavx512bw</td>
-<td></td>
-<td></td>
-<td>-mavx512cd</td>
-</tr>
-<tr>
-<td>-mavx512cd</td>
-<td></td>
-<td></td>
-<td>-mavx512dq</td>
-</tr>
-<tr>
-<td>-mavx512dq</td>
-<td></td>
-<td></td>
-<td>-mavx512f</td>
-</tr>
-<tr>
-<td>-mavx512f</td>
-<td></td>
-<td></td>
-<td>-mavx512ifma</td>
-</tr>
-<tr>
-<td>-mavx512ifma</td>
-<td></td>
-<td></td>
-<td>-mavx512vbmi</td>
-</tr>
-<tr>
-<td>-mavx512vbmi</td>
-<td></td>
-<td></td>
-<td>-mavx512vbmi2</td>
-</tr>
-<tr>
-<td>-mavx512vbmi2</td>
-<td></td>
-<td></td>
-<td>-mavx512vl</td>
-</tr>
-<tr>
-<td>-mavx512vl</td>
-<td></td>
-<td></td>
-<td>-mavx512vnni</td>
-</tr>
-<tr>
-<td>-mavx512vnni</td>
-<td></td>
-<td></td>
-<td>-mavx512vpopcntdq</td>
-</tr>
-<tr>
-<td>-mavx512vpopcntdq</td>
-<td></td>
-<td></td>
-<td>-mbmi</td>
-</tr>
-<tr>
-<td>-mbmi</td>
-<td></td>
-<td></td>
-<td>-mbmi2</td>
-</tr>
-<tr>
-<td>-mbmi2</td>
-<td></td>
-<td></td>
-<td>-mclflushopt</td>
-</tr>
-<tr>
-<td>-mclflushopt</td>
-<td></td>
-<td></td>
-<td>-mclwb</td>
-</tr>
-<tr>
-<td>-mclwb</td>
-<td></td>
-<td></td>
-<td>-mcrc32</td>
-</tr>
-<tr>
-<td>-mclzero</td>
-<td><strong>AMD ONLY</strong></td>
-<td></td>
-<td>-mcx16</td>
-</tr>
-<tr>
-<td>-mcrc32</td>
-<td></td>
-<td></td>
-<td>-mf16c</td>
-</tr>
-<tr>
-<td>-mcx16</td>
-<td></td>
-<td></td>
-<td>-mfancy-math-387</td>
-</tr>
-<tr>
-<td>-mf16c</td>
-<td></td>
-<td></td>
-<td>-mfma</td>
-</tr>
-<tr>
-<td>-mfancy-math-387</td>
-<td></td>
-<td></td>
-<td>-mfp-ret-in-387</td>
-</tr>
-<tr>
-<td>-mfma</td>
-<td></td>
-<td></td>
-<td>-mfsgsbase</td>
-</tr>
-<tr>
-<td>-mfp-ret-in-387</td>
-<td></td>
-<td></td>
-<td>-mfxsr</td>
-</tr>
-<tr>
-<td>-mfsgsbase</td>
-<td></td>
-<td><strong>Intel ONLY</strong></td>
-<td>-mgfni</td>
-</tr>
-<tr>
-<td>-mfxsr</td>
-<td></td>
-<td></td>
-<td>-mglibc</td>
-</tr>
-<tr>
-<td>-mglibc</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>-mhard-float</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>-mhard-float</td>
-<td></td>
-<td><strong>Intel ONLY</strong></td>
-<td>-mhle</td>
-</tr>
-<tr>
-<td>-mieee-fp</td>
-<td></td>
-<td></td>
-<td>-mieee-fp</td>
-</tr>
-<tr>
-<td>-mlong-double-80</td>
-<td></td>
-<td></td>
-<td>-mlong-double-80</td>
-</tr>
-<tr>
-<td>-mlzcnt</td>
-<td></td>
-<td></td>
-<td>-mlzcnt</td>
-</tr>
-<tr>
-<td>-mmmx</td>
-<td></td>
-<td></td>
-<td>-mmmx</td>
-</tr>
-<tr>
-<td>-mmovbe</td>
-<td></td>
-<td></td>
-<td>-mmovbe</td>
-</tr>
-<tr>
-<td>-mmwait</td>
-<td></td>
-<td></td>
-<td>-mmwait</td>
-</tr>
-<tr>
-<td>-mpclmul</td>
-<td></td>
-<td></td>
-<td>-mpclmul</td>
-</tr>
-<tr>
-<td>-mpopcnt</td>
-<td></td>
-<td></td>
-<td>-mpopcnt</td>
-</tr>
-<tr>
-<td>-mprfchw</td>
-<td></td>
-<td></td>
-<td>-mprfchw</td>
-</tr>
-<tr>
-<td>-mpush-args</td>
-<td></td>
-<td></td>
-<td>-mpush-args</td>
-</tr>
-<tr>
-<td>-mrdpid</td>
-<td><strong>AMD ONLY</strong></td>
-<td></td>
-<td>-mrdrnd</td>
-</tr>
-<tr>
-<td>-mrdrnd</td>
-<td></td>
-<td></td>
-<td>-mrdseed</td>
-</tr>
-<tr>
-<td>-mrdseed</td>
-<td></td>
-<td></td>
-<td>-mred-zone</td>
-</tr>
-<tr>
-<td>-mred-zone</td>
-<td></td>
-<td><strong>Intel ONLY</strong></td>
-<td>-mrtm</td>
-</tr>
-<tr>
-<td>-msahf</td>
-<td></td>
-<td></td>
-<td>-msahf</td>
-</tr>
-<tr>
-<td>-msha</td>
-<td></td>
-<td></td>
-<td>-msha</td>
-</tr>
-<tr>
-<td>-msse</td>
-<td></td>
-<td></td>
-<td>-msse</td>
-</tr>
-<tr>
-<td>-msse2</td>
-<td></td>
-<td></td>
-<td>-msse2</td>
-</tr>
-<tr>
-<td>-msse3</td>
-<td></td>
-<td></td>
-<td>-msse3</td>
-</tr>
-<tr>
-<td>-msse4</td>
-<td></td>
-<td></td>
-<td>-msse4</td>
-</tr>
-<tr>
-<td>-msse4.1</td>
-<td></td>
-<td></td>
-<td>-msse4.1</td>
-</tr>
-<tr>
-<td>-msse4.2</td>
-<td></td>
-<td></td>
-<td>-msse4.2</td>
-</tr>
-<tr>
-<td>-msse4a</td>
-<td><strong>AMD ONLY</strong></td>
-<td></td>
-<td>-mssse3</td>
-</tr>
-<tr>
-<td>-mssse3</td>
-<td></td>
-<td></td>
-<td>-mstv</td>
-</tr>
-<tr>
-<td>-mstv</td>
-<td></td>
-<td></td>
-<td>-mtls-direct-seg-refs</td>
-</tr>
-<tr>
-<td>-mtls-direct-seg-refs</td>
-<td></td>
-<td></td>
-<td>-mvaes</td>
-</tr>
-<tr>
-<td>-mvaes</td>
-<td></td>
-<td></td>
-<td>-mvpclmulqdq</td>
-</tr>
-<tr>
-<td>-mvpclmulqdq</td>
-<td></td>
-<td></td>
-<td>-mvzeroupper</td>
-</tr>
-<tr>
-<td>-mvzeroupper</td>
-<td></td>
-<td></td>
-<td>-mwbnoinvd</td>
-</tr>
-<tr>
-<td>-mwbnoinvd</td>
-<td></td>
-<td></td>
-<td>-mxsave</td>
-</tr>
-<tr>
-<td>-mxsave</td>
-<td></td>
-<td></td>
-<td>-mxsavec</td>
-</tr>
-<tr>
-<td>-mxsavec</td>
-<td></td>
-<td></td>
-<td>-mxsaveopt</td>
-</tr>
-<tr>
-<td>-mxsaveopt</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="指令集的基线-baseline"><a href="#指令集的基线-baseline" class="headerlink" title="指令集的基线 baseline"></a>指令集的基线 baseline</h2><p>不同 CPU 指令集之间的差异，会导致软件的移植性产生重大影响。通常的情况下，我们希望我在 x86 平台编译的软件，能在任意 x86 机器（无论 Intel 还是 AMD）上运行，而不是在每一 款 CPU 上都要重新编译。这种问题就是指令集的移植性问题。</p>
-<p>目前已经有解决方案了，那就是 gcc 的 <code>-march</code> 选项，通过在编译的时候指定 <code>-march</code> 实现一次编译，任意运行。<br>gcc 编译的 <code>-march</code> 选项会限定是编译过程可以使用的指令集，目前这个阶段 <code>x86-64-v2</code> 架构是当前推荐的 <code>-march</code> 选项，在性能和移植性之间取得了比较好的平衡。</p>
-<p>感兴趣的小伙伴可以在不同 CPU 平台上查询 <code>x86-64-v2</code> 指令集是否存在差异，结论肯定是不存在差异，因为这是一个 baseline，已经被标准化了。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">gcc -Q -march=x86<span class="number">-64</span>-v2 --help=target | grep enabled</span><br></pre></td></tr></table></figure>
-
-<p>那这些指令集的 baseline 是怎么标准化的？<br>有些同学可能会对标准的由来感兴趣，通俗来说，是 CPU&#x2F;OS&#x2F;Compiler (具有影响力的头部)厂商大家一起坐下来开个会，在会上确定下一代指令集标准，也就是 baseline，确定后，软件厂商按照这个指令集标准编译软件，CPU 厂商按照这个标准设计 CPU。共同保证软件的移植性。其他非头部厂商也会跟进这个标准。</p>
-<p><a class="link"   target="_blank" rel="noopener" href="https://developers.redhat.com/blog/2021/01/05/building-red-hat-enterprise-linux-9-for-the-x86-64-v2-microarchitecture-level#" >https://developers.redhat.com/blog/2021/01/05/building-red-hat-enterprise-linux-9-for-the-x86-64-v2-microarchitecture-level#<i class="fas fa-external-link-alt"></i></a></p>
-<h2 id="其他语言-go-java-python-编译"><a href="#其他语言-go-java-python-编译" class="headerlink" title="其他语言 go&#x2F;java&#x2F;python 编译"></a>其他语言 go&#x2F;java&#x2F;python 编译</h2><p>前面的介绍，主要是 C 语言，那其他语言比如（go&#x2F;java&#x2F;python&#x2F;rust）编译的&#x2F;运行的软件是否需要考虑指令集兼容？<br><strong>理论上，所有的语言，无论是编译型还是解释性语言都会面临兼容性的问题</strong>。毕竟写的软件总要在 CPU 上跑的。。。 前面介绍 C 语言，主要是因为 C 和硬件打交道的多，对性能和可移植性都有较高的要求，其他语言更多的集中在应用层。</p>
-<ul>
-<li>python 是解释性语言，用户侧不存在指令集兼容问题。指令集差异在 cpython 那块。我们就认为不存在吧</li>
-<li>go 是编译型语言。用户侧存在指令集兼容问题。但是因为 go 的默认配置使用的是最原始版本的 x86-64 指令集(go env 中 GOAMD64 环境变量代表是指令集版本)，所以兼容性很好。。。。我们就认为不存在吧</li>
-<li>java 是运行在 JVM 上的，指令集差异在 JVM 那层被屏蔽了，和 python 情况一样。我们也认为不存在</li>
-<li>rust 是编译型语言，存在指令集兼容问题，情况类似 go，取决于默认配置。</li>
-</ul>
-<h2 id="编译优化与可移植性的矛盾"><a href="#编译优化与可移植性的矛盾" class="headerlink" title="编译优化与可移植性的矛盾"></a>编译优化与可移植性的矛盾</h2><p>这里有一个规律，当我们使用 native 指令集(编译器使用机器上所有可用的指令集来优化) 编译的软件性能是最好的，同时可移植性也是最差的。</p>
-<p>还有一个规律，所有语言都存在指令集的兼容性问题，但是实际使用中，我们并不需要考虑，这是因为语言的设计者已经将指令集兼容通过各种方式屏蔽掉了，比如 go 是使用最原始的 x86-64 指令集来屏蔽，java 通过 JVM 来屏蔽等等。</p>
-<p>实际上往往只有像 C 语言会考虑指令集的兼容性，因为为了性能，编译器应该使用所有支持的指令集进行编译期优化，但是为了可移植性，又不能使用独有指令集。这本身就是一个矛盾。举个例子，像 DPDK&#x2F;SPDK 这种专门为了性能而生的软件框架，他们在编译的时候，默认采用 native 进行编译，实际上为了可移植性，我么在编译时会使用 x86-64-v2&#x2F;corei7 这些指令集，牺牲一些性能，提高可移植性。</p>
-<p>在现实场景中，如果 CPU 型号是可控的，那么在编译时候，可以激进一些。如果 CPU 型号不可控的，那么还是保守一些。</p>
+                         <p>这个项目是使用 Modern C++ 17 实现一个 字典树（<code>Trie</code>）<br>项目难点在于理解项目里如何使用 TrieNode 和 TrieTerminalNode 来组合实现一个 Trie Tree。另外一个难点是对 unique_ptr 的理解。理解 unique_ptr 智能指针对生命周期的管理。</p>
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>项目提供了图对 Trie Tree 介绍的，理解这两张图，基本理解了这个项目里我们需要实现什么了。<br>下面这张图是我们最终实现的 Trie Tree。图中红色的格子是要实现的 Terminal Node（TrieNodeWithValue），<br>图中包含字母的格子是要实现的 Trie Node。其中 Terminal Node 算是 Trie Node 的一个特殊情况。</p>
+<p>回来继续介绍 TrieNode，他有三个成员</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">char</span> key_char_;</span><br><span class="line"><span class="type">bool</span> is_end_&#123;<span class="literal">false</span>&#125;;</span><br><span class="line">std::unordered_map&lt;<span class="type">char</span>, std::unique_ptr&lt;TrieNode&gt;&gt; children_;</span><br></pre></td></tr></table></figure>
+<p><code>key_char_</code> 是路径的字符，比如 H，A，E<br><code>is_end_</code> 是表示当前 Node 是否是 Terminal Node，默认初始化为 false<br><code>children_</code> 是一个 hashmap，key 是当前节点的 <code>key_char_</code> ，value 是一个指向下一个节点的独占指针 unique_ptr 。图中代表 <code>children_</code> 是 T 和 V 的那一部分。T 和 V 都是 A 节点的子节点。<br><img   src="/../img/cmu15445-fall2022-p0-trie-tree.png"  alt="image.png"></p>
+<p>为什么说 Terminal Node 是 Trie Node 的特殊情况，因为项目中TrieNodeWithValue 是从 TrieNode 继承过来的，算是子类了。<br>比如，我们现在要用 Trie Tree 存储N个键值对，其中两个键值对是 (ab, 1) (ac, “val”) 。那么他们存放在书上就是下图展示的样子，因为我们要实现的 TrieNodeWithValue 的 value 被设计成支持任意类型的 value 存储，所以 TrieNodeWithValue 是一个模板类。<br><img   src="/../img/cmu15445-fall2022-p0-TrieNodeWithValue.png"  alt="image.png"></p>
+<h1 id="实现-TrieNode"><a href="#实现-TrieNode" class="headerlink" title="实现 TrieNode"></a>实现 TrieNode</h1><h2 id="InsertChildNode-GetChildNode-RemoveChildNode"><a href="#InsertChildNode-GetChildNode-RemoveChildNode" class="headerlink" title="InsertChildNode &amp; GetChildNode &amp; RemoveChildNode"></a>InsertChildNode &amp; GetChildNode &amp; RemoveChildNode</h2><p>实现 ChildNode 相关操作就是玩 unordered_map 。C++ 里面是 unordered_map 就是通常所说的 hashmap。<br><img   src="/../img/cmu15445-fall2022-p0-figure-3.png"  alt="image.png"><br><img   src="/../img/cmu15445-fall2022-p0-figure-4.png"  alt="image.png"><br><img   src="/../img/cmu15445-fall2022-p0-figure-5.png"  alt="image.png"></p>
+<h1 id="实现-TrieNodeWithValue"><a href="#实现-TrieNodeWithValue" class="headerlink" title="实现 TrieNodeWithValue"></a>实现 TrieNodeWithValue</h1><h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p>第一次碰到这个函数，有一点懵，没明白子类怎么移动构造，现在想想其实很简单，利用初始化列表将父类 move，然后在大括号里最定制化修改。果然， C++ 好久不用就容易忘。<br><img   src="/../img/cmu15445-fall2022-p0-figure-6.png"  alt="image.png"></p>
+<h1 id="实现-Trie"><a href="#实现-Trie" class="headerlink" title="实现 Trie"></a>实现 Trie</h1><h2 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h2><p>我们 <code>root_</code> Node 是一个空节点，而且要是一个由 unique_ptr 管理的 TrieNode。最初时候没想到使用 make_unique 来构造一个，想了挺久的（蠢哭了……）<br><img   src="/../img/cmu15445-fall2022-p0-figure-7.png"  alt="image.png"></p>
+<h2 id="Insert"><a href="#Insert" class="headerlink" title="Insert"></a>Insert</h2><p>项目要求要支持并发访问，加锁是必须的了。当然在实现的视线可以先实现不加锁版本的 Insert 保证代码没有逻辑错误，然后再为代码加锁。<br>其实我的最初版本，我的逻辑代码和加锁是混合在一起的，各种 for loop 中间 return，有了 return 就需要在 return 之前把之前加的锁释放掉。。。就挺混乱的，另外因为多个 return 位置，容易忘记解锁。<br>后来，我参考内核调度器那块代码，把解锁放到函数末尾做，当代码中需要 return 的时候，用 goto 跳转到 out label，这样也就统一了解锁的位置，代码看起来舒服多了。<br>其实更好的办法是像 DPDK 那样实现一个 unsafe 版本的函数，在实现一个 safe 版本的，锁加在 safe 版本的函数里，在 safe 调用 unsafe 函数，这样实现了逻辑代码和加锁代码分离。唯一的缺点可能是锁的粒度大，不容易优化锁的粒度吧。</p>
+<p>首先从 <code>root_</code> 的指针，开始遍历 Tree，执行插入操作<br>我们选择是遍历整个 string，我们把 string 分成两部分，[0, key.size()-1) 和 [key.size()-1] 两部分来实现。这样写的代码更加简单，感觉项目里的注释描述稍微有点引导学生将字符串分成两部分处理。其实完全没有必要，这样作为一个整体处理逻辑也更简单。<br>遍历整个 string 会把整个路径所有节点类型设置为 TrieNode，所以最后需要将 Terminal Node move 一下，转为  TrieNodeWithValue 类型。然后让 unique_ptr 指针指向 TrieNodeWithValue即可。<br><img   src="/../img/cmu15445-fall2022-p0-figure-8.png"  alt="image.png"></p>
+<h2 id="Remove"><a href="#Remove" class="headerlink" title="Remove"></a>Remove</h2><p>删除要求如果需要中间节点没有 child 节点，这个节点也需要被 remove 掉。这就说明在遍历的时候我们要记录父节点的指针，但是指针一旦调到下一个节点，就回不去了，我们用的也不是双向版本的指针。所有，我们要记录我们的遍历的路径，我们用 vector 存，其实用 stack 也没问题。<br>最终，我们先遍历一遍 string，走到底部。然后开始反向遍历，检查节点有没有子节点，没有就将节点删除。<br><img   src="/../img/cmu15445-fall2022-p0-figure-9.png"  alt="image.png"></p>
+<h2 id="GetValue"><a href="#GetValue" class="headerlink" title="GetValue"></a>GetValue</h2><p>从 <code>root_</code> 开始遍历,项目要求检查存储在 Terminal Node 的 value 类型。这里借助 <code>dynamic_cast</code>  来判断。<br><img   src="/../img/cmu15445-fall2022-p0-figure-10.png"  alt="image.png"></p>
+<h1 id="Gradescope"><a href="#Gradescope" class="headerlink" title="Gradescope"></a>Gradescope</h1><p><img   src="/../img/cmu15445-fall2022-p0-figure-11.png"  alt="image.png"></p>
 
                     
                 </div>
@@ -772,7 +335,11 @@
                             <ul class="post-tags-box border-box">
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/ISA/">ISA</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/cmu15445/">cmu15445</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/Trie/">Trie</a>
                                     </li>
                                 
                             </ul>
@@ -791,14 +358,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/xv6-lab0-prepare-workspace"
-                                   title="xv6 Lab0: Prepare for the Lab"
+                                   href="/cmu-15-445-fall-2022-project1-buffer-pool/"
+                                   title="CMU 15-445 Fall 2022 Project1: Buffer Pool"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">xv6 Lab0: Prepare for the Lab</span>
+                                        <span class="post-nav-title-item text-ellipsis">CMU 15-445 Fall 2022 Project1: Buffer Pool</span>
                                         <span class="post-nav-item">Prev posts</span>
                                     </span>
                                 </a>
@@ -808,11 +375,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/tracing-userspace-process-ebpf-usdt"
-                                   title="使用 ebpf USDT 追踪用户态程序"
+                                   href="/parsec3.0-compile-error/"
+                                   title="PARSEC 3.0 编译报错"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">使用 ebpf USDT 追踪用户态程序</span>
+                                        <span class="post-nav-title-item text-ellipsis">PARSEC 3.0 编译报错</span>
                                         <span class="post-nav-item">Next posts</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">
@@ -840,7 +407,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E7%9A%84%E6%BC%94%E8%BF%9B"><span class="nav-text">指令集的演进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%AF%94-Intel-%E4%B8%8E-AMD-%E6%8C%87%E4%BB%A4%E9%9B%86%E5%B7%AE%E5%BC%82"><span class="nav-text">对比 Intel 与 AMD 指令集差异</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E7%9A%84%E5%9F%BA%E7%BA%BF-baseline"><span class="nav-text">指令集的基线 baseline</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80-go-java-python-%E7%BC%96%E8%AF%91"><span class="nav-text">其他语言 go&#x2F;java&#x2F;python 编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96%E4%B8%8E%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E7%9A%84%E7%9F%9B%E7%9B%BE"><span class="nav-text">编译优化与可移植性的矛盾</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-TrieNode"><span class="nav-text">实现 TrieNode</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InsertChildNode-GetChildNode-RemoveChildNode"><span class="nav-text">InsertChildNode &amp; GetChildNode &amp; RemoveChildNode</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-TrieNodeWithValue"><span class="nav-text">实现 TrieNodeWithValue</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">构造函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-Trie"><span class="nav-text">实现 Trie</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0-1"><span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Insert"><span class="nav-text">Insert</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Remove"><span class="nav-text">Remove</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GetValue"><span class="nav-text">GetValue</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradescope"><span class="nav-text">Gradescope</span></a></li></ol>
     </div>
 </div>
 
@@ -1000,7 +567,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E7%9A%84%E6%BC%94%E8%BF%9B"><span class="nav-text">指令集的演进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%AF%94-Intel-%E4%B8%8E-AMD-%E6%8C%87%E4%BB%A4%E9%9B%86%E5%B7%AE%E5%BC%82"><span class="nav-text">对比 Intel 与 AMD 指令集差异</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E9%9B%86%E7%9A%84%E5%9F%BA%E7%BA%BF-baseline"><span class="nav-text">指令集的基线 baseline</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E8%AF%AD%E8%A8%80-go-java-python-%E7%BC%96%E8%AF%91"><span class="nav-text">其他语言 go&#x2F;java&#x2F;python 编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96%E4%B8%8E%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E7%9A%84%E7%9F%9B%E7%9B%BE"><span class="nav-text">编译优化与可移植性的矛盾</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-TrieNode"><span class="nav-text">实现 TrieNode</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#InsertChildNode-GetChildNode-RemoveChildNode"><span class="nav-text">InsertChildNode &amp; GetChildNode &amp; RemoveChildNode</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-TrieNodeWithValue"><span class="nav-text">实现 TrieNodeWithValue</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-text">构造函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0-Trie"><span class="nav-text">实现 Trie</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0-1"><span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Insert"><span class="nav-text">Insert</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Remove"><span class="nav-text">Remove</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GetValue"><span class="nav-text">GetValue</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradescope"><span class="nav-text">Gradescope</span></a></li></ol>
     </div>
 </div>
 
