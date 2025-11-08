@@ -76,7 +76,7 @@
                         <li class="menu-item flex-start border-box">
                             <a class="menu-text-color border-box" href="/">
                                 
-                                首页
+                                HOME
                                 
                             </a>
                             
@@ -86,7 +86,7 @@
                         <li class="menu-item flex-start border-box">
                             <a class="menu-text-color border-box" href="/archives">
                                 
-                                归档
+                                ARCHIVES
                                 
                             </a>
                             
@@ -96,7 +96,7 @@
                         <li class="menu-item flex-start border-box">
                             <a class="menu-text-color border-box" href="/tags">
                                 
-                                标签
+                                TAGS
                                 
                             </a>
                             
@@ -106,7 +106,7 @@
                         <li class="menu-item flex-start border-box">
                             <a class="menu-text-color border-box" href="/categories">
                                 
-                                分类
+                                CATEGORIES
                                 
                             </a>
                             
@@ -116,7 +116,7 @@
                         <li class="menu-item flex-start border-box">
                             <a class="menu-text-color border-box" href="/about">
                                 
-                                关于
+                                ABOUT
                                 
                             </a>
                             
@@ -148,7 +148,7 @@
                     <label class="drawer-menu-label border-box">
                         <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
                             
-                            首页
+                            HOME
                         </a>
                         
                     </label>
@@ -160,7 +160,7 @@
                     <label class="drawer-menu-label border-box">
                         <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
                             
-                            归档
+                            ARCHIVES
                         </a>
                         
                     </label>
@@ -172,7 +172,7 @@
                     <label class="drawer-menu-label border-box">
                         <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
                             
-                            标签
+                            TAGS
                         </a>
                         
                     </label>
@@ -184,7 +184,7 @@
                     <label class="drawer-menu-label border-box">
                         <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
                             
-                            分类
+                            CATEGORIES
                         </a>
                         
                     </label>
@@ -196,7 +196,7 @@
                     <label class="drawer-menu-label border-box">
                         <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
                             
-                            关于
+                            ABOUT
                         </a>
                         
                     </label>
@@ -261,7 +261,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Sat Nov 08 2025 15:11:13 GMT+0800">2025-11-08 15:11:13</span>
+                    <span class="datetime" data-updated="Sat Nov 08 2025 15:26:29 GMT+0800">2025-11-08 15:26:29</span>
                 </span>
             
         
@@ -297,7 +297,8 @@
                     
 
                     
-                         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><h2 id="runc-的定位和职责"><a href="#runc-的定位和职责" class="headerlink" title="runc 的定位和职责"></a>runc 的定位和职责</h2><p>先介绍，组成容器的三大技术，</p>
+                         <p>在开始之前，我们先介绍一下 runc 的定位和职责，</p>
+<p>先介绍，组成容器的三大技术，</p>
 <ul>
 <li>namespace， 内核提供的 namespace 隔离，用于让进程互相感知不到对方。</li>
 <li>cgroup，用于资源限制，防止进程过度使用资源，影响其他进程甚至主机的正常运行</li>
@@ -309,27 +310,26 @@
 <li>runc</li>
 </ul>
 <p>二者职责有分工，其中 containerd 是守护进程，负责从容器镜像提取出容器 rootfs ，并从 CRI 接口中拿到容器配置，用于生成描述容器的 OCI SPEC。 <strong>runc 会根据传来的 rootfs 和配置创建出容器进程。</strong></p>
-<h3 id="OCI-SPEC-对-namespace-的描述"><a href="#OCI-SPEC-对-namespace-的描述" class="headerlink" title="OCI SPEC 对 namespace 的描述"></a>OCI SPEC 对 namespace 的描述</h3><p>OCI SPEC 时 一个 json 文件，其在 .linux.namespaces 中描述容器需要对哪些 namespace 进行隔离。</p>
+<h2 id="OCI-SPEC-对-namespace-的描述"><a href="#OCI-SPEC-对-namespace-的描述" class="headerlink" title="OCI SPEC 对 namespace 的描述"></a>OCI SPEC 对 namespace 的描述</h2><p>OCI SPEC 是 一个 json 文件，它完整的描述了一个容器的所有配置。在 spec 中，在 .linux.namespaces 层级中描述容器需要对哪些 namespace 进行隔离。</p>
 <p>例，当前容器对 pid、network、ipc、uts、mount、cgroup 这 6 个 namespace 进行隔离。</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cat</span> config.json | jq .linux.namespaces</span></span><br><span class="line">[</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;type&quot;: &quot;pid&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;type&quot;: &quot;network&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;type&quot;: &quot;ipc&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;type&quot;: &quot;uts&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;type&quot;: &quot;mount&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;type&quot;: &quot;cgroup&quot;</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
 
-<h3 id="namespace-隔离"><a href="#namespace-隔离" class="headerlink" title="namespace 隔离"></a>namespace 隔离</h3><p>linux 系统通过 fork 来创建子进程，子进程会继承会进程的配置，其中就包括 namespace。在容器场景，我们父进程就是 runc cli，共享主机的 namespace。内核提供了 unshare 系统调用来让子进程进入一个全新的 namespace，不再共享父进程的 namespace，这就是容器实现 namespace 隔离的系统调用。</p>
+<h2 id="namespace-隔离"><a href="#namespace-隔离" class="headerlink" title="namespace 隔离"></a>namespace 隔离</h2><p>linux 系统通过 fork 来创建子进程，子进程会继承会进程的配置，其中就包括 namespace。在容器场景，我们父进程就是 runc cli，共享主机的 namespace。内核提供了 unshare 系统调用来让子进程进入一个全新的 namespace，不再共享父进程的 namespace，这就是容器实现 namespace 隔离的系统调用。</p>
 <p>介绍下C 库使用示例， 其中 flags 参数传递需要 unshare 的 namespace。</p>
 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> _GNU_SOURCE</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sched.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">unshare</span><span class="params">(<span class="type">int</span> flags)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 需要隔离 pid/net/mount namespace， flags 通过或运算指定如下参数</span></span><br><span class="line">CLONE_NEWPID | CLONE_NEWNET | CLONE_NEWNS</span><br></pre></td></tr></table></figure>
 
 
 
-<h1 id="隔离时序图"><a href="#隔离时序图" class="headerlink" title="隔离时序图"></a>隔离时序图</h1><p><img   src="/../img/runc-ns-isolation-mermaid.svg"  alt="image.png"></p>
-<h2 id="ENV"><a href="#ENV" class="headerlink" title="ENV"></a>ENV</h2><p>在 runc 中，会通过环境变量在父子进程间传递配置，对于ns 隔离这部分重要的环境变量有三个，</p>
+<h2 id="隔离时序图"><a href="#隔离时序图" class="headerlink" title="隔离时序图"></a>隔离时序图</h2><p><img   src="/../img/runc-ns-isolation-mermaid.svg"  alt="image.png"></p>
+<h3 id="ENV-作用"><a href="#ENV-作用" class="headerlink" title="ENV 作用"></a>ENV 作用</h3><p>在 runc 中，会通过环境变量在父子进程间传递配置，对于ns 隔离这部分重要的环境变量有三个，</p>
 <p>其中 <code>INITPIPE</code> 用于 runc 与 PARENT 之间传递配置和回传信息，属于进程间通信。</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># _LIBCONTAINER_INITPIPE 用于和 runc 通信, 读取 bootstrap data 和 发送 grandchild&#x27;s PID</span><br><span class="line"># _LIBCONTAINER_LOGPIPE 用于导出子进程写的日志的管道, 用于调试</span><br><span class="line"># _LIBCONTAINER_LOGLEVEL 日志等级，用于调试</span><br></pre></td></tr></table></figure>
 
 
-
-<h2 id="为什么不在一个进程中完成所有-namesapce-隔离？"><a href="#为什么不在一个进程中完成所有-namesapce-隔离？" class="headerlink" title="为什么不在一个进程中完成所有 namesapce 隔离？"></a>为什么不在一个进程中完成所有 namesapce 隔离？</h2><p>因为 linux namespace 的限制，导致我们在进行 namespace 隔离的时候，必须fork 两次，即parent → child → grandchild .</p>
+<h3 id="为什么不在一个进程中完成所有-namesapce-隔离？"><a href="#为什么不在一个进程中完成所有-namesapce-隔离？" class="headerlink" title="为什么不在一个进程中完成所有 namesapce 隔离？"></a>为什么不在一个进程中完成所有 namesapce 隔离？</h3><p>因为 linux namespace 的限制，导致我们在进行 namespace 隔离的时候，必须fork 两次，即parent → child → grandchild .</p>
 <p>第一次 fork，是因为如果直接 unshare ns， 会导致原有 ns 里面的操作权限都被 drop 掉。（如，隔离 user ns 还需要执行 gid&#x2F;uid mapping, 这时候就没有权限操作了）。因此我们先 fork 一次，父进程保留权限，在子进程 unshare 后虽然丢失权限，但是可以通过父子进程通信通知父进程（此处是通过管道），让父进程替我们操作。</p>
 <p>第二次 fork，是因为 pid namespace， pid 命名空间仅适用于子进程。我们 child 进程 unshare  pid ns对自己是不生效的，child 自己的 pid ns 不会改变，所以需要 fork 一次，让子进程继承配置。这就是第二次 fork 原因。</p>
-<h2 id="为什么-user-ns-隔离和其他-ns-分开？"><a href="#为什么-user-ns-隔离和其他-ns-分开？" class="headerlink" title="为什么 user ns 隔离和其他 ns 分开？"></a>为什么 user ns 隔离和其他 ns 分开？</h2><p>因为潜在内核 bug，将所有 ns 一起 unshare 隔离，可能导致命名空间对象的归属权错误，因此采用了保守方案，分开 unshare。</p>
+<h3 id="为什么-user-ns-隔离和其他-ns-分开？"><a href="#为什么-user-ns-隔离和其他-ns-分开？" class="headerlink" title="为什么 user ns 隔离和其他 ns 分开？"></a>为什么 user ns 隔离和其他 ns 分开？</h3><p>因为潜在内核 bug，将所有 ns 一起 unshare 隔离，可能导致命名空间对象的归属权错误，因此采用了保守方案，分开 unshare。</p>
 
                     
                 </div>
@@ -359,7 +359,7 @@
                                 >
                                     <span class="title flex-center">
                                         <span class="post-nav-title-item text-ellipsis">client-go 中指数退避 backoff</span>
-                                        <span class="post-nav-item">下一篇</span>
+                                        <span class="post-nav-item">Next posts</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">
                                         <i class="fas fa-chevron-right"></i>
@@ -386,7 +386,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#runc-%E7%9A%84%E5%AE%9A%E4%BD%8D%E5%92%8C%E8%81%8C%E8%B4%A3"><span class="nav-text">runc 的定位和职责</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OCI-SPEC-%E5%AF%B9-namespace-%E7%9A%84%E6%8F%8F%E8%BF%B0"><span class="nav-text">OCI SPEC 对 namespace 的描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#namespace-%E9%9A%94%E7%A6%BB"><span class="nav-text">namespace 隔离</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9A%94%E7%A6%BB%E6%97%B6%E5%BA%8F%E5%9B%BE"><span class="nav-text">隔离时序图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ENV"><span class="nav-text">ENV</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E5%9C%A8%E4%B8%80%E4%B8%AA%E8%BF%9B%E7%A8%8B%E4%B8%AD%E5%AE%8C%E6%88%90%E6%89%80%E6%9C%89-namesapce-%E9%9A%94%E7%A6%BB%EF%BC%9F"><span class="nav-text">为什么不在一个进程中完成所有 namesapce 隔离？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-user-ns-%E9%9A%94%E7%A6%BB%E5%92%8C%E5%85%B6%E4%BB%96-ns-%E5%88%86%E5%BC%80%EF%BC%9F"><span class="nav-text">为什么 user ns 隔离和其他 ns 分开？</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#OCI-SPEC-%E5%AF%B9-namespace-%E7%9A%84%E6%8F%8F%E8%BF%B0"><span class="nav-text">OCI SPEC 对 namespace 的描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#namespace-%E9%9A%94%E7%A6%BB"><span class="nav-text">namespace 隔离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%94%E7%A6%BB%E6%97%B6%E5%BA%8F%E5%9B%BE"><span class="nav-text">隔离时序图</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ENV-%E4%BD%9C%E7%94%A8"><span class="nav-text">ENV 作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E5%9C%A8%E4%B8%80%E4%B8%AA%E8%BF%9B%E7%A8%8B%E4%B8%AD%E5%AE%8C%E6%88%90%E6%89%80%E6%9C%89-namesapce-%E9%9A%94%E7%A6%BB%EF%BC%9F"><span class="nav-text">为什么不在一个进程中完成所有 namesapce 隔离？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-user-ns-%E9%9A%94%E7%A6%BB%E5%92%8C%E5%85%B6%E4%BB%96-ns-%E5%88%86%E5%BC%80%EF%BC%9F"><span class="nav-text">为什么 user ns 隔离和其他 ns 分开？</span></a></li></ol></li></ol>
     </div>
 </div>
 
@@ -411,7 +411,7 @@
     </div>
 
     <div class="theme-info info-item">
-        由&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;驱动&nbsp;&&nbsp;主题&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+        Powered by&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;&&nbsp;Theme&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
     </div>
 
     
@@ -520,7 +520,7 @@
                 <input autocomplete="off"
                        autocorrect="off"
                        autocapitalize="off"
-                       placeholder="搜索..."
+                       placeholder="Search..."
                        spellcheck="false"
                        type="search"
                        class="search-input"
@@ -546,7 +546,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#runc-%E7%9A%84%E5%AE%9A%E4%BD%8D%E5%92%8C%E8%81%8C%E8%B4%A3"><span class="nav-text">runc 的定位和职责</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OCI-SPEC-%E5%AF%B9-namespace-%E7%9A%84%E6%8F%8F%E8%BF%B0"><span class="nav-text">OCI SPEC 对 namespace 的描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#namespace-%E9%9A%94%E7%A6%BB"><span class="nav-text">namespace 隔离</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9A%94%E7%A6%BB%E6%97%B6%E5%BA%8F%E5%9B%BE"><span class="nav-text">隔离时序图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ENV"><span class="nav-text">ENV</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E5%9C%A8%E4%B8%80%E4%B8%AA%E8%BF%9B%E7%A8%8B%E4%B8%AD%E5%AE%8C%E6%88%90%E6%89%80%E6%9C%89-namesapce-%E9%9A%94%E7%A6%BB%EF%BC%9F"><span class="nav-text">为什么不在一个进程中完成所有 namesapce 隔离？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-user-ns-%E9%9A%94%E7%A6%BB%E5%92%8C%E5%85%B6%E4%BB%96-ns-%E5%88%86%E5%BC%80%EF%BC%9F"><span class="nav-text">为什么 user ns 隔离和其他 ns 分开？</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#OCI-SPEC-%E5%AF%B9-namespace-%E7%9A%84%E6%8F%8F%E8%BF%B0"><span class="nav-text">OCI SPEC 对 namespace 的描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#namespace-%E9%9A%94%E7%A6%BB"><span class="nav-text">namespace 隔离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%94%E7%A6%BB%E6%97%B6%E5%BA%8F%E5%9B%BE"><span class="nav-text">隔离时序图</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ENV-%E4%BD%9C%E7%94%A8"><span class="nav-text">ENV 作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E5%9C%A8%E4%B8%80%E4%B8%AA%E8%BF%9B%E7%A8%8B%E4%B8%AD%E5%AE%8C%E6%88%90%E6%89%80%E6%9C%89-namesapce-%E9%9A%94%E7%A6%BB%EF%BC%9F"><span class="nav-text">为什么不在一个进程中完成所有 namesapce 隔离？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-user-ns-%E9%9A%94%E7%A6%BB%E5%92%8C%E5%85%B6%E4%BB%96-ns-%E5%88%86%E5%BC%80%EF%BC%9F"><span class="nav-text">为什么 user ns 隔离和其他 ns 分开？</span></a></li></ol></li></ol>
     </div>
 </div>
 
