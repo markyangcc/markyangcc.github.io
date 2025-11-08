@@ -1532,4 +1532,45 @@
         <category>xv6</category>
       </categories>
   </entry>
+  <entry>
+    <title>Runc Namespace 隔离流程分析</title>
+    <url>/runc-ns-isolation/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><h2 id="runc-的定位和职责"><a href="#runc-的定位和职责" class="headerlink" title="runc 的定位和职责"></a>runc 的定位和职责</h2><p>先介绍，组成容器的三大技术，</p>
+<ul>
+<li>namespace， 内核提供的 namespace 隔离，用于让进程互相感知不到对方。</li>
+<li>cgroup，用于资源限制，防止进程过度使用资源，影响其他进程甚至主机的正常运行</li>
+<li>rootfs，容器的根文件系统，每个容器使用自己的一套 rootfs，无需共享主机 rootfs，实现 rootfs 隔离。</li>
+</ul>
+<p>组成容器的三大技术是由内核提供的底层能力。在上次 kubernetes 编排容器时，和内核打交道的组件并不是我们熟知的 kubelet。而是节点上的容器运行时， </p>
+<ul>
+<li>containerd</li>
+<li>runc</li>
+</ul>
+<p>二者职责有分工，其中 containerd 是守护进程，负责从容器镜像提取出容器 rootfs ，并从 CRI 接口中拿到容器配置，用于生成描述容器的 OCI SPEC。 <strong>runc 会根据传来的 rootfs 和配置创建出容器进程。</strong></p>
+<h3 id="OCI-SPEC-对-namespace-的描述"><a href="#OCI-SPEC-对-namespace-的描述" class="headerlink" title="OCI SPEC 对 namespace 的描述"></a>OCI SPEC 对 namespace 的描述</h3><p>OCI SPEC 时 一个 json 文件，其在 .linux.namespaces 中描述容器需要对哪些 namespace 进行隔离。</p>
+<p>例，当前容器对 pid、network、ipc、uts、mount、cgroup 这 6 个 namespace 进行隔离。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cat</span> config.json | jq .linux.namespaces</span></span><br><span class="line">[</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;type&quot;: &quot;pid&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;type&quot;: &quot;network&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;type&quot;: &quot;ipc&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;type&quot;: &quot;uts&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;type&quot;: &quot;mount&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;type&quot;: &quot;cgroup&quot;</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<h3 id="namespace-隔离"><a href="#namespace-隔离" class="headerlink" title="namespace 隔离"></a>namespace 隔离</h3><p>linux 系统通过 fork 来创建子进程，子进程会继承会进程的配置，其中就包括 namespace。在容器场景，我们父进程就是 runc cli，共享主机的 namespace。内核提供了 unshare 系统调用来让子进程进入一个全新的 namespace，不再共享父进程的 namespace，这就是容器实现 namespace 隔离的系统调用。</p>
+<p>介绍下C 库使用示例， 其中 flags 参数传递需要 unshare 的 namespace。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> _GNU_SOURCE</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sched.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">unshare</span><span class="params">(<span class="type">int</span> flags)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 需要隔离 pid/net/mount namespace， flags 通过或运算指定如下参数</span></span><br><span class="line">CLONE_NEWPID | CLONE_NEWNET | CLONE_NEWNS</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="隔离时序图"><a href="#隔离时序图" class="headerlink" title="隔离时序图"></a>隔离时序图</h1><p><img   src="/../img/runc-ns-isolation-mermaid.svg"  alt="image.png"></p>
+<h2 id="ENV"><a href="#ENV" class="headerlink" title="ENV"></a>ENV</h2><p>在 runc 中，会通过环境变量在父子进程间传递配置，对于ns 隔离这部分重要的环境变量有三个，</p>
+<p>其中 <code>INITPIPE</code> 用于 runc 与 PARENT 之间传递配置和回传信息，属于进程间通信。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># _LIBCONTAINER_INITPIPE 用于和 runc 通信, 读取 bootstrap data 和 发送 grandchild&#x27;s PID</span><br><span class="line"># _LIBCONTAINER_LOGPIPE 用于导出子进程写的日志的管道, 用于调试</span><br><span class="line"># _LIBCONTAINER_LOGLEVEL 日志等级，用于调试</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="为什么不在一个进程中完成所有-namesapce-隔离？"><a href="#为什么不在一个进程中完成所有-namesapce-隔离？" class="headerlink" title="为什么不在一个进程中完成所有 namesapce 隔离？"></a>为什么不在一个进程中完成所有 namesapce 隔离？</h2><p>因为 linux namespace 的限制，导致我们在进行 namespace 隔离的时候，必须fork 两次，即parent → child → grandchild .</p>
+<p>第一次 fork，是因为如果直接 unshare ns， 会导致原有 ns 里面的操作权限都被 drop 掉。（如，隔离 user ns 还需要执行 gid&#x2F;uid mapping, 这时候就没有权限操作了）。因此我们先 fork 一次，父进程保留权限，在子进程 unshare 后虽然丢失权限，但是可以通过父子进程通信通知父进程（此处是通过管道），让父进程替我们操作。</p>
+<p>第二次 fork，是因为 pid namespace， pid 命名空间仅适用于子进程。我们 child 进程 unshare  pid ns对自己是不生效的，child 自己的 pid ns 不会改变，所以需要 fork 一次，让子进程继承配置。这就是第二次 fork 原因。</p>
+<h2 id="为什么-user-ns-隔离和其他-ns-分开？"><a href="#为什么-user-ns-隔离和其他-ns-分开？" class="headerlink" title="为什么 user ns 隔离和其他 ns 分开？"></a>为什么 user ns 隔离和其他 ns 分开？</h2><p>因为潜在内核 bug，将所有 ns 一起 unshare 隔离，可能导致命名空间对象的归属权错误，因此采用了保守方案，分开 unshare。</p>
+]]></content>
+      <categories>
+        <category>容器</category>
+      </categories>
+  </entry>
 </search>
