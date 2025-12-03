@@ -448,14 +448,13 @@ cgroup，用于资源限制，防止进程过度使用资源，影响其他进�
                     
                     <h3 class="home-post-title border-box">
                         <a href="/kubeadm-setup-kubernetes-cluster-public-network/">
-                            kubeadm 公网环境搭建 kubenetes 集群
+                            kubeadm 搭建 kubenetes 集群
                         </a>
                     </h3>
 
                     <div class="home-post-content keep-markdown-body">
                         
-                            前沿公网搭建和本地搭建核心流程区别不大，本文拆解为两部分来搭建，
-第一部分是搭建一个单节点的控制面集群，这部分和本地搭建没有区别。第二部分是将公网的其他节点加入到这个集群中，需要注意的是云上防火墙的放行（云上防火墙通常叫安全组）以及区分 ECS 的内...
+                            本文介绍如何使用 kubeadm，创建一个符合最佳实践的最小化 Kubernetes 的单节点集群。虽然本文搭建的是，单节点 master 集群，依然可以通过 kubeadm 扩容新的 Node 节点加入到集群。本文会将重心放在如何拉起一个集群，集群...
                         
                     </div>
 
