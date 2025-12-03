@@ -955,7 +955,7 @@
   <entry>
     <title>kubeadm 公网环境搭建 kubenetes 集群</title>
     <url>/kubeadm-setup-kubernetes-cluster-public-network/</url>
-    <content><![CDATA[<h1 id="环境介绍"><a href="#环境介绍" class="headerlink" title="环境介绍"></a>环境介绍</h1><p>最近手里闲置了两台云服务器，准备搭建一个公网环境下的 Kubenetes 集群，平时可以利用这个环境学习测试 k8s。公网搭建和本地搭建核心流程区别不大，要注意的是机器的公网IP以及在安全组里放行 kubenetes 组件必要的端口。</p>
+    <content><![CDATA[<h1 id="环境介绍"><a href="#环境介绍" class="headerlink" title="环境介绍"></a>环境介绍</h1><p>最近手里闲置了两台云服务器，准备搭建一个公网环境下的 Kubenetes 集群。公网搭建和本地搭建核心流程区别不大，要注意的是机器的公网IP以及在安全组里放行 kubenetes 组件必要的端口。</p>
 <h1 id="配置云服务器"><a href="#配置云服务器" class="headerlink" title="配置云服务器"></a>配置云服务器</h1><h2 id="配置公网-IP"><a href="#配置公网-IP" class="headerlink" title="配置公网 IP"></a>配置公网 IP</h2><p>云厂商的 ECS 都有分配一个公网 IP。这个公网 IP 在控制台上会显示，但是 IP 并不是直接配置在 ECS 机器上。</p>
 <p>在机器上通过 <code>ip a</code> 命令只能看到内网 IP，我们需要在 ECS 设置一个虚拟网卡，将控制台的公网 IP 配置在 ECS 上。</p>
 <p>将公网 IP 配置到 eth0 网卡上（master and node），</p>
@@ -1017,19 +1017,27 @@
 <p>加载完模块后后，初始化集群,</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">kubeadm init --config kubeadm-init.yaml --v 5</span><br></pre></td></tr></table></figure>
 
-<p>集群初始化完成后，将这条命令保存到 <code>～/.bashrc</code> 中，方便后续通过 kubectl 命令管理集群。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> KUBECONFIG=/etc/kubernetes/admin.conf</span><br></pre></td></tr></table></figure>
+<p>集群初始化完成后，可以通过 kubectl 命令行管理集群。</p>
+<p>告诉 kubectl 连接集群的配置文件位置，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> KUBECONFIG=/etc/kubernetes/admin.conf</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;export KUBECONFIG=/etc/kubernetes/admin.conf&quot;</span> &gt;&gt; ~/.bashrc</span><br></pre></td></tr></table></figure>
 
-<p>执行完这一步，集群所需的关里面组件已经 up，此时集群依然是 not-ready 状态，应为我们还差集群网络没有配置，配置完毕后，集群状态会变为 ready。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@k8s-master ~]# kubectl get pods -A</span><br><span class="line">NAMESPACE     NAME                                 READY   STATUS    RESTARTS   AGE</span><br><span class="line">kube-system   etcd-k8s-master                      1/1     Running   9          14s</span><br><span class="line">kube-system   kube-apiserver-k8s-master            1/1     Running   9          12s</span><br><span class="line">kube-system   kube-controller-manager-k8s-master   1/1     Running   11         12s</span><br><span class="line">kube-system   kube-scheduler-k8s-master            1/1     Running   10         12s</span><br></pre></td></tr></table></figure>
+<p>为 kubectl 命令添加自动补全并持久化，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">source</span> &lt;(kubectl completion bash)</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;source &lt;(kubectl completion bash)&#x27;</span> &gt;&gt; ~/.bashrc</span><br></pre></td></tr></table></figure>
 
-<h2 id="集群网络配置"><a href="#集群网络配置" class="headerlink" title="集群网络配置"></a>集群网络配置</h2><h3 id="cilium"><a href="#cilium" class="headerlink" title="cilium"></a>cilium</h3><p>使用 cilium 1.18.4 作为集群的网络方案,</p>
-<p>cilium 安装需要使用 helm，首先我们安装 helm，</p>
+
+<p>执行完这一步，集群所需的关键组件(etcd&#x2F;apiserver&#x2F;cm&#x2F;scheduler)已经 up。此时当前节点依然是 not-ready 状态，因为我们还差集群网络没有配置，配置完毕后，集群状态会变为 ready。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@k8s-master ~]# kubectl get pods -A</span><br><span class="line">NAMESPACE     NAME                                  READY   STATUS    RESTARTS   AGE</span><br><span class="line">kube-system   coredns-855c4dd65d-hssl9              0/1     Pending   0          29s</span><br><span class="line">kube-system   coredns-855c4dd65d-ldrtc              0/1     Pending   0          29s</span><br><span class="line">kube-system   etcd-k8s-master                       1/1     Running   0          34s</span><br><span class="line">kube-system   kube-apiserver-k8s-master             1/1     Running   0          36s</span><br><span class="line">kube-system   kube-controller-manager-k8s-master    1/1     Running   0          34s</span><br><span class="line">kube-system   kube-proxy-7kx42                      1/1     Running   0          29s</span><br><span class="line">kube-system   kube-scheduler-k8s-master             1/1     Running   0          34s</span><br><span class="line"></span><br><span class="line">[root@k8s-master ~]# kubectl get node</span><br><span class="line">NAME         STATUS     ROLES           AGE     VERSION</span><br><span class="line">k8s-master   NotReady   control-plane   3m44s   v1.31.14</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="集群网络配置"><a href="#集群网络配置" class="headerlink" title="集群网络配置"></a>集群网络配置</h2><p>k8s 集群网络有很多种方案，这里就列几种最常用的方案配置方法，选择任意一种即可。</p>
+<h3 id="cilium"><a href="#cilium" class="headerlink" title="cilium"></a>cilium</h3><p>使用 cilium 1.18.4 作为集群的网络方案,</p>
+<p>cilium 安装需要使用 helm，首先我们安装 helm（需要启用 epel 源），</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install -y helm</span><br></pre></td></tr></table></figure>
 
 
 <p>通过 helm 安装 cilium，</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 下载 cilium helm charts 包</span></span><br><span class="line">wget https://github.com/cilium/charts/blob/master/cilium-1.18.4.tgz</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装 helm charts</span></span><br><span class="line">helm install cilium cilium-1.18.4.tgz -n kube-system \</span><br><span class="line">    --<span class="built_in">set</span> kubeProxyReplacement=<span class="literal">true</span> \</span><br><span class="line">    --<span class="built_in">set</span> bpf.masquerade=<span class="literal">true</span>   \</span><br><span class="line">    --<span class="built_in">set</span> k8sServiceHost=<span class="string">&quot;x.x.x.x&quot;</span> \</span><br><span class="line">    --<span class="built_in">set</span> k8sServicePort=6443 \</span><br><span class="line">    --<span class="built_in">set</span> operator.replicas=1</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 下载 cilium helm charts 包</span></span><br><span class="line">wget https://github.com/cilium/charts/blob/master/cilium-1.18.4.tgz</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装 helm charts, k8sServiceHost 替换为真实的 APISEerver IP</span></span><br><span class="line">helm install cilium cilium-1.18.4.tgz -n kube-system \</span><br><span class="line">    --<span class="built_in">set</span> kubeProxyReplacement=<span class="literal">true</span> \</span><br><span class="line">    --<span class="built_in">set</span> bpf.masquerade=<span class="literal">true</span>   \</span><br><span class="line">    --<span class="built_in">set</span> k8sServiceHost=<span class="string">&quot;x.x.x.x&quot;</span> \</span><br><span class="line">    --<span class="built_in">set</span> k8sServicePort=6443 \</span><br><span class="line">    --<span class="built_in">set</span> operator.replicas=1</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>Tips: 注意将 Charts 中 k8sServiceHost&amp;k8sServicePort 设置为 APIServer 使用的 IP&amp;Port，避免出现 <code>Unable to contact k8s api-server</code> 错误。<br><a class="link"   href="https://github.com/cilium/cilium/issues/20679" >https://github.com/cilium/cilium/issues/20679<i class="fas fa-external-link-alt"></i></a></p>
